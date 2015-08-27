@@ -1,4 +1,5 @@
 const core = require("sdk/view/core");
+const preferences = require("sdk/preferences/service");
 const tabs = require("sdk/tabs");
 
 const NewTabURL = require('resource:///modules/NewTabURL.jsm').NewTabURL;
@@ -40,5 +41,6 @@ function onTabOpen(tab) {
     }
 }
 
+preferences.set("browser.startup.homepage", "about:newtab");
 NewTabURL.override(constants.URL);
 tabs.on("open", onTabOpen);
