@@ -1,14 +1,16 @@
 const core = require("sdk/view/core");
-const data = require("sdk/self").data;
 const tabs = require("sdk/tabs");
 
+const NewTabURL = require('resource:///modules/NewTabURL.jsm').NewTabURL;
+
 const bookmarks = require("./lib/bookmarks");
+const constants = require("./lib/constants");
 const ui = require("./lib/ui");
 
 function clearUrlBar(tab) {
     let lowLevelWindow = core.viewFor(tab.window);
     let urlBar = lowLevelWindow.document.getElementById("urlbar").inputField;
-    if (urlBar.value === data.url("bookmark_dial.html")) {
+    if (urlBar.value === constants.URL) {
         urlBar.value = "";
     }
     urlBar.focus();
@@ -19,8 +21,7 @@ function makeContextMenu() {
 }
 
 function maybeLoadBookmarDial(tab) {
-    if (tab.url == "about:newtab") {
-        tab.url = data.url("bookmark_dial.html");
+    if (tab.url == constants.URL) {
         tab.on("load", clearUrlBar);
         tab.on("load", makeContextMenu);
         tab.on("activate", clearUrlBar);
@@ -39,4 +40,5 @@ function onTabOpen(tab) {
     }
 }
 
+NewTabURL.override(constants.URL);
 tabs.on("open", onTabOpen);
