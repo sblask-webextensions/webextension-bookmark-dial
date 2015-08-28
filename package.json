@@ -10,5 +10,15 @@
     "engines": {
         "firefox": ">=38.0a1",
         "fennec": ">=38.0a1"
-    }
+    },
+    "preferences-branch": "bookmarkdial",
+    "preferences": [
+        {
+            "type": "string",
+            "name": "bookmarkFolder",
+            "title": "The folder to show in Bookmark Dial",
+            "value": "/TOOLBAR/",
+            "hidden": true
+        }
+    ]
 }
