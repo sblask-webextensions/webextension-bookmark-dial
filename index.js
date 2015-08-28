@@ -18,7 +18,7 @@ function clearUrlBar(tab) {
 }
 
 function makeContextMenu() {
-    bookmarks.getFolders(ui.bookmarkTreeToContextMenu);
+    bookmarks.update(ui.bookmarkTreeToContextMenu);
 }
 
 function maybeLoadBookmarDial(tab) {
