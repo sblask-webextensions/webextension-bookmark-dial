@@ -19,6 +19,17 @@
             "title": "The folder to show in Bookmark Dial",
             "value": "/TOOLBAR/",
             "hidden": true
+        },
+        {
+            "type": "file",
+            "name": "customStyleFile",
+            "title": "A custom CSS file for Bookmark Dial"
+        },
+        {
+            "type": "bool",
+            "name": "useCustomStyleFile",
+            "title": "Use the custom CSS file(replacing the default one)",
+            "value": true
         }
     ]
 }
