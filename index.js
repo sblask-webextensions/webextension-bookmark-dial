@@ -66,6 +66,7 @@ pageMod.PageMod({
     attachTo: ["existing", "top"],
     contentScriptFile: [
         "./jquery-2.1.4.js",
+        "./underscore-1.8.3.js",
         "./bookmark_dial.js",
     ],
     onAttach: function(worker) {
@@ -78,6 +79,7 @@ pageMod.PageMod({
         clearUrlBar(worker.tab);
         worker.tab.on("activate", clearUrlBar);
         worker.tab.on("pageshow", clearUrlBar);
+        worker.port.emit("init");
         updateStyle(worker);
         bookmarks.update();
     }
