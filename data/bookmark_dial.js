@@ -47,13 +47,14 @@ function __setSize(tileWidth, windowWidth, windowHeight) {
         "Setting size",
         tileWidth, tileHeight, tileWidthPercentage, tileHeightPercentage, windowWidth, windowHeight
     );
+    let tilesPerLine = Math.floor(100 / tileWidthPercentage);
+    let horizontalPaddingPercentage = (100 % tileWidthPercentage) / 2;
     let styleString = "" +
         "li {" +
-            // "width: calc(100% / " + tilesPerLine + ");" +
-            "width: " + tileWidthPercentage + "%;" +
+            "width: calc(100% / " + tilesPerLine + ");" +
         "}" +
         "ol {" +
-            // "padding: " + verticalPadding + "px " + horizontalPaddingPercentage + "% 0;" +
+            "padding: 2% calc(" + horizontalPaddingPercentage + "% + 2%);" +
         "}" +
     "";
     $("style#sizingStyle").text(styleString);
@@ -77,7 +78,7 @@ function layout() {
 
 function update(bookmarks) {
     console.log("Update " + bookmarks.length + " bookmarks");
-    let updatedList = $("<ol>");
+    let updatedList = $('<ol class="flexbox">');
     for (let bookmark of bookmarks) {
         updatedList.append(
             $.parseHTML(
