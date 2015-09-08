@@ -13,12 +13,15 @@ const ui = require("./lib/ui");
 const workerRegistry = require("./lib/worker-registry");
 
 function clearUrlBar(tab) {
-    let lowLevelWindow = core.viewFor(tab.window);
-    let urlBar = lowLevelWindow.document.getElementById("urlbar").inputField;
-    if (urlBar.value === constants.URL) {
-        urlBar.value = "";
+    // does not always seem to be available with private browsing
+    if (tab.window) {
+        let lowLevelWindow = core.viewFor(tab.window);
+        let urlBar = lowLevelWindow.document.getElementById("urlbar").inputField;
+        if (urlBar.value === constants.URL) {
+            urlBar.value = "";
+        }
+        urlBar.focus();
     }
-    urlBar.focus();
 }
 
 function updateDial() {
