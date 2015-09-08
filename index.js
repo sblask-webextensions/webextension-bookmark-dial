@@ -54,6 +54,9 @@ function updateStyle(worker) {
 preferences.set("browser.startup.homepage", "about:newtab");
 NewTabURL.override(constants.URL);
 
+// initialize the ui parts that don't need bookmarks yet
+ui.init();
+
 // setup listeners
 bookmarks.on("update", ui.bookmarkTreeToContextMenu);
 bookmarks.on("update", updateDial);
