@@ -26,7 +26,7 @@ li {
 
 a {
     border-radius: 10px;
-    border: 1px solid lightgrey;
+    border: 1px solid black;
     display: block;
     overflow: hidden;
     position: absolute;
@@ -40,8 +40,24 @@ a {
 
 a:focus,
 a:hover {
+    border-color: #4cb1ff;
     box-shadow: 0 0 10px 5px #4cb1ff;
     outline: none;
+}
+
+a.busy {
+    background-image: url("busy.png");
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+}
+
+a.busy img {
+    display: none;
+}
+
+a.busy span {
+    background-color: unset;
+    color: white;
 }
 
 span {

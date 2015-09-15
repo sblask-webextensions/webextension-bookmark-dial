@@ -27,7 +27,7 @@ function clearUrlBar(tab) {
 function updateDial() {
     let folder = simplePreferences.prefs.bookmarkFolder;
     if (folder) {
-        workerRegistry.message("update", bookmarks.getBookmarks(folder));
+        workerRegistry.message("bookmarksUpdated", bookmarks.getBookmarks(folder));
     }
 }
 
@@ -44,7 +44,7 @@ function __getStyleString() {
 }
 
 function updateStyle(worker) {
-    let message = "styleUpdate";
+    let message = "styleUpdated";
     let data = __getStyleString();
     if (worker) {
         worker.port.emit(message, data);
@@ -61,8 +61,8 @@ NewTabURL.override(constants.URL);
 ui.init();
 
 // setup listeners
-bookmarks.on("update", ui.bookmarkTreeToContextMenu);
-bookmarks.on("update", updateDial);
+bookmarks.on("bookmarksUpdated", ui.bookmarkTreeToContextMenu);
+bookmarks.on("bookmarksUpdated", updateDial);
 simplePreferences.on("bookmarkFolder", updateDial);
 simplePreferences.on("customStyleFile", function() {updateStyle();});
 simplePreferences.on("useCustomStyleFile", function() {updateStyle();});

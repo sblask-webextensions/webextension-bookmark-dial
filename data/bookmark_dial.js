@@ -60,7 +60,7 @@ function __setSize(tileWidth, windowWidth, windowHeight) {
     $("style#sizingStyle").text(styleString);
 }
 
-function setStyle(styleString) {
+function updateStyle(styleString) {
     console.log("Update style");
     $("style#givenStyle").text(styleString);
 }
@@ -76,7 +76,7 @@ function layout() {
     __setSize(tileWidth, windowWidth, windowHeight);
 }
 
-function update(bookmarks) {
+function updateBookmarks(bookmarks) {
     console.log("Update " + bookmarks.length + " bookmarks");
     let updatedList = $('<ol class="flexbox">');
     for (let bookmark of bookmarks) {
@@ -93,17 +93,57 @@ function update(bookmarks) {
     $("ol").replaceWith(updatedList);
 }
 
+function __applyOnMatches(someFunction, urlMap) {
+    $("a").each(function(index) {
+        let anchor = $(this);
+        let bookmarkURL = anchor.attr("href");
+        if (urlMap[bookmarkURL]) {
+            console.log("Found match at index " + index);
+            someFunction(anchor, bookmarkURL, urlMap);
+        }
+    });
+}
+
+function __setBusy(anchor) {
+    anchor.addClass("busy");
+}
+
+function setBusy(bookmarkURL) {
+    let urlMap = {};
+    urlMap[bookmarkURL] = true;
+    __applyOnMatches(__setBusy, urlMap);
+}
+
+function __updateThumbnail(anchor, bookmarkURL, thumbnails) {
+    console.log("Update thumbnail for " + bookmarkURL);
+    let thumbnailURL = thumbnails[bookmarkURL];
+    anchor.children("img").attr("src", thumbnailURL);
+    anchor.removeClass("busy");
+}
+
+function updateThumbnails(thumbnails) {
+    __applyOnMatches(__updateThumbnail, thumbnails);
+}
+
 self.port.on("init", function() {
     layout();
     window.onresize = _.debounce(layout, 300);
 });
 
-self.port.on("styleUpdate", function(styleString) {
-    setStyle(styleString);
+self.port.on("styleUpdated", function(styleString) {
+    updateStyle(styleString);
 });
 
-self.port.on("update", function(bookmarks) {
+self.port.on("bookmarksUpdated", function(bookmarks) {
     bookmarkCount = bookmarks.length;
     layout();
-    update(bookmarks);
+    updateBookmarks(bookmarks);
+});
+
+self.port.on("updatingThumbnail", function(bookmarkURL) {
+    setBusy(bookmarkURL);
+});
+
+self.port.on("thumbnailsUpdated", function(thumbnails) {
+    updateThumbnails(thumbnails);
 });
