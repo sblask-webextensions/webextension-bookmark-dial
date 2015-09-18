@@ -85,7 +85,9 @@ function updateBookmarks(bookmarks) {
                 '<li class="keepAspectRatio">' +
                     '<a href="' + bookmark.url + '">' +
                         '<img src="./foo.jpg">' +
-                        '<span>' + bookmark.title + '</span>' +
+                        '<div class="absoluteBottom">' +
+                            '<span class="absoluteBottom">' + bookmark.title + '</span>' +
+                        '</div>' +
                     '</a>' +
                 '</li>' +
                 ''));
