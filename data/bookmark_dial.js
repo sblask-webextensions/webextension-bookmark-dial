@@ -56,6 +56,12 @@ function __setSize(tileWidth, windowWidth, windowHeight) {
         "ol {" +
             "padding: 2% calc(" + horizontalPaddingPercentage + "% + 2%);" +
         "}" +
+        "div {" +
+            "height: " + tileHeight / 10 + "px;" +
+        "}" +
+        "span {" +
+            "font-size: " + tileHeight / 300 + "em;" +
+        "}" +
     "";
     $("style#sizingStyle").text(styleString);
 }
