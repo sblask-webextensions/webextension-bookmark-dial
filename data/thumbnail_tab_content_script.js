@@ -3,15 +3,22 @@
 const WINDOW_WIDTH = 1024;
 const THUMBNAIL_WIDTH = 600;
 
+let bodyStyle = document.body.style;
+let htmlStyle = document.getElementsByTagName("html")[0].style;
+
+// need to set height explicitly as applying a transform sometimes lead to height 0
+htmlStyle.height = "9999px";
+bodyStyle.height = "9999px";
+bodyStyle.overflowY = "hidden";
 
 // make sure body is on the left
-document.body.style.margin = 0;
+bodyStyle.margin = 0;
 // cut off as much empty space as possible
-document.body.style.maxWidth = WINDOW_WIDTH + 'px';
+bodyStyle.maxWidth = WINDOW_WIDTH + 'px';
 
 // scale to fit the thumbnail width
 let scale = THUMBNAIL_WIDTH / document.body.clientWidth;
-document.body.style.transform = 'scale(' + scale + ')';
-document.body.style.transformOrigin = '0 0 0';
+bodyStyle.transform = 'scale(' + scale + ')';
+bodyStyle.transformOrigin = '0 0 0';
 // set width explicitely as otherwise the scale is off in some cases
-document.body.style.width = document.body.clientWidth + 'px';
+bodyStyle.width = document.body.clientWidth + 'px';
