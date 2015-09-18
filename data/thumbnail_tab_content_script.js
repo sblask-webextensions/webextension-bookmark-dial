@@ -1,7 +1,6 @@
-/* globals document */
+/* globals document, self */
 
 const WINDOW_WIDTH = 1024;
-const THUMBNAIL_WIDTH = 600;
 
 let bodyStyle = document.body.style;
 let htmlStyle = document.getElementsByTagName("html")[0].style;
@@ -16,7 +15,7 @@ bodyStyle.margin = 0;
 bodyStyle.maxWidth = WINDOW_WIDTH + 'px';
 
 // scale to fit the thumbnail width
-let scale = THUMBNAIL_WIDTH / document.body.clientWidth;
+let scale = self.options.THUMBNAIL_WIDTH / document.body.clientWidth;
 bodyStyle.transform = 'scale(' + scale + ')';
 bodyStyle.transformOrigin = '0 0 0';
 // set width explicitely as otherwise the scale is off in some cases

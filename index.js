@@ -70,6 +70,7 @@ simplePreferences.on("useCustomStyleFile", function() {updateStyle();});
 pageMod.PageMod({
     include: constants.URL,
     attachTo: ["existing", "top"],
+    contentScriptOptions: { THUMBNAIL_WIDTH: constants.THUMBNAIL_WIDTH },
     contentScriptFile: [
         "./jquery-2.1.4.js",
         "./underscore-1.8.3.js",

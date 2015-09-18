@@ -1,12 +1,11 @@
 /* globals _, self, window */
 /* jshint jquery:true */
-const maxTileWidth = 600;
 
 let bookmarkCount;
 
 function __normalizeTileWidth(tileWidth) {
-    if (tileWidth > maxTileWidth) {
-        return maxTileWidth;
+    if (tileWidth > self.options.THUMBNAIL_WIDTH) {
+        return self.options.THUMBNAIL_WIDTH;
     } else {
         return tileWidth;
     }
@@ -51,6 +50,8 @@ function __setSize(tileWidth, windowWidth, windowHeight) {
     let horizontalPaddingPercentage = (100 % tileWidthPercentage) / 2;
     let styleString = "" +
         "li {" +
+            "min-width: 100px;" +
+            "max-width: " + self.options.THUMBNAIL_WIDTH + "px;" +
             "width: calc(100% / " + tilesPerLine + ");" +
         "}" +
         "ol {" +

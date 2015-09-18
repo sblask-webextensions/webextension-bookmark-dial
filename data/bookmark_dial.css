@@ -21,7 +21,6 @@ ol {
 li {
     display: block;
     float: left;
-    max-width: 600px;
 }
 
 a {
