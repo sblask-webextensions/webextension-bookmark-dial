@@ -7,9 +7,8 @@ let bodyStyle = document.body.style;
 let htmlStyle = document.getElementsByTagName("html")[0].style;
 
 // need to set height explicitly as applying a transform sometimes lead to height 0
-htmlStyle.height = "9999px";
-bodyStyle.height = "9999px";
-bodyStyle.overflowY = "hidden";
+htmlStyle.minHeight = "700px";
+bodyStyle.minHeight = "700px";
 
 // make sure body is on the left
 bodyStyle.margin = 0;
