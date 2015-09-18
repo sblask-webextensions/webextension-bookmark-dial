@@ -25,10 +25,7 @@ function clearUrlBar(tab) {
 }
 
 function updateDial() {
-    let folder = simplePreferences.prefs.bookmarkFolder;
-    if (folder) {
-        workerRegistry.message("bookmarksUpdated", bookmarks.getBookmarks(folder));
-    }
+    workerRegistry.message("bookmarksUpdated", bookmarks.getBookmarks());
 }
 
 function __getStyleString() {

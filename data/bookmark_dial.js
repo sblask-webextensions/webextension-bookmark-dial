@@ -91,7 +91,7 @@ function updateBookmarks(bookmarks) {
             $.parseHTML(
                 '<li class="keepAspectRatio">' +
                     '<a href="' + bookmark.url + '">' +
-                        '<img src="./foo.jpg">' +
+                        '<img src="' + bookmark.thumbnail + '">' +
                         '<div class="absoluteBottom">' +
                             '<span class="absoluteBottom">' + bookmark.title + '</span>' +
                         '</div>' +
