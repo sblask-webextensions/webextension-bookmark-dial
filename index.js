@@ -1,7 +1,6 @@
 const core = require("sdk/view/core");
 const file = require("sdk/io/file");
 const pageMod = require("sdk/page-mod");
-const preferences = require("sdk/preferences/service");
 const self = require("sdk/self");
 const simplePreferences = require('sdk/simple-prefs');
 
@@ -50,8 +49,6 @@ function updateStyle(worker) {
     }
 }
 
-// hijack homepage and new tab page
-preferences.set("browser.startup.homepage", "about:newtab");
 NewTabURL.override(constants.URL);
 
 // initialize the ui parts that don't need bookmarks yet
