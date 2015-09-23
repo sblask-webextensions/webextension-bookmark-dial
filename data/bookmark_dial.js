@@ -1,4 +1,4 @@
-/* globals _, self, window */
+/* globals self, window */
 /* jshint jquery:true */
 
 let bookmarkCount;
@@ -83,6 +83,14 @@ function layout() {
     __setSize(tileWidth, windowWidth, windowHeight);
 }
 
+let debounceTimeout;
+function debouncedLayout() {
+    if (debounceTimeout) {
+        clearTimeout(debounceTimeout);
+    }
+    debounceTimeout = setTimeout(layout, 300);
+}
+
 function updateBookmarks(bookmarks) {
     console.log("Update " + bookmarks.length + " bookmarks");
     let updatedList = $('<ol class="flexbox">');
@@ -136,7 +144,7 @@ function updateThumbnails(thumbnails) {
 
 self.port.on("init", function() {
     layout();
-    window.onresize = _.debounce(layout, 300);
+    window.onresize = debouncedLayout;
 });
 
 self.port.on("styleUpdated", function(styleString) {
