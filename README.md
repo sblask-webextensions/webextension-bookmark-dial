@@ -1,6 +1,6 @@
 # firefox-bookmark-dial
 Display the contents of a bookmark folder as thumbnails with title everytime
-the user opens a new tab.
+the user opens Firefox or a new tab.
 
 Most options are accessible through the context menu(see screenshots for more
 information). You can also set a custom css file in the add-on's preferences to
