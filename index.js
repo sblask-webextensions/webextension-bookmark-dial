@@ -95,4 +95,6 @@ exports.main = function (options) {
 
 exports.onUnload = function (reason) {
     console.log("Closing down with reason ", reason);
+    bookmarks.shutdown();
+    NewTabURL.reset();
 };
