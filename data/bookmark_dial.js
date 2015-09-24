@@ -148,7 +148,7 @@ function updateThumbnails(thumbnails) {
 
 self.port.on("init", function() {
     layout();
-    window.onresize = debouncedLayout;
+    window.addEventListener("resize", debouncedLayout, true);
 });
 
 self.port.on("styleUpdated", function(styleString) {
