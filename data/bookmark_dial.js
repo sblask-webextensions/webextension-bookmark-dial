@@ -48,9 +48,10 @@ function __setSize(tileWidth, windowWidth, windowHeight) {
     );
     let tilesPerLine = Math.floor(100 / tileWidthPercentage);
     let horizontalPaddingPercentage = (100 % tileWidthPercentage) / 2;
+    let labelHeight = 5 + tileHeight / 20;
+    let busyImage = tileWidth > 150 ? "busy.png" : "busy-small.png";
     let styleString = "" +
         "li {" +
-            "min-width: 100px;" +
             "max-width: " + self.options.THUMBNAIL_WIDTH + "px;" +
             "width: calc(100% / " + tilesPerLine + ");" +
         "}" +
@@ -58,10 +59,13 @@ function __setSize(tileWidth, windowWidth, windowHeight) {
             "padding: 2% calc(" + horizontalPaddingPercentage + "% + 2%);" +
         "}" +
         "div {" +
-            "height: " + tileHeight / 10 + "px;" +
+            "height: " + labelHeight * 2 + "px;" +
         "}" +
         "span {" +
-            "font-size: " + tileHeight / 300 + "em;" +
+            "font-size: " + labelHeight + "px;" +
+        "}" +
+        "a.busy {" +
+            "background-image: url('" + busyImage + "');" +
         "}" +
     "";
     $("style#sizingStyle").text(styleString);
