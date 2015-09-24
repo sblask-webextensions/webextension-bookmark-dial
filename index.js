@@ -75,16 +75,24 @@ function setupPageMod() {
     });
 }
 
-NewTabURL.override(constants.URL);
+exports.main = function (options) {
+    console.log("Starting up with reason ", options.loadReason);
 
-// initialize the ui parts that don't need bookmarks yet
-ui.init();
+    NewTabURL.override(constants.URL);
 
-// setup listeners
-bookmarks.on("bookmarksUpdated", ui.bookmarkTreeToContextMenu);
-bookmarks.on("bookmarksUpdated", updateDial);
-simplePreferences.on("bookmarkFolder", updateDial);
-simplePreferences.on("customStyleFile", function() {updateStyle();});
-simplePreferences.on("useCustomStyleFile", function() {updateStyle();});
+    // initialize the ui parts that don't need bookmarks yet
+    ui.init();
 
-setupPageMod();
+    // setup listeners
+    bookmarks.on("bookmarksUpdated", ui.bookmarkTreeToContextMenu);
+    bookmarks.on("bookmarksUpdated", updateDial);
+    simplePreferences.on("bookmarkFolder", updateDial);
+    simplePreferences.on("customStyleFile", function() {updateStyle();});
+    simplePreferences.on("useCustomStyleFile", function() {updateStyle();});
+
+    setupPageMod();
+};
+
+exports.onUnload = function (reason) {
+    console.log("Closing down with reason ", reason);
+};
