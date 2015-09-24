@@ -49,6 +49,33 @@ function updateStyle(worker) {
     }
 }
 
+function setupPageMod() {
+    pageMod.PageMod({
+        include: constants.URL,
+        attachTo: ["existing", "top"],
+        contentScriptOptions: { THUMBNAIL_WIDTH: constants.THUMBNAIL_WIDTH },
+        contentScriptFile: [
+            "./jquery-2.1.4.js",
+            "./underscore-1.8.3.js",
+            "./bookmark_dial.js",
+        ],
+        onAttach: function(worker) {
+            console.log("Attach");
+            worker.on('detach', function () {
+                console.log("Detach");
+                workerRegistry.deregister(this);
+            });
+            workerRegistry.register(worker);
+            clearUrlBar(worker.tab);
+            worker.tab.on("activate", clearUrlBar);
+            worker.tab.on("pageshow", clearUrlBar);
+            worker.port.emit("init");
+            updateStyle(worker);
+            bookmarks.update();
+        }
+    });
+}
+
 NewTabURL.override(constants.URL);
 
 // initialize the ui parts that don't need bookmarks yet
@@ -61,28 +88,4 @@ simplePreferences.on("bookmarkFolder", updateDial);
 simplePreferences.on("customStyleFile", function() {updateStyle();});
 simplePreferences.on("useCustomStyleFile", function() {updateStyle();});
 
-pageMod.PageMod({
-    include: constants.URL,
-    attachTo: ["existing", "top"],
-    contentScriptOptions: { THUMBNAIL_WIDTH: constants.THUMBNAIL_WIDTH },
-    contentScriptFile: [
-        "./jquery-2.1.4.js",
-        "./underscore-1.8.3.js",
-        "./bookmark_dial.js",
-    ],
-    onAttach: function(worker) {
-        console.log("Attach");
-        worker.on('detach', function () {
-            console.log("Detach");
-            workerRegistry.deregister(this);
-        });
-        workerRegistry.register(worker);
-        clearUrlBar(worker.tab);
-        worker.tab.on("activate", clearUrlBar);
-        worker.tab.on("pageshow", clearUrlBar);
-        worker.port.emit("init");
-        updateStyle(worker);
-        bookmarks.update();
-    }
-});
-
+setupPageMod();
