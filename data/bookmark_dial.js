@@ -95,23 +95,31 @@ function debouncedLayout() {
     debounceTimeout = setTimeout(layout, 300);
 }
 
+function __makeHTMLListItem(bookmark) {
+    return '' +
+        '<li class="keepAspectRatio">' +
+            '<a href="' + bookmark.url + '">' +
+                '<img src="' + bookmark.thumbnail + '">' +
+                '<div class="absoluteBottom">' +
+                    '<span class="absoluteBottom">' + bookmark.title + '</span>' +
+                '</div>' +
+            '</a>' +
+        '</li>' +
+    '';
+}
+
+function __updateHTMLList(listString) {
+    let list = window.document.getElementsByTagName("ol")[0];
+    list.innerHTML = listString;
+}
+
 function updateBookmarks(bookmarks) {
     console.log("Update " + bookmarks.length + " bookmarks");
-    let updatedList = $('<ol class="flexbox">');
+    let updatedList = [];
     for (let bookmark of bookmarks) {
-        updatedList.append(
-            $.parseHTML(
-                '<li class="keepAspectRatio">' +
-                    '<a href="' + bookmark.url + '">' +
-                        '<img src="' + bookmark.thumbnail + '">' +
-                        '<div class="absoluteBottom">' +
-                            '<span class="absoluteBottom">' + bookmark.title + '</span>' +
-                        '</div>' +
-                    '</a>' +
-                '</li>' +
-                ''));
+        updatedList.push(__makeHTMLListItem(bookmark));
     }
-    $("ol").replaceWith(updatedList);
+    __updateHTMLList(updatedList.join("\n"));
 }
 
 function __applyOnMatches(someFunction, urlMap) {
