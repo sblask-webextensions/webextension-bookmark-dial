@@ -18,8 +18,8 @@ function clearUrlBar(tab) {
         let urlBar = lowLevelWindow.document.getElementById("urlbar").inputField;
         if (urlBar.value === constants.URL) {
             urlBar.value = "";
+            urlBar.focus();
         }
-        urlBar.focus();
     }
 }
 
