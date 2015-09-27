@@ -16,7 +16,7 @@ function __getTileWidth(bookmarkCount, windowWidth, windowHeight) {
     let previousTileWidth = -1;
     let newTileWidth = 0;
     let tilesPerLine = 1;
-    while (newTileWidth > previousTileWidth && tilesPerLine < 100) {
+    while (newTileWidth >= previousTileWidth && tilesPerLine < 100) {
         previousTileWidth = newTileWidth;
         let lineCount = Math.ceil(bookmarkCount / tilesPerLine);
         newTileWidth = Math.floor(windowWidth / tilesPerLine);
