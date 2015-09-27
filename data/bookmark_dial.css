@@ -89,15 +89,6 @@ img {
     right: 0;
 }
 
-.flexbox {
-    align-content: center;
-    align-items: center;
-    align-self: center;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-}
-
 /* width set dynamically, height comes from before element (padding is based on width) */
 .keepAspectRatio {
     position: relative;

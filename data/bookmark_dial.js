@@ -1,42 +1,50 @@
 /* globals self, window */
 /* jshint jquery:true */
 
+const LIST_MARGIN = 20;
+
 let bookmarkCount;
 
-function __normalizeTileWidth(tileWidth) {
-    if (tileWidth > self.options.THUMBNAIL_WIDTH) {
-        return self.options.THUMBNAIL_WIDTH;
-    } else {
-        return tileWidth;
-    }
-}
 
-
-function __getTileWidth(bookmarkCount, windowWidth, windowHeight) {
-    let previousTileWidth = -1;
+function __getOptimalTileLayout(bookmarkCount, containerWidth, containerHeight) {
+    let newLineCount = 0;
+    let newTileHeight = 0;
     let newTileWidth = 0;
-    let tilesPerLine = 1;
-    while (newTileWidth >= previousTileWidth && tilesPerLine < 100) {
+    let newTilesPerLine = 0;
+
+    let previousLineCount = 0;
+    let previousTileHeight = 0;
+    let previousTileWidth = 0;
+    let previousTilesPerLine = 0;
+
+    while (newTileWidth >= previousTileWidth && newTileWidth < self.options.THUMBNAIL_WIDTH) {
+        previousLineCount = newLineCount;
+        previousTileHeight = newTileHeight;
         previousTileWidth = newTileWidth;
-        let lineCount = Math.ceil(bookmarkCount / tilesPerLine);
-        newTileWidth = Math.floor(windowWidth / tilesPerLine);
-        let tileHeight = newTileWidth / 3 * 2;
-        if (tileHeight * lineCount > windowHeight) {
-            tileHeight = windowHeight / lineCount;
-            newTileWidth = tileHeight / 2 * 3;
+        previousTilesPerLine = newTilesPerLine;
+
+        newTilesPerLine++;
+        newLineCount = Math.ceil(bookmarkCount / newTilesPerLine);
+        newTileWidth = Math.floor(containerWidth / newTilesPerLine);
+        newTileHeight = Math.floor(newTileWidth / 3 * 2);
+        if (newTileHeight * newLineCount > containerHeight) {
+            newTileHeight = Math.floor(containerHeight / newLineCount);
+            newTileWidth = Math.floor(newTileHeight / 2 * 3);
         }
-        tilesPerLine++;
     }
-    return __normalizeTileWidth(previousTileWidth);
+    return [previousTilesPerLine, previousLineCount, previousTileWidth, previousTileHeight];
 }
 
 
-function __setSize(tileWidth, windowWidth, windowHeight) {
-    let tileHeight = tileWidth / 3 * 2;
-    console.log("Setting size", tileWidth, tileHeight, windowWidth, windowHeight);
-    let tilesPerLine = Math.floor(windowWidth / tileWidth);
-    let tileWidthPercentage = Math.floor(100 / tilesPerLine);
-    let horizontalPaddingPercentage = (100 % tileWidthPercentage) / 2;
+function __setStyle(layout, windowWidth, windowHeight) {
+    console.log("Setting size", layout, windowWidth, windowHeight);
+    let [tilesPerLine, lineCount, tileWidth, tileHeight] = layout;
+    let listWidth = tileWidth * tilesPerLine;
+    let listHeight = tileHeight * lineCount;
+
+    let horizontalPadding = Math.ceil((windowWidth - listWidth) / 2) + "px";
+    let verticalPadding = Math.floor((windowHeight - listHeight) / 2) + "px";
+
     let labelHeight = 5 + tileHeight / 20;
     let busyImage = tileWidth > 150 ? "busy.png" : "busy-small.png";
     let styleString = "" +
@@ -44,15 +52,22 @@ function __setSize(tileWidth, windowWidth, windowHeight) {
             "max-width: " + self.options.THUMBNAIL_WIDTH + "px;" +
             "width: calc(100% / " + tilesPerLine + ");" +
         "}" +
+        "\n" +
         "ol {" +
-            "padding: 2% calc(" + horizontalPaddingPercentage + "% + 2%);" +
+            "width: calc(100% - " + LIST_MARGIN + "px);" +
+            "height: calc(100% - " + LIST_MARGIN + "px);" +
+            "margin: " + LIST_MARGIN / 2 + "px;" +
+            "padding: calc(" + verticalPadding + ") calc(" + horizontalPadding + ") 0;" +
         "}" +
+        "\n" +
         "div {" +
             "height: " + labelHeight * 2 + "px;" +
         "}" +
+        "\n" +
         "span {" +
             "font-size: " + labelHeight + "px;" +
         "}" +
+        "\n" +
         "a.busy {" +
             "background-image: url('" + busyImage + "');" +
         "}" +
@@ -65,15 +80,15 @@ function updateStyle(styleString) {
     $("style#givenStyle").text(styleString);
 }
 
-function layout() {
+function makeLayout() {
     if (!bookmarkCount) {
         return;
     }
     console.log("Calculate layout");
-    let windowWidth = window.innerWidth;
-    let windowHeight = window.innerHeight;
-    let tileWidth = __getTileWidth(bookmarkCount, windowWidth, windowHeight);
-    __setSize(tileWidth, windowWidth, windowHeight);
+    let containerWidth = window.innerWidth - LIST_MARGIN;
+    let containerHeight = window.innerHeight - LIST_MARGIN;
+    let layout = __getOptimalTileLayout(bookmarkCount, containerWidth, containerHeight);
+    __setStyle(layout, containerWidth, containerHeight);
 }
 
 let debounceTimeout;
@@ -81,7 +96,7 @@ function debouncedLayout() {
     if (debounceTimeout) {
         clearTimeout(debounceTimeout);
     }
-    debounceTimeout = setTimeout(layout, 300);
+    debounceTimeout = setTimeout(makeLayout, 300);
 }
 
 function __makeHTMLListItem(bookmark) {
@@ -144,7 +159,7 @@ function updateThumbnails(thumbnails) {
 }
 
 self.port.on("init", function() {
-    layout();
+    makeLayout();
     window.addEventListener("resize", debouncedLayout, true);
 });
 
@@ -154,7 +169,7 @@ self.port.on("styleUpdated", function(styleString) {
 
 self.port.on("bookmarksUpdated", function(bookmarks) {
     bookmarkCount = bookmarks.length;
-    layout();
+    makeLayout();
     updateBookmarks(bookmarks);
 });
 
