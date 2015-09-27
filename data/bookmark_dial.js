@@ -17,7 +17,7 @@ function __getOptimalTileLayout(bookmarkCount, containerWidth, containerHeight) 
     let previousTileWidth = 0;
     let previousTilesPerLine = 0;
 
-    while (newTileWidth >= previousTileWidth && newTileWidth < self.options.THUMBNAIL_WIDTH) {
+    while (newTileWidth >= previousTileWidth && newTileWidth <= self.options.THUMBNAIL_WIDTH) {
         previousLineCount = newLineCount;
         previousTileHeight = newTileHeight;
         previousTileWidth = newTileWidth;
@@ -25,10 +25,16 @@ function __getOptimalTileLayout(bookmarkCount, containerWidth, containerHeight) 
 
         newTilesPerLine++;
         newLineCount = Math.ceil(bookmarkCount / newTilesPerLine);
-        newTileWidth = Math.floor(containerWidth / newTilesPerLine);
+        newTileWidth = Math.min(
+            self.options.THUMBNAIL_WIDTH,
+            Math.floor(containerWidth / newTilesPerLine)
+        );
         newTileHeight = Math.floor(newTileWidth / 3 * 2);
         if (newTileHeight * newLineCount > containerHeight) {
-            newTileHeight = Math.floor(containerHeight / newLineCount);
+            newTileHeight = Math.min(
+                Math.floor(containerHeight / newLineCount),
+                self.options.THUMBNAIL_WIDTH / 3 * 2
+            );
             newTileWidth = Math.floor(newTileHeight / 2 * 3);
         }
     }
