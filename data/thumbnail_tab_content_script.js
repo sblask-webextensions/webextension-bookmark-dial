@@ -6,8 +6,11 @@ let bodyStyle = document.body.style;
 let htmlStyle = document.getElementsByTagName("html")[0].style;
 
 // need to set height explicitly as applying a transform sometimes lead to height 0
-htmlStyle.minHeight = "700px";
-bodyStyle.minHeight = "700px";
+htmlStyle.minHeight = WINDOW_WIDTH + "px";
+bodyStyle.minHeight = WINDOW_WIDTH + "px";
+
+// fix bad overflow on some pages
+bodyStyle.borderTop = "1px solid transparent";
 
 // make sure body is on the left
 bodyStyle.margin = 0;
