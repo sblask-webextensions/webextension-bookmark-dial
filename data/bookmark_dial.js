@@ -31,22 +31,11 @@ function __getTileWidth(bookmarkCount, windowWidth, windowHeight) {
 }
 
 
-function __getTileSizeFromWidth(tileWidth, windowWidth, windowHeight) {
-    let tileHeight = tileWidth / 3 * 2;
-    let tileWidthPercentage = Math.floor(tileWidth / windowWidth * 100);
-    let tileHeightPercentage = Math.floor(tileHeight / windowHeight * 100);
-    return [tileHeight, tileWidthPercentage, tileHeightPercentage];
-}
-
-
 function __setSize(tileWidth, windowWidth, windowHeight) {
-    let [tileHeight, tileWidthPercentage, tileHeightPercentage] =
-        __getTileSizeFromWidth(tileWidth, windowWidth, windowHeight);
-    console.log(
-        "Setting size",
-        tileWidth, tileHeight, tileWidthPercentage, tileHeightPercentage, windowWidth, windowHeight
-    );
-    let tilesPerLine = Math.floor(100 / tileWidthPercentage);
+    let tileHeight = tileWidth / 3 * 2;
+    console.log("Setting size", tileWidth, tileHeight, windowWidth, windowHeight);
+    let tilesPerLine = Math.floor(windowWidth / tileWidth);
+    let tileWidthPercentage = Math.floor(100 / tilesPerLine);
     let horizontalPaddingPercentage = (100 % tileWidthPercentage) / 2;
     let labelHeight = 5 + tileHeight / 20;
     let busyImage = tileWidth > 150 ? "busy.png" : "busy-small.png";
