@@ -17,8 +17,7 @@ easy contribution to their projects. Bookmark Dial is aimed at fixing these
 issues.
 
 The thumbnails are always arranged and sized(up to a maximum size to save
-storage space) to fill a maximum of space. If you also want to see this page
-when Firefox starts up, set the homepage to `about:newtab`.
+storage space) to fill a maximum of space.
 
 Most options are accessible through the context menu(see screenshots for more
 information). You can also set a custom css file in the add-on's preferences to
