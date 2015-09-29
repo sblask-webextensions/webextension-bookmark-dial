@@ -36,7 +36,7 @@ function __getStyleString() {
     if (useCustomStyleFile && customStyleFile && file.exists(customStyleFile)) {
         return file.read(customStyleFile);
     } else {
-        return self.data.load("./bookmark_dial.css");
+        return self.data.load("./dial.css");
     }
 }
 
@@ -57,7 +57,7 @@ function setupPageMod() {
         contentScriptOptions: { THUMBNAIL_WIDTH: constants.THUMBNAIL_WIDTH },
         contentScriptFile: [
             "./jquery-2.1.4.js",
-            "./bookmark_dial.js",
+            "./dial.js",
         ],
         onAttach: function(worker) {
             console.log("Attach");

@@ -22,7 +22,7 @@ storage space) to fill a maximum of space.
 Most options are accessible through the context menu(see screenshots for more
 information). You can also set a custom css file in the add-on's preferences to
 change the style. Note that it will replace, not complement the [default
-one](https://github.com/sblask/firefox-bookmark-dial/blob/master/data/bookmark_dial.css)
+one](https://github.com/sblask/firefox-bookmark-dial/blob/master/data/dial.css)
 so you should use that one as a starting point.
 
 Adding or changing bookmarks outside the new tab page will not automatically
