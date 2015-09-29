@@ -33,6 +33,12 @@
             "name": "useCustomStyleFile",
             "title": "Use the custom CSS file(replacing the default one)",
             "value": true
+        },
+        {
+            "type": "bool",
+            "name": "replaceHomepage",
+            "title": "Use Bookmark Dial instead of default homepage",
+            "value": true
         }
     ]
 }

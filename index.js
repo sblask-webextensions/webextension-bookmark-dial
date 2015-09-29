@@ -1,6 +1,7 @@
 const core = require("sdk/view/core");
 const file = require("sdk/io/file");
 const pageMod = require("sdk/page-mod");
+const preferences = require("sdk/preferences/service");
 const self = require("sdk/self");
 const simplePreferences = require('sdk/simple-prefs');
 
@@ -75,6 +76,18 @@ function setupPageMod() {
     });
 }
 
+function resetHomepage() {
+    preferences.set("browser.startup.homepage", "about:home");
+}
+
+function maybeReplaceHomepage() {
+    if (simplePreferences.prefs.replaceHomepage) {
+        preferences.set("browser.startup.homepage", constants.URL);
+    } else {
+        resetHomepage();
+    }
+}
+
 exports.main = function (options) {
     console.log("Starting up with reason ", options.loadReason);
 
@@ -90,6 +103,9 @@ exports.main = function (options) {
     simplePreferences.on("customStyleFile", function() {updateStyle();});
     simplePreferences.on("useCustomStyleFile", function() {updateStyle();});
 
+    maybeReplaceHomepage();
+    simplePreferences.on("replaceHomepage", function() {maybeReplaceHomepage();});
+
     setupPageMod();
 };
 
@@ -97,4 +113,8 @@ exports.onUnload = function (reason) {
     console.log("Closing down with reason ", reason);
     bookmarks.shutdown();
     NewTabURL.reset();
+
+    if (reason === "disable" || reason === "uninstall") {
+        resetHomepage();
+    }
 };
