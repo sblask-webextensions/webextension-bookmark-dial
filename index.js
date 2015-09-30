@@ -72,7 +72,7 @@ function setupPageMod() {
             worker.tab.on("pageshow", clearUrlBar);
             worker.port.emit("init");
             updateStyle(worker);
-            bookmarks.update();
+            updateDial();
         }
     });
 }
