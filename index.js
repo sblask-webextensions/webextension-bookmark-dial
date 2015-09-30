@@ -10,6 +10,7 @@ const NewTabURL = require('resource:///modules/NewTabURL.jsm').NewTabURL;
 const bookmarks = require("./lib/bookmarks");
 const constants = require("./lib/constants");
 const uiContextMenu = require("./lib/ui-context-menu");
+const uiPanels = require("./lib/ui-panels");
 const workerRegistry = require("./lib/worker-registry");
 
 function clearUrlBar(tab) {
@@ -93,11 +94,12 @@ exports.main = function (options) {
 
     NewTabURL.override(constants.URL);
 
-    // initialize the ui parts that don't need bookmarks yet
     uiContextMenu.init();
 
+    simplePreferences.on("bookmarkFolderChooser", function() {
+        uiPanels.openChooseFolderPanel(bookmarks.getTreeAsArray());
+    });
     // setup listeners
-    bookmarks.on("bookmarksUpdated", uiContextMenu.bookmarkTreeToContextMenu);
     bookmarks.on("bookmarksUpdated", updateDial);
     simplePreferences.on("bookmarkFolder", updateDial);
     simplePreferences.on("customStyleFile", function() {updateStyle();});

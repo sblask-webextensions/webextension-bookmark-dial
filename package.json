@@ -24,6 +24,12 @@
             "hidden": true
         },
         {
+            "type": "control",
+            "label": "Choose",
+            "name": "bookmarkFolderChooser",
+            "title": "Folder for Bookmark Dial"
+        },
+        {
             "type": "file",
             "name": "customStyleFile",
             "title": "A custom CSS file for Bookmark Dial"

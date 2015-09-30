@@ -1,0 +1,41 @@
+* {
+    box-sizing: border-box;
+}
+body {
+    height: 200px;
+    margin: 0;
+    overflow: auto;
+    padding: 10px;
+    text-align: center;
+    width: 300px;
+}
+select {
+    width: 280px;
+}
+#unsorted:before {
+    content: url(./unsortedBookmarks.png);
+    vertical-align: sub;
+}
+#toolbar:before {
+    content: url(./bookmarksToolbar.png);
+    vertical-align: sub;
+}
+#menu:before {
+    content: url(./bookmarksMenu.png);
+    vertical-align: sub;
+}
+.level1 {
+    padding-left:  5px;
+}
+.level2 {
+    padding-left: 35px;
+}
+.level3 {
+    padding-left: 45px;
+}
+.level4 {
+    padding-left: 55px;
+}
+.level5 {
+    padding-left: 65px;
+}
