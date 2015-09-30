@@ -25,8 +25,16 @@ function clearUrlBar(tab) {
     }
 }
 
-function updateDial() {
-    workerRegistry.message("bookmarksUpdated", bookmarks.getBookmarks());
+function __send(message, data, worker) {
+    if (worker) {
+        worker.port.emit(message, data);
+    } else {
+        workerRegistry.message(message, data);
+    }
+}
+
+function updateDial(worker) {
+    __send("bookmarksUpdated", bookmarks.getBookmarks(), worker);
 }
 
 function __getStyleString() {
@@ -42,13 +50,7 @@ function __getStyleString() {
 }
 
 function updateStyle(worker) {
-    let message = "styleUpdated";
-    let data = __getStyleString();
-    if (worker) {
-        worker.port.emit(message, data);
-    } else {
-        workerRegistry.message(message, data);
-    }
+    __send("styleUpdated", __getStyleString(), worker);
 }
 
 function setupPageMod() {
@@ -72,7 +74,7 @@ function setupPageMod() {
             worker.tab.on("pageshow", clearUrlBar);
             worker.port.emit("init");
             updateStyle(worker);
-            updateDial();
+            updateDial(worker);
         }
     });
 }
