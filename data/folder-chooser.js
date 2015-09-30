@@ -13,7 +13,7 @@ function idForValue(value) {
 
 function buildOption(value, label, defaultValue) {
     let selected = value === defaultValue ? ' selected="selected"' : "";
-    let level = (value.match(/\//g) || []).length;
+    let level = (value.match(/\//g) || []).length - 2 // leading and trailing /;
     return [
         '<option',
             ' id="' + idForValue(value) + '"',
