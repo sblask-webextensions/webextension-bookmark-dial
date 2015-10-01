@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/sblask/firefox-bookmark-dial.svg?branch=master)](https://travis-ci.org/sblask/firefox-bookmark-dial)
+
 # firefox-bookmark-dial
 Replaces the [default New Tab
 page](https://support.mozilla.org/en-US/kb/about-tiles-new-tab) and displays
