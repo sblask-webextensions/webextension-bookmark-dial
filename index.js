@@ -102,8 +102,8 @@ exports.main = function (options) {
         uiPanels.openChooseFolderPanel(bookmarks.getTreeAsArray());
     });
     // setup listeners
-    bookmarks.on("bookmarksUpdated", updateDial);
-    simplePreferences.on("bookmarkFolder", updateDial);
+    bookmarks.on("bookmarksUpdated", function() { updateDial(); });
+    simplePreferences.on("bookmarkFolder",  function() { updateDial(); });
     simplePreferences.on("customStyleFile", function() {updateStyle();});
     simplePreferences.on("useCustomStyleFile", function() {updateStyle();});
 
