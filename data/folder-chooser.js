@@ -1,7 +1,4 @@
-/* globals self, window */
-
 var select = window.document.getElementsByTagName("select")[0];
-var folderChooserStyle = window.document.getElementById("folderChooserStyle");
 
 function getSelectValue() {
     return select.options[select.selectedIndex].value;
@@ -12,17 +9,18 @@ function idForValue(value) {
 }
 
 function buildOption(value, label, defaultValue) {
-    let selected = value === defaultValue ? ' selected="selected"' : "";
-    let level = (value.match(/\//g) || []).length - 2 // leading and trailing /;
+    let selected = value === defaultValue ? " selected='selected'" : "";
+    let level = (value.match(/\//g) || []).length - 2; // leading and trailing /;
+    /* eslint indeint: 0 */
     return [
-        '<option',
-            ' id="' + idForValue(value) + '"',
-            selected,
-            ' value="' + value + '"',
-            ' class="level' + level + '"',
-        '>',
-            label,
-        '</option>',
+        "<option",
+        " id='" + idForValue(value) + "'",
+        selected,
+        " value='" + value + "'",
+        " class='level" + level + "'",
+        ">",
+        label,
+        "</option>",
     ].join("\n");
 }
 

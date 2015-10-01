@@ -1,5 +1,4 @@
-/* globals self, window */
-/* jshint jquery:true */
+/* eslint-env jquery */
 
 const LIST_MARGIN = 20;
 
@@ -106,16 +105,16 @@ function debouncedLayout() {
 }
 
 function __makeHTMLListItem(bookmark) {
-    return '' +
-        '<li class="keepAspectRatio">' +
-            '<a id="' + bookmark.id + '" href="' + bookmark.url + '">' +
-                '<img src="' + bookmark.thumbnail + '">' +
-                '<div class="absoluteBottom">' +
-                    '<span class="absoluteBottom">' + bookmark.title + '</span>' +
-                '</div>' +
-            '</a>' +
-        '</li>' +
-    '';
+    return "" +
+        "<li class='keepAspectRatio'>" +
+        " <a id='" + bookmark.id + "' href='" + bookmark.url + "'>" +
+        "  <img src='" + bookmark.thumbnail + "'>" +
+        "  <div class='absoluteBottom'>" +
+        "   <span class='absoluteBottom'>" + bookmark.title + "</span>" +
+        "  </div>" +
+        " </a>" +
+        "</li>" +
+        "";
 }
 
 function __updateHTMLList(listString) {

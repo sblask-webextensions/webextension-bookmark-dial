@@ -3,9 +3,9 @@ const file = require("sdk/io/file");
 const pageMod = require("sdk/page-mod");
 const preferences = require("sdk/preferences/service");
 const self = require("sdk/self");
-const simplePreferences = require('sdk/simple-prefs');
+const simplePreferences = require("sdk/simple-prefs");
 
-const NewTabURL = require('resource:///modules/NewTabURL.jsm').NewTabURL;
+const NewTabURL = require("resource:///modules/NewTabURL.jsm").NewTabURL;
 
 const bookmarks = require("./lib/bookmarks");
 const constants = require("./lib/constants");
@@ -68,7 +68,7 @@ function setupPageMod() {
         ],
         onAttach: function(worker) {
             console.log("Attach");
-            worker.on('detach', function () {
+            worker.on("detach", function () {
                 console.log("Detach");
                 workerRegistry.deregister(this);
             });
@@ -79,7 +79,7 @@ function setupPageMod() {
             worker.port.emit("init");
             updateStyle(worker);
             updateDial(worker);
-        }
+        },
     });
 }
 
