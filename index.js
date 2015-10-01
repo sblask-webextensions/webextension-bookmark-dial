@@ -34,7 +34,11 @@ function __send(message, data, worker) {
 }
 
 function updateDial(worker) {
-    __send("bookmarksUpdated", bookmarks.getBookmarks(), worker);
+    let bookmarkList = bookmarks.getBookmarks();
+    // updateDial will be called later through listener if bookmarks are not available yet
+    if (bookmarkList) {
+        __send("bookmarksUpdated", bookmarkList, worker);
+    }
 }
 
 function __getStyleString() {
