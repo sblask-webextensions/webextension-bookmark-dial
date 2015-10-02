@@ -20,6 +20,7 @@ function initFormHandler() {
     }
 
     form.addEventListener("submit", onSubmit, false);
+    form.elements[0].focus();
 }
 
 document.addEventListener("DOMContentLoaded", initFormHandler, false);

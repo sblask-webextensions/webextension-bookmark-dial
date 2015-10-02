@@ -8,9 +8,6 @@
     <body>
         <h1>Add/Edit bookmark</h1>
         <form action="demo_form.asp">
-            <input type="hidden" name="id">
-            <input type="hidden" name="index">
-
             <div class="wrapper">
                 <label for="title">Name</label>
                 <input required type="text" id="name" name="title" class="inputElement">
@@ -37,6 +34,9 @@
             </div>
 
             <input type="submit" value="Save Bookmark">
+
+            <input type="hidden" name="id">
+            <input type="hidden" name="index">
         </form>
         <script type="application/javascript;version=1.7" src="./save-bookmark.js"></script>
         <script type="application/javascript;version=1.7" src="./folder-chooser.js"></script>
