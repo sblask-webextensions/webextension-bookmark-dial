@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" type="text/css" href="./edit-bookmark-panel.css">
+        <link rel="stylesheet" type="text/css" href="./folder-chooser.css">
+    </head>
+    <body>
+        <h1>Add/Edit bookmark</h1>
+        <form action="demo_form.asp">
+            <input type="hidden" name="id">
+            <input type="hidden" name="index">
+
+            <div class="wrapper">
+                <label for="name">Name</label>
+                <input required type="text" id="name" name="name" class="inputElement">
+            </div>
+            <div class="wrapper">
+                <label for="location">Location</label>
+                <input required type="url" name="location" class="inputElement">
+            </div>
+            <div class="wrapper">
+                <label for="tags">Tags</label>
+                <input type="text" name="tags" class="inputElement">
+            </div>
+            <div class="wrapper">
+                <label for="keyword">Keyword</label>
+                <input type="text" name="keyword" class="inputElement">
+            </div>
+            <div class="wrapper description">
+                <label for="description">Description</label>
+                <textarea type="text" name="description" class="inputElement"></textarea>
+            </div>
+            <div class="wrapper folder">
+                <label for="folder">Folder</label>
+                <select size="5" name="folder"></select>
+            </div>
+
+            <input type="submit" value="Save Bookmark">
+        </form>
+        <script type="application/javascript;version=1.7" src="./save-bookmark.js"></script>
+        <script type="application/javascript;version=1.7" src="./folder-chooser.js"></script>
+    </body>
+</html>

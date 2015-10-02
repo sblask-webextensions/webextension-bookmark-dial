@@ -1,0 +1,17 @@
+* {
+    box-sizing: border-box;
+}
+body {
+    height: 220px;
+    margin: 0;
+    overflow: auto;
+    padding: 10px;
+    text-align: center;
+    width: 300px;
+}
+h1 {
+    font-size: 14px;
+}
+select {
+    width: 280px;
+}
