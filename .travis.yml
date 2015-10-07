@@ -2,4 +2,4 @@ language: javascript
 install:
     - npm install -g eslint
 script:
-    - eslint index.js lib data
+    - eslint index.js lib data test
