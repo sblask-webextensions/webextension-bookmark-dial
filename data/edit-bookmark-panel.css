@@ -2,7 +2,7 @@
     box-sizing: border-box;
 }
 body {
-    height: 380px;
+    height: 300px;
     margin: 0;
     overflow: auto;
     padding: 10px;
@@ -19,7 +19,7 @@ label {
     float: left;
     padding-right: 1%;
     text-align: right;
-    width: 25%;
+    width: 20%;
     height: 24px;
     line-height: 24px;
 }
@@ -30,19 +30,19 @@ input[type=submit] {
     margin-top: 15px;
 }
 select {
-    width: 75%;
+    width: 80%;
 }
 .inputElement {
     border-radius: 3px;
     border: 1px solid #B3B3B3;
     clear: both;
-    width: 75%;
+    width: 80%;
 }
 .wrapper {
     clear: both;
     height: 30px;
     padding: 3px;
 }
-.wrapper.description, .wrapper.folder {
+.wrapper.folder {
     height: auto;
 }
