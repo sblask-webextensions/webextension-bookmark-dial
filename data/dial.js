@@ -47,36 +47,32 @@ function __setStyle(layout, windowWidth, windowHeight) {
     let listWidth = tileWidth * tilesPerLine;
     let listHeight = tileHeight * lineCount;
 
-    let horizontalPadding = Math.ceil((windowWidth - listWidth) / 2) + "px";
-    let verticalPadding = Math.floor((windowHeight - listHeight) / 2) + "px";
+    let horizontalPadding = Math.ceil((windowWidth - listWidth) / 2);
+    let verticalPadding = Math.floor((windowHeight - listHeight) / 2);
 
     let labelHeight = 5 + tileHeight / 20;
     let busyImage = tileWidth > 150 ? "busy.png" : "busy-small.png";
-    let styleString = "" +
-        "li {" +
-            "max-width: " + self.options.THUMBNAIL_WIDTH + "px;" +
-            "width: calc(100% / " + tilesPerLine + ");" +
-        "}" +
-        "\n" +
-        "ol {" +
-            "width: calc(100% - " + LIST_MARGIN + "px);" +
-            "height: calc(100% - " + LIST_MARGIN + "px);" +
-            "margin: " + LIST_MARGIN / 2 + "px;" +
-            "padding: calc(" + verticalPadding + ") calc(" + horizontalPadding + ") 0;" +
-        "}" +
-        "\n" +
-        "div {" +
-            "height: " + labelHeight * 2 + "px;" +
-        "}" +
-        "\n" +
-        "span {" +
-            "font-size: " + labelHeight + "px;" +
-        "}" +
-        "\n" +
-        "a.busy {" +
-            "background-image: url('" + busyImage + "');" +
-        "}" +
-    "";
+    let styleString = `
+        li {
+            max-width: ${ self.options.THUMBNAIL_WIDTH }px;
+            width: calc(100% / ${ tilesPerLine });
+        }
+        ol {
+            width: calc(100% - ${ LIST_MARGIN }px);
+            height: calc(100% - ${ LIST_MARGIN }px);
+            margin: ${ LIST_MARGIN / 2 }px;
+            padding: ${ verticalPadding }px ${ horizontalPadding }px 0;
+        }
+        div {
+            height: ${ labelHeight * 2 }px;
+        }
+        span {
+            font-size: ${ labelHeight }px;
+        }
+        a.busy {
+            background-image: url("${ busyImage }");
+        }
+    `;
     $("style#sizingStyle").text(styleString);
 }
 
@@ -105,16 +101,16 @@ function debouncedLayout() {
 }
 
 function __makeHTMLListItem(bookmark) {
-    return "" +
-        "<li class='keepAspectRatio'>" +
-        " <a id='" + bookmark.id + "' href='" + bookmark.url + "'>" +
-        "  <img src='" + bookmark.thumbnail + "'>" +
-        "  <div class='absoluteBottom'>" +
-        "   <span class='absoluteBottom'>" + bookmark.title + "</span>" +
-        "  </div>" +
-        " </a>" +
-        "</li>" +
-        "";
+    return `
+        <li class="keepAspectRatio">
+            <a id="${ bookmark.id }" href="${ bookmark.url }">
+                <img src="${ bookmark.thumbnail }">
+                <div class="absoluteBottom">
+                    <span class="absoluteBottom">${ bookmark.title }</span>
+                </div>
+            </a>
+        </li>
+    `;
 }
 
 function __updateHTMLList(listString) {
