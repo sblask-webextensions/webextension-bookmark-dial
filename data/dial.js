@@ -103,10 +103,11 @@ function debouncedLayout() {
 function __makeHTMLListItem(bookmark) {
     return `
         <li class="keepAspectRatio">
-            <a id="${ bookmark.id }" href="${ bookmark.url }">
+            <a id="${ bookmark.id }" href="${ bookmark.url }" title="${ bookmark.title }">
                 <img src="${ bookmark.thumbnail }">
                 <div class="absoluteBottom">
                     <span class="absoluteBottom">${ bookmark.title }</span>
+                    <span class="absoluteBottom tags">${ bookmark.tags.join(", ") }</span>
                 </div>
             </a>
         </li>

@@ -98,3 +98,7 @@ img {
     display: block;
     padding-top: calc(100% / 3 * 2);
 }
+
+.tags {
+    top: 100%;
+}
