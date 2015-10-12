@@ -7,8 +7,11 @@ function initFormHandler() {
         let data = {};
         for (let formElement of form.elements) {
             if (formElement.type != "submit") {
-                data[formElement.name] = formElement.value || undefined;
+                data[formElement.name] = formElement.value.trim() || undefined;
             }
+        }
+        if (data.tags) {
+            data.tags = data.tags.split(",");
         }
         return data;
     }
