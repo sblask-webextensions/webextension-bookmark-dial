@@ -5,7 +5,7 @@ function getBookmarkDataForNode(node) {
         id: parseInt(node.id),
         title: node.title,
         url: node.href,
-        tags: tags ? tags.split(",") : undefined,
+        tags: tags ? tags.split(/, */) : undefined,
         index: [...(document.getElementsByTagName("a"))].indexOf(node),
     };
 }
