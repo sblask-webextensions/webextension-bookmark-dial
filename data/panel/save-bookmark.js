@@ -12,9 +12,11 @@ function initFormHandler() {
         if (data.id) {
             data.id = parseInt(data.id);
         }
+
         if (data.index) {
             data.index = parseInt(data.index);
         }
+
         data.tags = data.tags ? data.tags.split(/, */) : undefined;
         return data;
     }
@@ -35,6 +37,7 @@ function initFormHandler() {
                 data[formElement.name] = formElement.value.trim() || undefined;
             }
         }
+
         return postProcess(data);
     }
 

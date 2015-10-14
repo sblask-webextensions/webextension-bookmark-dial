@@ -35,6 +35,7 @@ function __send(message, data, worker) {
 
 function updateDial(worker) {
     let bookmarkList = bookmarks.getBookmarks();
+
     // updateDial will be called later through listener if bookmarks are not available yet
     if (bookmarkList) {
         __send("bookmarksUpdated", bookmarkList, worker);
@@ -74,9 +75,11 @@ function setupPageMod() {
                 console.log("Detach");
                 workerRegistry.deregister(this);
             });
+
             worker.port.on("save", function(bookmark) {
                 bookmarks.saveBookmark(bookmark);
             });
+
             workerRegistry.register(worker);
             clearUrlBar(worker.tab);
             worker.tab.on("activate", clearUrlBar);
@@ -110,10 +113,14 @@ exports.main = function(options) {
     simplePreferences.on("bookmarkFolderChooser", function() {
         uiPanels.openChooseFolderPanel(bookmarks.getTreeAsArray());
     });
+
     // setup listeners
     bookmarks.on("bookmarksUpdated", function() { updateDial(); });
+
     simplePreferences.on("bookmarkFolder",  function() { updateDial(); });
+
     simplePreferences.on("customStyleFile", function() {updateStyle();});
+
     simplePreferences.on("useCustomStyleFile", function() {updateStyle();});
 
     maybeReplaceHomepage();

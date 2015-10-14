@@ -13,6 +13,7 @@ function initSelect() {
 
     function buildOption(value, label, defaultValue) {
         let selected = value === defaultValue ? " selected='selected'" : "";
+
         // substract 2 for leading and trailing slash;
         let level = (value.match(/\//g) || []).length - 2;
         /* eslint indeint: 0 */
@@ -34,6 +35,7 @@ function initSelect() {
             let [value, label] = tuple;
             listOfOptions.push(buildOption(value, label, addon.options.chosenFolder));
         }
+
         select.innerHTML = listOfOptions.join("\n");
     }
 
@@ -42,6 +44,7 @@ function initSelect() {
             addon.port.emit("save", getSelectValue());
         });
     }
+
     fillSelect();
 }
 

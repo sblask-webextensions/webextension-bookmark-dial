@@ -12,6 +12,7 @@ bodyStyle.borderTop = "1px solid transparent";
 
 // make sure body is on the left
 bodyStyle.margin = 0;
+
 // cut off as much empty space as possible
 bodyStyle.maxWidth = WINDOW_WIDTH + "px";
 
@@ -19,5 +20,6 @@ bodyStyle.maxWidth = WINDOW_WIDTH + "px";
 let scale = self.options.THUMBNAIL_WIDTH / document.body.clientWidth;
 bodyStyle.transform = "scale(" + scale + ")";
 bodyStyle.transformOrigin = "0 0 0";
+
 // set width explicitely as otherwise the scale is off in some cases
 bodyStyle.width = document.body.clientWidth + "px";

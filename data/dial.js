@@ -15,21 +15,23 @@ const SORTABLE_OPTIONS = {
     start: function(_event, ui) {
         originalIndex = ui.placeholder.index("li") - 1;
         const tileRect = ui.placeholder[0].getBoundingClientRect();
+
         // helper's size is off for some reason when not setting this explicitely
         ui.helper.height(tileRect.height);
         ui.helper.width(tileRect.width);
     },
+
     update: function(_event, ui) {
         const bookmark = getBookmarkDataForNode(ui.item.find("a")[0]);
         if (originalIndex < bookmark.index) {
             bookmark.index = bookmark.index + 1;
         }
+
         self.port.emit("save", bookmark);
     },
 };
 
 let bookmarkCount;
-
 
 function __getOptimalTileLayout(bookmarkCount, containerWidth, containerHeight) {
     let newLineCount = 0;
@@ -63,9 +65,9 @@ function __getOptimalTileLayout(bookmarkCount, containerWidth, containerHeight) 
             newTileWidth = Math.floor(newTileHeight / 2 * 3);
         }
     }
+
     return [previousTilesPerLine, previousLineCount, previousTileWidth, previousTileHeight];
 }
-
 
 function __setStyle(layout, windowWidth, windowHeight) {
     console.log("Setting size", layout, windowWidth, windowHeight);
@@ -111,6 +113,7 @@ function makeLayout() {
     if (!bookmarkCount) {
         return;
     }
+
     console.log("Calculate layout");
     let containerWidth = window.innerWidth - LIST_MARGIN;
     let containerHeight = window.innerHeight - LIST_MARGIN;
@@ -123,6 +126,7 @@ function debouncedLayout() {
     if (debounceTimeout) {
         clearTimeout(debounceTimeout);
     }
+
     debounceTimeout = setTimeout(makeLayout, 300);
 }
 
@@ -151,6 +155,7 @@ function updateBookmarks(bookmarks) {
     for (let bookmark of bookmarks) {
         updatedList.push(__makeHTMLListItem(bookmark));
     }
+
     __updateHTMLList(updatedList.join("\n"));
 }
 
