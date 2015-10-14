@@ -1,0 +1,13 @@
+{
+    "preset": "idiomatic",
+    "esnext": true,
+    "disallowTrailingComma": null,
+    "disallowSpacesInFunctionExpression": null,
+    "requireSpacesInsideBrackets": null,
+    "requireSpacesInsideParentheses": null,
+    "maximumLineLength": null,
+    "excludeFiles": [
+        "data/jquery-2.1.4.js",
+        "data/jquery-ui-1.11.4.js",
+    ],
+}
