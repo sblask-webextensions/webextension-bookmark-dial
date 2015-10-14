@@ -1,6 +1,27 @@
+/* global getBookmarkDataForNode */
 /* eslint-env jquery */
 
+let originalIndex;
+
 const LIST_MARGIN = 20;
+const SORTABLE_OPTIONS = {
+    containment: "window",
+    cursor: "move",
+    distance: 5,
+    revert: true,
+    scroll: false,
+    tolerance: "pointer",
+    start: function(_event, ui) {
+        originalIndex = ui.helper.index("li");
+    },
+    update: function(_event, ui) {
+        const bookmark = getBookmarkDataForNode(ui.item.find("a")[0]);
+        if (originalIndex < bookmark.index) {
+            bookmark.index = bookmark.index + 1;
+        }
+        self.port.emit("save", bookmark);
+    },
+};
 
 let bookmarkCount;
 
@@ -163,6 +184,8 @@ function updateThumbnails(thumbnails) {
 self.port.on("init", function() {
     makeLayout();
     window.addEventListener("resize", debouncedLayout, true);
+    $("ol").sortable(SORTABLE_OPTIONS);
+    $("ol").disableSelection();
 });
 
 self.port.on("styleUpdated", function(styleString) {

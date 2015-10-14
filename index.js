@@ -64,13 +64,18 @@ function setupPageMod() {
         contentScriptOptions: { THUMBNAIL_WIDTH: constants.THUMBNAIL_WIDTH },
         contentScriptFile: [
             "./jquery-2.1.4.js",
+            "./jquery-ui-1.11.4.js",
             "./dial.js",
+            "./bookmark-data.js",
         ],
         onAttach: function(worker) {
             console.log("Attach");
             worker.on("detach", function () {
                 console.log("Detach");
                 workerRegistry.deregister(this);
+            });
+            worker.port.on("save", function (bookmark) {
+                bookmarks.saveBookmark(bookmark);
             });
             workerRegistry.register(worker);
             clearUrlBar(worker.tab);
