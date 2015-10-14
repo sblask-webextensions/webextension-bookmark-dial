@@ -8,11 +8,16 @@ const SORTABLE_OPTIONS = {
     containment: "window",
     cursor: "move",
     distance: 5,
+    helper: "clone",
     revert: true,
     scroll: false,
     tolerance: "pointer",
     start: function(_event, ui) {
-        originalIndex = ui.helper.index("li");
+        originalIndex = ui.placeholder.index("li") - 1;
+        const tileRect = ui.placeholder[0].getBoundingClientRect();
+        // helper's size is off for some reason when not setting this explicitely
+        ui.helper.height(tileRect.height);
+        ui.helper.width(tileRect.width);
     },
     update: function(_event, ui) {
         const bookmark = getBookmarkDataForNode(ui.item.find("a")[0]);
