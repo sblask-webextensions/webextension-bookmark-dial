@@ -70,11 +70,11 @@ function setupPageMod() {
         ],
         onAttach: function(worker) {
             console.log("Attach");
-            worker.on("detach", function () {
+            worker.on("detach", function() {
                 console.log("Detach");
                 workerRegistry.deregister(this);
             });
-            worker.port.on("save", function (bookmark) {
+            worker.port.on("save", function(bookmark) {
                 bookmarks.saveBookmark(bookmark);
             });
             workerRegistry.register(worker);
@@ -100,7 +100,7 @@ function maybeReplaceHomepage() {
     }
 }
 
-exports.main = function (options) {
+exports.main = function(options) {
     console.log("Starting up with reason ", options.loadReason);
 
     NewTabURL.override(constants.URL);
@@ -122,7 +122,7 @@ exports.main = function (options) {
     setupPageMod();
 };
 
-exports.onUnload = function (reason) {
+exports.onUnload = function(reason) {
     console.log("Closing down with reason ", reason);
     bookmarks.shutdown();
     NewTabURL.reset();

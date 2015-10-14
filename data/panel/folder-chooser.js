@@ -13,7 +13,8 @@ function initSelect() {
 
     function buildOption(value, label, defaultValue) {
         let selected = value === defaultValue ? " selected='selected'" : "";
-        let level = (value.match(/\//g) || []).length - 2; // leading and trailing /;
+        // substract 2 for leading and trailing slash;
+        let level = (value.match(/\//g) || []).length - 2;
         /* eslint indeint: 0 */
         return [
             "<option",
@@ -37,7 +38,7 @@ function initSelect() {
     }
 
     if (addon.options.saveOnSelect) {
-        select.addEventListener("change", function(){
+        select.addEventListener("change", function() {
             addon.port.emit("save", getSelectValue());
         });
     }
