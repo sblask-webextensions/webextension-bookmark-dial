@@ -20,7 +20,7 @@
             "type": "string",
             "name": "bookmarkFolder",
             "title": "The folder to show in Bookmark Dial",
-            "value": "/TOOLBAR/",
+            "value": "/UNSORTED/",
             "hidden": true
         },
         {
