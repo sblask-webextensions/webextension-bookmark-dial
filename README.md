@@ -27,5 +27,5 @@ change the style. Note that it will replace, not complement the [default
 one](https://github.com/sblask/firefox-bookmark-dial/blob/master/data/dial.css)
 so you should use that one as a starting point.
 
-Adding or changing bookmarks outside the new tab page will not automatically
-update open tabs, but opening new ones or refreshing a tab will.
+Adding or changing bookmarks/folders outside of Bookmark Dial will not be
+visible unless you `Refresh Bookmarks`(see context menu) or restart Firefox.
