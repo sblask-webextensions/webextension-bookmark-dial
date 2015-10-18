@@ -13,6 +13,12 @@ function initFormHandler() {
             data.id = parseInt(data.id);
         }
 
+        const originalGroup = addon.options.chosenFolder;
+        const chosenGroup = data.group;
+        if (originalGroup !== chosenGroup) {
+            data.index = undefined;
+        }
+
         if (data.index) {
             data.index = parseInt(data.index);
         }
