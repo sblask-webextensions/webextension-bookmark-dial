@@ -92,7 +92,7 @@ function setupPageMod() {
 }
 
 function resetHomepage() {
-    preferences.set("browser.startup.homepage", "about:home");
+    preferences.reset("browser.startup.homepage");
 }
 
 function maybeReplaceHomepage() {
