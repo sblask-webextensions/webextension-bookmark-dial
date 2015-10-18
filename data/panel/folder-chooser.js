@@ -16,17 +16,16 @@ function initSelect() {
 
         // substract 2 for leading and trailing slash;
         let level = (value.match(/\//g) || []).length - 2;
-        /* eslint indeint: 0 */
-        return [
-            "<option",
-            " id='" + idForValue(value) + "'",
-            selected,
-            " value='" + value + "'",
-            " class='level" + level + "'",
-            ">",
-            label,
-            "</option>",
-        ].join("\n");
+        return `
+            <option
+                ${selected}
+                class="level${level}"
+                id="${idForValue(value)}"
+                value="${value}"
+            >
+                ${label}
+            </option>
+        `;
     }
 
     function fillSelect() {
