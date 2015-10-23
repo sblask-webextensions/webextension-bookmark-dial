@@ -6,7 +6,7 @@
     "description": "Display the contents of a bookmark folder as thumbnails with title everytime the user opens a new tab.",
     "author": "Sebastian Blask",
     "license": "MIT",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "homepage": "https://github.com/sblask/firefox-bookmark-dial",
     "engines": {
         "firefox": ">=38.0a1",

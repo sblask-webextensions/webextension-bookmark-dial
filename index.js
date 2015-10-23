@@ -4,6 +4,7 @@ const pageMod = require("sdk/page-mod");
 const preferences = require("sdk/preferences/service");
 const self = require("sdk/self");
 const simplePreferences = require("sdk/simple-prefs");
+const timers = require("sdk/timers");
 
 const NewTabURL = require("resource:///modules/NewTabURL.jsm").NewTabURL;
 
@@ -13,13 +14,18 @@ const uiContextMenu = require("./lib/ui-context-menu");
 const uiPanels = require("./lib/ui-panels");
 const workerRegistry = require("./lib/worker-registry");
 
+function offThreadClearURLBar(tab) {
+    timers.setTimeout(function() { clearUrlBar(tab); }, 1);
+}
+
 function clearUrlBar(tab) {
     // does not always seem to be available with private browsing
     if (tab.window) {
         let lowLevelWindow = core.viewFor(tab.window);
         let urlBar = lowLevelWindow.document.getElementById("urlbar").inputField;
-        if (urlBar.value === constants.URL) {
+        if (urlBar.value.startsWith(constants.URL)) {
             urlBar.value = "";
+            // sets focus for the wrong tab if on activate tab event thread
             urlBar.focus();
         }
     }
@@ -81,9 +87,9 @@ function setupPageMod() {
             });
 
             workerRegistry.register(worker);
-            clearUrlBar(worker.tab);
-            worker.tab.on("activate", clearUrlBar);
-            worker.tab.on("pageshow", clearUrlBar);
+            offThreadClearURLBar(worker.tab);
+            worker.tab.on("activate", offThreadClearURLBar);
+            worker.tab.on("pageshow", offThreadClearURLBar);
             worker.port.emit("init");
             updateStyle(worker);
             updateDial(worker);
