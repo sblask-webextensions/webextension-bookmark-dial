@@ -25,6 +25,7 @@ function clearUrlBar(tab) {
         let urlBar = lowLevelWindow.document.getElementById("urlbar").inputField;
         if (urlBar.value.startsWith(constants.URL)) {
             urlBar.value = "";
+
             // sets focus for the wrong tab if on activate tab event thread
             urlBar.focus();
         }
