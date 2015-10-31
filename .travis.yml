@@ -1,6 +1,6 @@
 language: javascript
 addons:
-    firefox: "38.0"
+    firefox: "41.0"
 install:
     - npm install -g eslint
     - npm install -g jpm
