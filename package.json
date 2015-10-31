@@ -9,8 +9,8 @@
     "version": "1.0.1",
     "homepage": "https://github.com/sblask/firefox-bookmark-dial",
     "engines": {
-        "firefox": ">=38.0a1",
-        "fennec": ">=38.0a1"
+        "firefox": ">=41.0a1",
+        "fennec": ">=41.0a1"
     },
     "permissions": {
         "private-browsing": true
