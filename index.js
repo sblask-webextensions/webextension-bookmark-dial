@@ -14,11 +14,11 @@ const uiContextMenu = require("./lib/ui-context-menu");
 const uiPanels = require("./lib/ui-panels");
 const workerRegistry = require("./lib/worker-registry");
 
-function offThreadClearURLBar(tab) {
-    timers.setTimeout(function() { clearUrlBar(tab); }, 1);
+function __offThreadClearURLBar(tab) {
+    timers.setTimeout(function() { __clearUrlBar(tab); }, 1);
 }
 
-function clearUrlBar(tab) {
+function __clearUrlBar(tab) {
     // does not always seem to be available with private browsing
     if (tab.window) {
         let lowLevelWindow = core.viewFor(tab.window);
@@ -40,10 +40,14 @@ function __send(message, data, worker) {
     }
 }
 
-function updateDial(worker) {
+function __updateDial() {
+    __updateDialFor();
+}
+
+function __updateDialFor(worker) {
     let bookmarkList = bookmarks.getBookmarks();
 
-    // updateDial will be called later through listener if bookmarks are not available yet
+    // __updateDial will be called later through listener if bookmarks are not available yet
     if (bookmarkList) {
         __send("bookmarksUpdated", bookmarkList, worker);
     }
@@ -61,11 +65,15 @@ function __getStyleString() {
     }
 }
 
-function updateStyle(worker) {
+function __updateStyle() {
+    __updateStyleFor();
+}
+
+function __updateStyleFor(worker) {
     __send("styleUpdated", __getStyleString(), worker);
 }
 
-function setupPageMod() {
+function __setupPageMod() {
     pageMod.PageMod({
         include: constants.URL,
         attachTo: ["existing", "top"],
@@ -88,12 +96,12 @@ function setupPageMod() {
             });
 
             workerRegistry.register(worker);
-            offThreadClearURLBar(worker.tab);
-            worker.tab.on("activate", offThreadClearURLBar);
-            worker.tab.on("pageshow", offThreadClearURLBar);
+            __offThreadClearURLBar(worker.tab);
+            worker.tab.on("activate", __offThreadClearURLBar);
+            worker.tab.on("pageshow", __offThreadClearURLBar);
             worker.port.emit("init");
-            updateStyle(worker);
-            updateDial(worker);
+            __updateStyleFor(worker);
+            __updateDialFor(worker);
         },
     });
 }
@@ -121,23 +129,21 @@ exports.main = function(options) {
         uiPanels.openChooseFolderPanel(bookmarks.getTreeAsArray());
     });
 
-    // setup listeners
-    bookmarks.on("bookmarksUpdated", function() { updateDial(); });
+    bookmarks.on("bookmarksUpdated", __updateDial);
+    simplePreferences.on("bookmarkFolder",  __updateDial);
 
-    simplePreferences.on("bookmarkFolder",  function() { updateDial(); });
-
-    simplePreferences.on("customStyleFile", function() {updateStyle();});
-
-    simplePreferences.on("useCustomStyleFile", function() {updateStyle();});
+    simplePreferences.on("customStyleFile", __updateStyle);
+    simplePreferences.on("useCustomStyleFile", __updateStyle);
 
     maybeReplaceHomepage();
-    simplePreferences.on("replaceHomepage", function() {maybeReplaceHomepage();});
+    simplePreferences.on("replaceHomepage", function() { maybeReplaceHomepage(); });
 
-    setupPageMod();
+    __setupPageMod();
 };
 
 exports.onUnload = function(reason) {
     console.log("Closing down with reason ", reason);
+
     bookmarks.shutdown();
     NewTabURL.reset();
 
