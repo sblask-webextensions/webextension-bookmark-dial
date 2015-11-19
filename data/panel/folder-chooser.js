@@ -13,30 +13,27 @@ function initSelect() {
     }
 
     function buildOption(value, label, defaultValue) {
-        let selected = value === defaultValue ? " selected='selected'" : "";
-
         // substract 2 for leading and trailing slash;
-        let level = (value.match(/\//g) || []).length - 2;
-        return `
-            <option
-                ${selected}
-                class="level${level}"
-                id="${idForValue(value)}"
-                value="${value}"
-            >
-                ${label}
-            </option>
-        `;
+        const level = (value.match(/\//g) || []).length - 2;
+
+        const option = document.createElement("option");
+        option.setAttribute("class", "level" + level);
+        option.setAttribute("id", idForValue(value));
+        option.setAttribute("value", value);
+        option.text = label;
+
+        if (value === defaultValue) {
+            option.setAttribute("selected", "selected");
+        }
+
+        return option;
     }
 
     function fillSelect() {
-        let listOfOptions = [];
         for (let tuple of addon.options.bookmarkFolders) {
             let [value, label] = tuple;
-            listOfOptions.push(buildOption(value, label, addon.options.chosenFolder));
+            select.appendChild(buildOption(value, label, addon.options.chosenFolder));
         }
-
-        select.innerHTML = listOfOptions.join("\n");
     }
 
     if (addon.options.saveOnSelect) {
