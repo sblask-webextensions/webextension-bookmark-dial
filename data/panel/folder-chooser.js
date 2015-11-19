@@ -1,7 +1,8 @@
 /* global addon */
 
 function initSelect() {
-    let select = document.querySelector("select");
+    const submit = document.querySelector("input[type=submit]");
+    const select = document.querySelector("select");
 
     function getSelectValue() {
         return select.options[select.selectedIndex].value;
@@ -43,6 +44,14 @@ function initSelect() {
             addon.port.emit("save", getSelectValue());
         });
     }
+
+    // submit on enter
+    select.addEventListener("keypress", function(event) {
+        if (submit && event.keyCode === 13) {
+            // form.submit() does not trigger validation, so use click on submit
+            submit.click();
+        }
+    });
 
     fillSelect();
 }
