@@ -11,6 +11,22 @@
         "fennec": ">=41.0a1"
     },
     "license": "MIT",
+    "keywords": [
+        "bookmarks",
+        "contextmenu",
+        "fast dial",
+        "fastdial",
+        "homepage",
+        "jetpack",
+        "new tab",
+        "newtab",
+        "open tab",
+        "opera",
+        "speed dial",
+        "speeddial",
+        "thumbnails",
+        "visual"
+    ],
     "icon": "resource://bookmarkdial-at-sblask/data/icon.svg",
     "homepage": "https://addons.mozilla.org/firefox/addon/bookmark-dial/",
     "repository": {
