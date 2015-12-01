@@ -18,7 +18,7 @@ possible. They are auto-generated when adding a new bookmark or choosing a
 different folder, but can also be refreshed manually.
 
 You can add, edit and remove bookmarks through the context menu(see screenshots
-for more information).
+for more information). Use drag and drop to re-order bookmarks.
 
 You can also set a custom css file in the add-on's preferences to
 change the style. Note that it will replace, not complement the
@@ -32,7 +32,7 @@ Known Issues
 ------------
 
    - Adding or changing bookmarks/folders outside of Bookmark Dial will not be visible unless you `Refresh Bookmarks`(see context menu) or restart Firefox.
-   - Thumbnail generation is not "quiet" - if you've got for example a Youtube video page bookmarked you might hear the video playing for a few seconds while the thumbnail is being generated. This has been fixed but requires [tab muting](https://support.mozilla.org/en-US/kb/mute-noisy-tabs-firefox) which is currently in beta(Firefox 42)
+   - Thumbnail generation is not "quiet" if you are using Firefox 41 or lower. While generating the thumbnail for a Youtube video page for example you might hear the video playing for a few seconds. From Firefox 42, the thumbnail generation happens in a [mute tab](https://support.mozilla.org/en-US/kb/mute-noisy-tabs-firefox)
 
 Possible Improvements
 ---------------------
@@ -40,7 +40,7 @@ Possible Improvements
    - Use file storage instead of [simple storage](https://developer.mozilla.org/en-US/Add-ons/SDK/High-Level_APIs/simple-storage) to allow for higher resolution and more thumbnails(current limit is around 100)
    - Support adding/aditing a bookmark's keyword(requires a [different API](https://developer.mozilla.org/en-US/docs/Mozilla/Tech/Places/Using_the_Places_keywords_API))
    - Thumbnail generation adds entries to the history, maybe this can be avoided?
-   - Try [React](https://facebook.github.io/react/) for rendering whcih might increase performance
+   - Try [React](https://facebook.github.io/react/) for rendering which might increase performance
 
 Similarities to other add-ons
 -----------------------------
