@@ -31,7 +31,9 @@ function initFormHandler() {
         const data = preProcessData(Object.assign({}, addon.options.bookmark));
         for (let formElement of form.elements) {
             if (formElement.type != "submit" && formElement.type != "group") {
-                formElement.value = data[formElement.name];
+                if (data[formElement.name]) {
+                    formElement.value = data[formElement.name];
+                }
             }
         }
     }
