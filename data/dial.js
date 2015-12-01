@@ -130,33 +130,46 @@ function debouncedLayout() {
     debounceTimeout = setTimeout(makeLayout, 300);
 }
 
-function __makeHTMLListItem(bookmark) {
-    return `
-        <li class="keepAspectRatio">
-            <a id="${ bookmark.id }" href="${ bookmark.url }" title="${ bookmark.title }">
-                <img src="${ bookmark.thumbnail }">
-                <div class="absoluteBottom">
-                    <span class="absoluteBottom">${ bookmark.title }</span>
-                    <span class="absoluteBottom tags">${ bookmark.tags.join(", ") }</span>
-                </div>
-            </a>
-        </li>
-    `;
+function __createElement(tagName, attributes, children) {
+    const element = document.createElement(tagName);
+    for (let key in attributes) {
+        element.setAttribute(key, attributes[key]);
+    }
+
+    for (let child of children) {
+        element.appendChild(child);
+    }
+
+    return element;
 }
 
-function __updateHTMLList(listString) {
-    let list = window.document.getElementsByTagName("ol")[0];
-    list.innerHTML = listString;
+function __makeHTMLListItem(bookmark) {
+    return __createElement("li", {class: "keepAspectRatio"}, [
+        __createElement("a", {id: bookmark.id, href: bookmark.url, title: bookmark.title}, [
+            __createElement("img", {src: bookmark.thumbnail}, []),
+            __createElement("div", {class: "absoluteBottom"}, [
+                __createElement("span", {class: "absoluteBottom"}, [
+                    document.createTextNode(bookmark.title),
+                ]),
+                __createElement("span", {class: "absoluteBottom tags"}, [
+                    document.createTextNode(bookmark.tags.join(", ")),
+                ]),
+            ]),
+        ]),
+    ]);
+}
+
+function __makeSortable() {
+    $("ol").sortable(SORTABLE_OPTIONS);
+    $("ol").disableSelection();
 }
 
 function updateBookmarks(bookmarks) {
     console.log("Update " + bookmarks.length + " bookmarks");
-    let updatedList = [];
-    for (let bookmark of bookmarks) {
-        updatedList.push(__makeHTMLListItem(bookmark));
-    }
-
-    __updateHTMLList(updatedList.join("\n"));
+    const oldList = document.querySelector("ol");
+    const newList = __createElement("ol", {}, bookmarks.map(__makeHTMLListItem));
+    oldList.parentNode.replaceChild(newList, oldList);
+    __makeSortable();
 }
 
 function __applyOnMatches(someFunction, urlMap) {
@@ -194,8 +207,7 @@ function updateThumbnails(thumbnails) {
 self.port.on("init", function() {
     makeLayout();
     window.addEventListener("resize", debouncedLayout, true);
-    $("ol").sortable(SORTABLE_OPTIONS);
-    $("ol").disableSelection();
+    __makeSortable();
 });
 
 self.port.on("styleUpdated", function(styleString) {
