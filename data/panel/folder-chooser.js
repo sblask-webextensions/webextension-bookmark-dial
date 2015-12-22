@@ -36,17 +36,28 @@ function initSelect() {
         }
     }
 
+    function submitWithValidation() {
+        if (submit) {
+            // form.submit() does not trigger validation, so use click on submit
+            submit.click();
+        }
+    }
+
     if (addon.options.saveOnSelect) {
         select.addEventListener("change", function() {
             addon.port.emit("save", getSelectValue());
         });
     }
 
+    // submit on double click
+    select.addEventListener("dblclick", function(_event) {
+        submitWithValidation();
+    });
+
     // submit on enter
     select.addEventListener("keypress", function(event) {
-        if (submit && event.keyCode === 13) {
-            // form.submit() does not trigger validation, so use click on submit
-            submit.click();
+        if (event.keyCode === 13) {
+            submitWithValidation();
         }
     });
 
