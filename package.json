@@ -71,10 +71,10 @@
             "title": "A custom CSS file for Bookmark Dial"
         },
         {
-            "type": "bool",
-            "name": "useCustomStyleFile",
-            "title": "Use the custom CSS file(replacing the default one)",
-            "value": true
+            "type": "control",
+            "name": "resetCustomStyleFile",
+            "label": "Clear custom CSS file and use the default one",
+            "title": " "
         },
         {
             "type": "bool",

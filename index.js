@@ -56,9 +56,8 @@ function __updateDialFor(worker) {
 function __getStyleString() {
     //  cannot use href for local file as file:// does not work,
     //  so load file directly using the appropriate functions
-    let useCustomStyleFile = simplePreferences.prefs.useCustomStyleFile;
     let customStyleFile = simplePreferences.prefs.customStyleFile;
-    if (useCustomStyleFile && customStyleFile && file.exists(customStyleFile)) {
+    if (customStyleFile && file.exists(customStyleFile)) {
         return file.read(customStyleFile);
     } else {
         return self.data.load("./dial.css");
@@ -133,7 +132,9 @@ exports.main = function(options) {
     simplePreferences.on("bookmarkFolder",  __updateDial);
 
     simplePreferences.on("customStyleFile", __updateStyle);
-    simplePreferences.on("useCustomStyleFile", __updateStyle);
+    simplePreferences.on("resetCustomStyleFile", function() {
+        simplePreferences.prefs.customStyleFile = "";
+    });
 
     maybeReplaceHomepage();
     simplePreferences.on("replaceHomepage", function() { maybeReplaceHomepage(); });
