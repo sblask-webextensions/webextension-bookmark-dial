@@ -61,8 +61,8 @@
         },
         {
             "type": "control",
-            "label": "Choose",
             "name": "bookmarkFolderChooser",
+            "label": "Choose",
             "title": "Folder for Bookmark Dial"
         },
         {
