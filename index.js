@@ -1,18 +1,27 @@
 const core = require("sdk/view/core");
 const file = require("sdk/io/file");
 const pageMod = require("sdk/page-mod");
+const path = require("sdk/fs/path");
 const preferences = require("sdk/preferences/service");
 const self = require("sdk/self");
 const simplePreferences = require("sdk/simple-prefs");
+const system = require("sdk/system");
 const timers = require("sdk/timers");
 
 const NewTabURL = require("resource:///modules/NewTabURL.jsm").NewTabURL;
 
 const bookmarks = require("./lib/bookmarks");
 const constants = require("./lib/constants");
+const fileUtils = require("./lib/file-utils");
 const uiContextMenu = require("./lib/ui-context-menu");
 const uiPanels = require("./lib/ui-panels");
 const workerRegistry = require("./lib/worker-registry");
+
+const PROFILE_DIRECTORY = path.join(system.pathFor("ProfD"), "bookmarkdial-profile");
+const PROFILE_URL = "resource://bookmarkdial-at-sblask-profile/";
+
+const BACKGROUND_DIRECTORY = path.join(PROFILE_DIRECTORY, "background");
+const BACKGROUND_URL = PROFILE_URL + "background/";
 
 function __offThreadClearURLBar(tab) {
     timers.setTimeout(function() { __clearUrlBar(tab); }, 1);
@@ -51,6 +60,52 @@ function __updateDialFor(worker) {
     if (bookmarkList) {
         __send("bookmarksUpdated", bookmarkList, worker);
     }
+}
+
+function __getBackgroundFilename() {
+    return path.basename(simplePreferences.prefs.backgroundImage);
+}
+
+function __getBackgroundPath() {
+    return path.join(BACKGROUND_DIRECTORY, __getBackgroundFilename());
+}
+
+function __copyBackground() {
+    if (file.exists(BACKGROUND_DIRECTORY)) {
+        fileUtils.purgeDirectory(BACKGROUND_DIRECTORY);
+    }
+
+    let from = simplePreferences.prefs.backgroundImage;
+    let to = __getBackgroundPath();
+
+    if (from && file.exists(from)) {
+        file.mkpath(BACKGROUND_DIRECTORY);
+        fileUtils.copy(from, to);
+    }
+}
+
+function __getBackgroundStyleString() {
+    if (!simplePreferences.prefs.backgroundImage) {
+        return "";
+    }
+
+    let backgroundSize = simplePreferences.prefs.scaleBackgroundToFit ? "contain" : "auto";
+    let backgroundURL = BACKGROUND_URL + __getBackgroundFilename();
+    return `
+       body {
+            background-image: url("${ backgroundURL }");
+            background-size: ${ backgroundSize };
+       }
+    `;
+}
+
+function __updateBackground() {
+    __copyBackground();
+    __updateBackgroundFor();
+}
+
+function __updateBackgroundFor(worker) {
+    __send("backgroundUpdated", __getBackgroundStyleString(), worker);
 }
 
 function __getStyleString() {
@@ -99,6 +154,7 @@ function __setupPageMod() {
             worker.tab.on("activate", __offThreadClearURLBar);
             worker.tab.on("pageshow", __offThreadClearURLBar);
             worker.port.emit("init");
+            __updateBackgroundFor(worker);
             __updateStyleFor(worker);
             __updateDialFor(worker);
         },
@@ -120,6 +176,8 @@ function maybeReplaceHomepage() {
 exports.main = function(options) {
     console.log("Starting up with reason ", options.loadReason);
 
+    file.mkpath(PROFILE_DIRECTORY);
+
     NewTabURL.override(constants.URL);
 
     uiContextMenu.init();
@@ -130,6 +188,12 @@ exports.main = function(options) {
 
     bookmarks.on("bookmarksUpdated", __updateDial);
     simplePreferences.on("bookmarkFolder",  __updateDial);
+
+    simplePreferences.on("backgroundImage", __updateBackground);
+    simplePreferences.on("scaleBackgroundToFit", __updateBackground);
+    simplePreferences.on("resetBackgroundImage", function() {
+        simplePreferences.prefs.backgroundImage = "";
+    });
 
     simplePreferences.on("customStyleFile", __updateStyle);
     simplePreferences.on("resetCustomStyleFile", function() {
@@ -151,4 +215,6 @@ exports.onUnload = function(reason) {
     if (reason === "disable" || reason === "uninstall") {
         resetHomepage();
     }
+
+    fileUtils.purgeDirectory(PROFILE_DIRECTORY);
 };

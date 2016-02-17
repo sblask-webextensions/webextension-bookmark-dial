@@ -5,10 +5,15 @@
 }
 
 body, html {
-    background-color: black;
     height: 100%;
     overflow-y: auto;
     width: 100%;
+}
+
+body {
+    background-color: black;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 ol {

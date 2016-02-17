@@ -67,6 +67,23 @@
         },
         {
             "type": "file",
+            "name": "backgroundImage",
+            "title": "Image to use as background"
+        },
+        {
+            "type": "control",
+            "name": "resetBackgroundImage",
+            "label": "Clear chosen background image",
+            "title": " "
+        },
+        {
+            "type": "bool",
+            "name": "scaleBackgroundToFit",
+            "title": "Scale background image to fit browser window",
+            "value": true
+        },
+        {
+            "type": "file",
             "name": "customStyleFile",
             "title": "A custom CSS file for Bookmark Dial"
         },
@@ -88,5 +105,6 @@
             "title": "Use dialog for Add Link and Add Page instead of creating a bookmark directly",
             "value": true
         }
-    ]
+    ],
+    "unpack": true
 }

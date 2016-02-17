@@ -104,8 +104,13 @@ function __setStyle(layout, windowWidth, windowHeight) {
     $("style#sizingStyle").text(styleString);
 }
 
-function updateStyle(styleString) {
-    console.log("Update style");
+function updateBackgroundStyle(styleString) {
+    console.log("Update background style");
+    $("style#backgroundStyle").text(styleString);
+}
+
+function updateGivenStyle(styleString) {
+    console.log("Update Given style");
     $("style#givenStyle").text(styleString);
 }
 
@@ -210,8 +215,12 @@ self.port.on("init", function() {
     __makeSortable();
 });
 
+self.port.on("backgroundUpdated", function(backgroundStyleString) {
+    updateBackgroundStyle(backgroundStyleString);
+});
+
 self.port.on("styleUpdated", function(styleString) {
-    updateStyle(styleString);
+    updateGivenStyle(styleString);
 });
 
 self.port.on("bookmarksUpdated", function(bookmarks) {
