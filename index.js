@@ -214,7 +214,6 @@ exports.onUnload = function(reason) {
 
     if (reason === "disable" || reason === "uninstall") {
         resetHomepage();
+        fileUtils.purgeDirectory(PROFILE_DIRECTORY);
     }
-
-    fileUtils.purgeDirectory(PROFILE_DIRECTORY);
 };
