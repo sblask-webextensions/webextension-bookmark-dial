@@ -32,6 +32,7 @@ const SORTABLE_OPTIONS = {
 };
 
 let bookmarkCount;
+let columnCount;
 
 function __getOptimalTileLayout(bookmarkCount, containerWidth, containerHeight) {
     let newLineCount = 0;
@@ -69,6 +70,16 @@ function __getOptimalTileLayout(bookmarkCount, containerWidth, containerHeight) 
     return [previousTilesPerLine, previousLineCount, previousTileWidth, previousTileHeight];
 }
 
+function __getFixedTileLayout(columnCount, bookmarkCount, containerWidth) {
+    let lineCount = Math.ceil(bookmarkCount / columnCount);
+    let tileWidth = Math.min(
+        self.options.THUMBNAIL_WIDTH,
+        Math.floor(containerWidth / columnCount)
+    );
+    let tileHeight = tileWidth / 3 * 2;
+    return [columnCount, lineCount, tileWidth, tileHeight];
+}
+
 function __setStyle(layout, windowWidth, windowHeight) {
     console.log("Setting size", layout, windowWidth, windowHeight);
     let [tilesPerLine, lineCount, tileWidth, tileHeight] = layout;
@@ -89,7 +100,9 @@ function __setStyle(layout, windowWidth, windowHeight) {
             width: calc(100% - ${ LIST_MARGIN }px);
             height: calc(100% - ${ LIST_MARGIN }px);
             margin: ${ LIST_MARGIN / 2 }px;
-            padding: ${ verticalPadding }px ${ horizontalPadding }px 0;
+            padding-top: ${ verticalPadding }px;
+            padding-left: ${ horizontalPadding }px;
+            padding-right: ${ horizontalPadding }px;
         }
         div {
             height: ${ labelHeight * 2 }px;
@@ -119,10 +132,17 @@ function makeLayout() {
         return;
     }
 
-    console.log("Calculate layout");
+    console.log("Calculate layout with columnCount " + columnCount);
     let containerWidth = window.innerWidth - LIST_MARGIN;
     let containerHeight = window.innerHeight - LIST_MARGIN;
-    let layout = __getOptimalTileLayout(bookmarkCount, containerWidth, containerHeight);
+
+    let layout;
+    if (columnCount === null) {
+        layout = __getOptimalTileLayout(bookmarkCount, containerWidth, containerHeight);
+    } else {
+        layout = __getFixedTileLayout(columnCount, bookmarkCount, containerWidth);
+    }
+
     __setStyle(layout, containerWidth, containerHeight);
 }
 
@@ -210,6 +230,7 @@ function updateThumbnails(thumbnails) {
 }
 
 self.port.on("init", function() {
+    columnCount = self.options.INITIAL_COLUMN_COUNT;
     makeLayout();
     window.addEventListener("resize", debouncedLayout, true);
     __makeSortable();
@@ -217,6 +238,11 @@ self.port.on("init", function() {
 
 self.port.on("backgroundUpdated", function(backgroundStyleString) {
     updateBackgroundStyle(backgroundStyleString);
+});
+
+self.port.on("columnCountUpdated", function(newColumnCount) {
+    columnCount = newColumnCount;
+    makeLayout();
 });
 
 self.port.on("styleUpdated", function(styleString) {

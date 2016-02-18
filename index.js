@@ -131,7 +131,10 @@ function __setupPageMod() {
     pageMod.PageMod({
         include: constants.URL,
         attachTo: ["existing", "top"],
-        contentScriptOptions: { THUMBNAIL_WIDTH: constants.THUMBNAIL_WIDTH },
+        contentScriptOptions: {
+            THUMBNAIL_WIDTH: constants.THUMBNAIL_WIDTH,
+            INITIAL_COLUMN_COUNT: parseInt(simplePreferences.prefs.numberOfColumns),
+        },
         contentScriptFile: [
             "./jquery-2.1.4.js",
             "./jquery-ui-1.11.4.js",
@@ -187,7 +190,11 @@ exports.main = function(options) {
     });
 
     bookmarks.on("bookmarksUpdated", __updateDial);
-    simplePreferences.on("bookmarkFolder",  __updateDial);
+    simplePreferences.on("bookmarkFolder", __updateDial);
+
+    simplePreferences.on("numberOfColumns", function() {
+        __send("columnCountUpdated", parseInt(simplePreferences.prefs.numberOfColumns));
+    });
 
     simplePreferences.on("backgroundImage", __updateBackground);
     simplePreferences.on("scaleBackgroundToFit", __updateBackground);
