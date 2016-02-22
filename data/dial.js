@@ -229,8 +229,8 @@ function updateThumbnails(thumbnails) {
     __applyOnMatches(__updateThumbnail, thumbnails);
 }
 
-self.port.on("init", function() {
-    columnCount = self.options.INITIAL_COLUMN_COUNT;
+self.port.on("init", function(initialColumnCount) {
+    columnCount = initialColumnCount;
     makeLayout();
     window.addEventListener("resize", debouncedLayout, true);
     __makeSortable();

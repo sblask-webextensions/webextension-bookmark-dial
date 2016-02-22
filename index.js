@@ -133,7 +133,6 @@ function __setupPageMod() {
         attachTo: ["existing", "top"],
         contentScriptOptions: {
             THUMBNAIL_WIDTH: constants.THUMBNAIL_WIDTH,
-            INITIAL_COLUMN_COUNT: parseInt(simplePreferences.prefs.numberOfColumns),
         },
         contentScriptFile: [
             "./jquery-2.1.4.js",
@@ -156,7 +155,7 @@ function __setupPageMod() {
             __offThreadClearURLBar(worker.tab);
             worker.tab.on("activate", __offThreadClearURLBar);
             worker.tab.on("pageshow", __offThreadClearURLBar);
-            worker.port.emit("init");
+            worker.port.emit("init", parseInt(simplePreferences.prefs.numberOfColumns));
             __updateBackgroundFor(worker);
             __updateStyleFor(worker);
             __updateDialFor(worker);
