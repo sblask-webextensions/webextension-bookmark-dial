@@ -2,7 +2,7 @@
     "title": "Bookmark Dial",
     "name": "bookmarkdial",
     "id": "bookmarkdial@sblask",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "description": "Display the contents of a bookmark folder as thumbnails with title everytime the user opens a new tab.",
     "main": "index.js",
     "author": "Sebastian Blask",
