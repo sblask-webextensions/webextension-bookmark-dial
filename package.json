@@ -1,30 +1,18 @@
 {
-    "title": "Bookmark Dial",
-    "name": "bookmarkdial",
-    "id": "bookmarkdial@sblask",
-    "version": "1.1.2",
-    "description": "Display the contents of a bookmark folder as thumbnails with title everytime the user opens a new tab.",
-    "main": "index.js",
     "author": "Sebastian Blask",
-    "engines": {
-        "firefox": ">=41.0a1",
-        "fennec": ">=41.0a1"
-    },
-    "license": "MIT",
-    "scripts": {
-        "help": "jpm --help",
-        "lint": "eslint index.js lib data test && jscs index.js lib data",
-        "start": "jpm --binary firefox-trunk run",
-        "start:stable": "jpm --binary /usr/bin/firefox run",
-        "start:stable:profile": "jpm --no-copy --profile /home/sebastian/Desktop/profile --binary /usr/bin/firefox run",
-        "test": "echo test",
-        "xpi": "jpm xpi"
-    },
+    "description": "Display the contents of a bookmark folder as thumbnails with title everytime the user opens a new tab.",
     "devDependencies": {
         "eslint": "1.10.x",
         "jpm": "1.0.x",
         "jscs": "2.6.x"
     },
+    "engines": {
+        "fennec": ">=41.0a1",
+        "firefox": ">=41.0a1"
+    },
+    "homepage": "https://addons.mozilla.org/firefox/addon/bookmark-dial/",
+    "icon": "resource://bookmarkdial-at-sblask/data/icon.svg",
+    "id": "bookmarkdial@sblask",
     "keywords": [
         "bookmarks",
         "contextmenu",
@@ -41,121 +29,133 @@
         "thumbnails",
         "visual"
     ],
-    "icon": "resource://bookmarkdial-at-sblask/data/icon.svg",
-    "homepage": "https://addons.mozilla.org/firefox/addon/bookmark-dial/",
+    "license": "MIT",
+    "main": "index.js",
+    "name": "bookmarkdial",
+    "permissions": {
+        "private-browsing": true
+    },
+    "preferences": [
+        {
+            "hidden": true,
+            "name": "bookmarkFolder",
+            "title": "The folder to show in Bookmark Dial",
+            "type": "string",
+            "value": "/UNSORTED/"
+        },
+        {
+            "label": "Choose",
+            "name": "bookmarkFolderChooser",
+            "title": "Folder for Bookmark Dial",
+            "type": "control"
+        },
+        {
+            "name": "replaceHomepage",
+            "title": "Use Bookmark Dial instead of default homepage",
+            "type": "bool",
+            "value": true
+        },
+        {
+            "name": "useEditDialogForSavesFromPage",
+            "title": "Use dialog for Add Link and Add Page instead of creating a bookmark directly",
+            "type": "bool",
+            "value": true
+        },
+        {
+            "name": "numberOfColumns",
+            "options": [
+                {
+                    "label": "Auto",
+                    "value": "auto"
+                },
+                {
+                    "label": "1",
+                    "value": "1"
+                },
+                {
+                    "label": "2",
+                    "value": "2"
+                },
+                {
+                    "label": "3",
+                    "value": "3"
+                },
+                {
+                    "label": "4",
+                    "value": "4"
+                },
+                {
+                    "label": "5",
+                    "value": "5"
+                },
+                {
+                    "label": "6",
+                    "value": "6"
+                },
+                {
+                    "label": "7",
+                    "value": "7"
+                },
+                {
+                    "label": "8",
+                    "value": "8"
+                },
+                {
+                    "label": "9",
+                    "value": "9"
+                },
+                {
+                    "label": "10",
+                    "value": "10"
+                }
+            ],
+            "title": "Number of colums",
+            "type": "menulist"
+        },
+        {
+            "name": "backgroundImage",
+            "title": "Image to use as background",
+            "type": "file"
+        },
+        {
+            "label": "Clear chosen background image",
+            "name": "resetBackgroundImage",
+            "title": " ",
+            "type": "control"
+        },
+        {
+            "name": "scaleBackgroundToFit",
+            "title": "Scale background image to fit browser window",
+            "type": "bool",
+            "value": true
+        },
+        {
+            "name": "customStyleFile",
+            "title": "A custom CSS file for Bookmark Dial",
+            "type": "file"
+        },
+        {
+            "label": "Clear custom CSS file and use the default one",
+            "name": "resetCustomStyleFile",
+            "title": " ",
+            "type": "control"
+        }
+    ],
+    "preferences-branch": "bookmarkdial",
     "repository": {
         "type": "git",
         "url": "https://github.com/sblask/firefox-bookmark-dial"
     },
-    "permissions": {
-        "private-browsing": true
+    "scripts": {
+        "help": "jpm --help",
+        "lint": "eslint index.js lib data test && jscs index.js lib data",
+        "start": "jpm --binary firefox-trunk run",
+        "start:stable": "jpm --binary /usr/bin/firefox run",
+        "start:stable:profile": "jpm --no-copy --profile /home/sebastian/Desktop/profile --binary /usr/bin/firefox run",
+        "test": "echo test",
+        "xpi": "jpm xpi"
     },
-    "preferences-branch": "bookmarkdial",
-    "preferences": [
-        {
-            "type": "string",
-            "name": "bookmarkFolder",
-            "title": "The folder to show in Bookmark Dial",
-            "value": "/UNSORTED/",
-            "hidden": true
-        },
-        {
-            "type": "control",
-            "name": "bookmarkFolderChooser",
-            "label": "Choose",
-            "title": "Folder for Bookmark Dial"
-        },
-        {
-            "type": "bool",
-            "name": "replaceHomepage",
-            "title": "Use Bookmark Dial instead of default homepage",
-            "value": true
-        },
-        {
-            "type": "bool",
-            "name": "useEditDialogForSavesFromPage",
-            "title": "Use dialog for Add Link and Add Page instead of creating a bookmark directly",
-            "value": true
-        },
-        {
-            "type": "menulist",
-            "name": "numberOfColumns",
-            "title": "Number of colums",
-            "options": [
-                {
-                    "value": "auto",
-                    "label": "Auto"
-                },
-                {
-                    "value": "1",
-                    "label": "1"
-                },
-                {
-                    "value": "2",
-                    "label": "2"
-                },
-                {
-                    "value": "3",
-                    "label": "3"
-                },
-                {
-                    "value": "4",
-                    "label": "4"
-                },
-                {
-                    "value": "5",
-                    "label": "5"
-                },
-                {
-                    "value": "6",
-                    "label": "6"
-                },
-                {
-                    "value": "7",
-                    "label": "7"
-                },
-                {
-                    "value": "8",
-                    "label": "8"
-                },
-                {
-                    "value": "9",
-                    "label": "9"
-                },
-                {
-                    "value": "10",
-                    "label": "10"
-                }
-            ]
-        },
-        {
-            "type": "file",
-            "name": "backgroundImage",
-            "title": "Image to use as background"
-        },
-        {
-            "type": "control",
-            "name": "resetBackgroundImage",
-            "label": "Clear chosen background image",
-            "title": " "
-        },
-        {
-            "type": "bool",
-            "name": "scaleBackgroundToFit",
-            "title": "Scale background image to fit browser window",
-            "value": true
-        },
-        {
-            "type": "file",
-            "name": "customStyleFile",
-            "title": "A custom CSS file for Bookmark Dial"
-        },
-        {
-            "type": "control",
-            "name": "resetCustomStyleFile",
-            "label": "Clear custom CSS file and use the default one",
-            "title": " "
-        }
-    ],
-    "unpack": true
+    "title": "Bookmark Dial",
+    "unpack": true,
+    "version": "1.1.2"
 }
