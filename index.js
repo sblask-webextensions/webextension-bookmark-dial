@@ -7,6 +7,7 @@ const self = require("sdk/self");
 const simplePreferences = require("sdk/simple-prefs");
 const system = require("sdk/system");
 const timers = require("sdk/timers");
+const webExtension = require("sdk/webextension");
 
 const NewTabURL = require("resource:///modules/NewTabURL.jsm").NewTabURL;
 
@@ -22,6 +23,8 @@ const PROFILE_URL = "resource://bookmarkdial-at-sblask-profile/";
 
 const BACKGROUND_DIRECTORY = path.join(PROFILE_DIRECTORY, "background");
 const BACKGROUND_URL = PROFILE_URL + "background/";
+
+webExtension.startup();
 
 function __offThreadClearURLBar(tab) {
     timers.setTimeout(function() { __clearUrlBar(tab); }, 1);

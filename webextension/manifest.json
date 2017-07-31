@@ -1,0 +1,19 @@
+{
+    "applications": {
+        "gecko": {
+            "id": "bookmarkdial@sblask",
+            "strict_min_version": "46.0"
+        }
+    },
+    "author": "Sebastian Blask",
+    "background": {
+        "scripts": [
+            "background.js"
+        ]
+    },
+    "description": "Display the contents of a bookmark folder as thumbnails with title every time the user opens a new tab.",
+    "homepage_url": "https://github.com/sblask/firefox-bookmark-dial/",
+    "manifest_version": 2,
+    "name": "Bookmark Dial",
+    "version": "2.0.0"
+}
