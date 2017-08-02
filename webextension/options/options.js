@@ -1,7 +1,12 @@
+const OPTION_BACKGROUND_COLOR = "option_background_color";
+
 function restoreOptions() {
     browser.storage.local.get([
+        OPTION_BACKGROUND_COLOR,
     ]).then(
         result => {
+            setTextValue("backgroundColor", result[OPTION_BACKGROUND_COLOR]);
+            document.getElementById("backgroundColorPicker").style.backgroundColor = result[OPTION_BACKGROUND_COLOR];
         }
     );
 }
@@ -30,6 +35,7 @@ function setBooleanValue(elementID, newValue) {
 function saveOptions(event) {
     event.preventDefault();
     browser.storage.local.set({
+        [OPTION_BACKGROUND_COLOR]: document.getElementById("backgroundColor").value,
     });
 }
 
