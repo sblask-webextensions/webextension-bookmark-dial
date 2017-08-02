@@ -1,0 +1,80 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+}
+body {
+    min-width: 400px;
+    padding: 10px;
+}
+form > fieldset {
+    border: 1px solid;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    width: 100%;
+}
+form > fieldset > label:not(:first-child),
+form > fieldset > fieldset > label:not(:first-child) {
+    display: inline-block;
+    margin-top: 10px;
+}
+form > fieldset > fieldset {
+    border-color: #DDDDDD;
+    padding: 5px;
+}
+input[type=text],
+input[type=number] {
+    width: 100%;
+}
+input[type=checkbox],
+input[type=radio] {
+    display: inline-block;
+}
+textarea {
+    height: 100px;
+    padding: 3px;
+    width: 100%;
+}
+.box-wrapper {
+    margin-top: 5px;
+}
+.box-wrapper > .box-wrapper {
+    margin-left: 25px;
+}
+.box-wrapper > label, .color-wrapper .label {
+    display: block;
+    line-height: 20px;
+    margin: -20px 0 0 25px;
+}
+.color-wrapper {
+    position: relative;
+}
+.color-wrapper > input {
+    display: block;
+    height: 12px;
+    left: 0px;
+    padding: 0;
+    position: absolute;
+    top: 1px;
+    width: 12px;
+    z-index: -1;
+}
+.color-wrapper .color-picker {
+    background-color: black;
+    border-radius: 3px;
+    display: inline-block;
+    height: 12px;
+    width: 12px;
+}
+@-moz-document url-prefix() {
+    .color-wrapper > input {
+        left: 1px;
+        top: 3px;
+    }
+    .color-wrapper > input:focus {
+        outline: 1px dotted;
+    }
+    .color-wrapper .color-picker {
+        margin-left: 1px;
+    }
+}

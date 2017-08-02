@@ -22,5 +22,8 @@
     "homepage_url": "https://github.com/sblask/firefox-bookmark-dial/",
     "manifest_version": 2,
     "name": "Bookmark Dial",
+    "options_ui": {
+        "page": "options/options.html"
+    },
     "version": "2.0.0"
 }
