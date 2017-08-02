@@ -12,6 +12,12 @@
             "background.js"
         ]
     },
+    "browser_action": {
+        "browser_style": false,
+        "default_icon": "icon.svg",
+        "default_popup": "options/options.html",
+        "default_title": "Bookmark Dial"
+    },
     "chrome_settings_overrides": {
         "homepage": "bookmark-dial.html"
     },
