@@ -1,8 +1,11 @@
 {
     "preset": "airbnb",
+    "requirePaddingNewLinesAfterBlocks": false,
+    "requirePaddingNewLinesBeforeLineComments": false,
     "validateQuoteMarks": '"',
     "validateIndentation": 4,
     "excludeFiles": [
+        "webextension/browser-polyfill.js",
         "data/jquery-2.1.4.js",
         "data/jquery-ui-1.11.4.js",
     ],
