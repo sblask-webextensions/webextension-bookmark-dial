@@ -16,7 +16,7 @@ function restoreOptions() {
 }
 
 function enableAutosave() {
-    for (let input of document.querySelectorAll("input:not([type=radio]):not([type=checkbox]), textarea")) {
+    for (let input of document.querySelectorAll("input:not([type=checkbox]):not([type=file]):not([type=radio]), textarea")) {
         input.addEventListener("input", saveOptions);
     }
     for (let input of document.querySelectorAll("input[type=radio], input[type=checkbox]")) {
@@ -37,15 +37,33 @@ function setBooleanValue(elementID, newValue) {
 }
 
 function saveOptions(event) {
-    event.preventDefault();
+    if (event) {
+        event.preventDefault();
+    }
     browser.storage.local.set({
         [OPTION_BACKGROUND_COLOR]: document.getElementById("backgroundColor").value,
         [OPTION_BACKGROUND_IMAGE_URL]: document.getElementById("backgroundImageURL").value,
     });
 }
 
+function loadBackgroundImageURL(event) {
+    let reader = new FileReader();
+    reader.addEventListener(
+        "load",
+        () => {
+            setTextValue("backgroundImageURL", reader.result);
+            saveOptions();
+        },
+    );
+
+    let input = event.target;
+    reader.readAsDataURL(input.files[0]);
+}
+
 document.addEventListener("DOMContentLoaded", restoreOptions);
 document.addEventListener("DOMContentLoaded", enableAutosave);
 document.querySelector("form").addEventListener("submit", saveOptions);
+
+document.querySelector("#backgroundImageChooser").addEventListener("change", loadBackgroundImageURL);
 
 browser.storage.onChanged.addListener(restoreOptions);
