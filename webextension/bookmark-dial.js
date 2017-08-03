@@ -1,15 +1,6 @@
 const OPTION_BACKGROUND_COLOR = "option_background_color";
 const OPTION_BACKGROUND_IMAGE_URL = "option_background_image_url";
 
-const BACKGROUND_STYLE = makeStyle();
-
-function makeStyle() {
-    let style = document.createElement("style");
-    style.type = "text/css";
-    document.head.appendChild(style);
-    return style;
-}
-
 let backgroundColor = undefined;
 let backgroundImageURL = undefined;
 
