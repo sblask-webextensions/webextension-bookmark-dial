@@ -1,12 +1,16 @@
 const OPTION_BACKGROUND_COLOR = "option_background_color";
+const OPTION_BACKGROUND_IMAGE_URL = "option_background_image_url";
 
 function restoreOptions() {
     browser.storage.local.get([
         OPTION_BACKGROUND_COLOR,
+        OPTION_BACKGROUND_IMAGE_URL,
     ]).then(
         result => {
             setTextValue("backgroundColor", result[OPTION_BACKGROUND_COLOR]);
             document.getElementById("backgroundColorPicker").style.backgroundColor = result[OPTION_BACKGROUND_COLOR];
+
+            setTextValue("backgroundImageURL", result[OPTION_BACKGROUND_IMAGE_URL]);
         }
     );
 }
@@ -36,6 +40,7 @@ function saveOptions(event) {
     event.preventDefault();
     browser.storage.local.set({
         [OPTION_BACKGROUND_COLOR]: document.getElementById("backgroundColor").value,
+        [OPTION_BACKGROUND_IMAGE_URL]: document.getElementById("backgroundImageURL").value,
     });
 }
 

@@ -1,4 +1,5 @@
 const OPTION_BACKGROUND_COLOR = "option_background_color";
+const OPTION_BACKGROUND_IMAGE_URL = "option_background_image_url";
 
 const BACKGROUND_STYLE = makeStyle();
 
@@ -9,27 +10,41 @@ function makeStyle() {
     return style;
 }
 
-function getBackgroundStyleString(backgroundColor) {
+let backgroundColor = undefined;
+let backgroundImageURL = undefined;
+
+function getBackgroundStyleString() {
     return `
-        body, html {
-            background: ${backgroundColor};
+        body {
+            background-attachment: fixed;
+            background-color: ${backgroundColor};
+            background-image: url(${backgroundImageURL});
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: contain;
         }
     `;
 }
 
 function onPreferencesChanged(changes) {
     if (changes[OPTION_BACKGROUND_COLOR]) {
-        let backgroundColor = changes[OPTION_BACKGROUND_COLOR].newValue;
-        $("style#backgroundStyle").text(getBackgroundStyleString(backgroundColor));
+        backgroundColor = changes[OPTION_BACKGROUND_COLOR].newValue;
     }
+    if (changes[OPTION_BACKGROUND_IMAGE_URL]) {
+        backgroundImageURL = changes[OPTION_BACKGROUND_IMAGE_URL].newValue;
+    }
+    $("style#backgroundStyle").text(getBackgroundStyleString());
 }
+
 function initFromPreferences() {
     browser.storage.local.get([
         OPTION_BACKGROUND_COLOR,
+        OPTION_BACKGROUND_IMAGE_URL,
     ]).then(
         (result) => {
-            let backgroundColor = result[OPTION_BACKGROUND_COLOR];
-            $("style#backgroundStyle").text(getBackgroundStyleString(backgroundColor));
+            backgroundColor = result[OPTION_BACKGROUND_COLOR];
+            backgroundImageURL = result[OPTION_BACKGROUND_IMAGE_URL];
+            $("style#backgroundStyle").text(getBackgroundStyleString());
         }
     );
 }
