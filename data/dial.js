@@ -157,7 +157,7 @@ function debouncedLayout() {
 
 function __createElement(tagName, attributes, children) {
     const element = document.createElement(tagName);
-    for (let key in attributes) {
+    for (let key of Object.keys(attributes)) { // TODO replace with Map
         element.setAttribute(key, attributes[key]);
     }
 
