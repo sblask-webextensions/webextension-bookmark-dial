@@ -1,5 +1,6 @@
 const OPTION_BACKGROUND_COLOR = "option_background_color";
 const OPTION_BACKGROUND_IMAGE_URL = "option_background_image_url";
+const OPTION_BOOKMARK_FOLDER = "option_bookmark_folder";
 
 const FOLDER_SELECT = document.querySelector("#folderSelect");
 
@@ -21,7 +22,7 @@ function enableAutosave() {
     for (let input of document.querySelectorAll("input:not([type=checkbox]):not([type=file]):not([type=radio]), textarea")) {
         input.addEventListener("input", saveOptions);
     }
-    for (let input of document.querySelectorAll("input[type=radio], input[type=checkbox]")) {
+    for (let input of document.querySelectorAll("input[type=radio], input[type=checkbox], select")) {
         input.addEventListener("change", saveOptions);
     }
 }
@@ -42,9 +43,17 @@ function saveOptions(event) {
     if (event) {
         event.preventDefault();
     }
+
+    let folderSelect = document.getElementById("folderSelect");
+    let selectedFolder = undefined;
+    if (folderSelect.selectedIndex >= 0) {
+        selectedFolder = folderSelect.options[folderSelect.selectedIndex].value;
+    }
+
     browser.storage.local.set({
         [OPTION_BACKGROUND_COLOR]: document.getElementById("backgroundColor").value,
         [OPTION_BACKGROUND_IMAGE_URL]: document.getElementById("backgroundImageURL").value,
+        [OPTION_BOOKMARK_FOLDER]: selectedFolder,
     });
 }
 
@@ -69,6 +78,24 @@ function loadBookmarkTree(folders, level=-1) {
     }
 }
 
+function maybeSelectFolder() {
+    browser.storage.local.get([
+        OPTION_BOOKMARK_FOLDER,
+    ]).then(
+        result => {
+            let bookmarkFolder = result[OPTION_BOOKMARK_FOLDER];
+            if (!bookmarkFolder) {
+                return;
+            }
+            for (let option of document.getElementById("folderSelect").options) {
+                if (option.value === bookmarkFolder) {
+                    option.setAttribute("selected", true);
+                }
+            }
+        }
+    );
+}
+
 function loadBackgroundImageURL(event) {
     let reader = new FileReader();
     reader.addEventListener(
@@ -91,4 +118,9 @@ document.querySelector("#backgroundImageChooser").addEventListener("change", loa
 
 browser.storage.onChanged.addListener(restoreOptions);
 
-browser.bookmarks.getTree().then(loadBookmarkTree);
+browser.bookmarks.getTree().then(
+    (folders) => {
+        loadBookmarkTree(folders);
+        maybeSelectFolder();
+    }
+);
