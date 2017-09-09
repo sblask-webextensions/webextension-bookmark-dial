@@ -5,7 +5,6 @@ const OPTION_BOOKMARK_FOLDER = "option_bookmark_folder";
 const LIST_MARGIN = 20;
 const THUMBNAIL_WIDTH = 300;
 
-let originalIndex;
 const SORTABLE_OPTIONS = {
     containment: "window",
     cursor: "move",
@@ -15,7 +14,6 @@ const SORTABLE_OPTIONS = {
     scroll: false,
     tolerance: "pointer",
     start: function(_event, ui) {
-        originalIndex = ui.placeholder.index("li") - 1;
         const tileRect = ui.placeholder[0].getBoundingClientRect();
 
         // helper's size is off for some reason when not setting this explicitely
@@ -24,12 +22,12 @@ const SORTABLE_OPTIONS = {
     },
 
     update: function(_event, ui) {
-        let newIndex = ui.item.index("li");
-        if (originalIndex < newIndex) {
-            newIndex += 1;
-        }
-
-        // TODO: move bookmark
+        browser.bookmarks.move(
+            ui.item.find("a")[0].id,
+            {
+                index: ui.item.index("li"),
+            },
+        );
     },
 };
 
