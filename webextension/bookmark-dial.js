@@ -191,8 +191,8 @@ function __updateBookmarks(bookmarkFolder) {
     }
 
     browser.bookmarks.getChildren(bookmarkFolder).then(
-        (updatedBookmarks) => {
-            bookmarks = updatedBookmarks;
+        (bookmarkOrFolder) => {
+            bookmarks = bookmarkOrFolder.filter(item => item.url && item.url.indexOf("place:") !== 0);
             __replaceBookmarkList();
             __makeBookmarkListSortable();
             __makeLayout();
