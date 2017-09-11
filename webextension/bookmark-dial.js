@@ -33,6 +33,7 @@ const SORTABLE_OPTIONS = {
 
 let backgroundColor = undefined;
 let backgroundImageURL = undefined;
+let bookmarkFolder = undefined;
 
 let bookmarks = undefined;
 let columnCount = undefined;
@@ -185,7 +186,7 @@ function __replaceBookmarkList() {
     oldList.parentNode.replaceChild(newList, oldList);
 }
 
-function __updateBookmarks(bookmarkFolder) {
+function __updateDial() {
     if (!bookmarkFolder) {
         return;
     }
@@ -217,7 +218,8 @@ function onPreferencesChanged(changes) {
         backgroundImageURL = changes[OPTION_BACKGROUND_IMAGE_URL].newValue;
     }
     if (changes[OPTION_BOOKMARK_FOLDER]) {
-        __updateBookmarks(changes[OPTION_BOOKMARK_FOLDER].newValue);
+        bookmarkFolder = changes[OPTION_BOOKMARK_FOLDER].newValue;
+        __updateDial();
     }
     $("style#backgroundStyle").text(__getBackgroundStyleString());
 }
@@ -231,7 +233,8 @@ function initFromPreferences() {
         (result) => {
             backgroundColor = result[OPTION_BACKGROUND_COLOR];
             backgroundImageURL = result[OPTION_BACKGROUND_IMAGE_URL];
-            __updateBookmarks(result[OPTION_BOOKMARK_FOLDER]);
+            bookmarkFolder = result[OPTION_BOOKMARK_FOLDER];
+            __updateDial();
 
             $("style#backgroundStyle").text(__getBackgroundStyleString());
         }
@@ -239,6 +242,12 @@ function initFromPreferences() {
 }
 
 browser.storage.onChanged.addListener(onPreferencesChanged);
+
+browser.bookmarks.onCreated.addListener(__updateDial);
+browser.bookmarks.onChanged.addListener(__updateDial);
+browser.bookmarks.onMoved.addListener(__updateDial);
+browser.bookmarks.onRemoved.addListener(__updateDial);
+
 window.addEventListener("resize", debouncedMakeLayout, true);
 
 initFromPreferences();
