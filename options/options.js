@@ -35,10 +35,6 @@ function setTextValue(elementID, newValue) {
     }
 }
 
-function setBooleanValue(elementID, newValue) {
-    document.getElementById(elementID).checked = newValue;
-}
-
 function saveOptions(event) {
     if (event) {
         event.preventDefault();
