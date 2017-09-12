@@ -1,5 +1,3 @@
-data/jquery-2.1.4.js
-data/jquery-ui-1.11.4.js
-webextension/browser-polyfill.js
-webextension/jquery-3.1.1.js
-webextension/jquery-ui-1.12.1.js
+browser-polyfill.js
+content-scripts/jquery-3.1.1.js
+content-scripts/jquery-ui-1.12.1.js

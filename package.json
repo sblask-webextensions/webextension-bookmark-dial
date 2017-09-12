@@ -1,162 +1,35 @@
 {
     "author": "Sebastian Blask",
-    "description": "Display the contents of a bookmark folder as thumbnails with title everytime the user opens a new tab.",
     "devDependencies": {
         "eslint": "4.1.x",
-        "jpm": "1.3.x",
-        "jscs": "2.6.x"
+        "jscs": "2.6.x",
+        "web-ext": "1.9.x"
     },
-    "engines": {
-        "fennec": ">=41.0a1",
-        "firefox": ">=41.0a1"
-    },
-    "hasEmbeddedWebExtension": true,
-    "homepage": "https://addons.mozilla.org/firefox/addon/bookmark-dial/",
-    "icon": "resource://bookmarkdial-at-sblask/data/icon.svg",
-    "id": "bookmarkdial@sblask",
-    "keywords": [
-        "bookmarks",
-        "contextmenu",
-        "fast dial",
-        "fastdial",
-        "homepage",
-        "jetpack",
-        "new tab",
-        "newtab",
-        "open tab",
-        "opera",
-        "speed dial",
-        "speeddial",
-        "thumbnails",
-        "visual"
-    ],
     "license": "MIT",
-    "main": "index.js",
     "name": "bookmarkdial",
-    "permissions": {
-        "private-browsing": true
-    },
-    "preferences": [
-        {
-            "hidden": true,
-            "name": "bookmarkFolder",
-            "title": "The folder to show in Bookmark Dial",
-            "type": "string",
-            "value": "/UNSORTED/"
-        },
-        {
-            "label": "Choose",
-            "name": "bookmarkFolderChooser",
-            "title": "Folder for Bookmark Dial",
-            "type": "control"
-        },
-        {
-            "name": "replaceHomepage",
-            "title": "Use Bookmark Dial instead of default homepage",
-            "type": "bool",
-            "value": true
-        },
-        {
-            "name": "useEditDialogForSavesFromPage",
-            "title": "Use dialog for Add Link and Add Page instead of creating a bookmark directly",
-            "type": "bool",
-            "value": true
-        },
-        {
-            "name": "numberOfColumns",
-            "options": [
-                {
-                    "label": "Auto",
-                    "value": "auto"
-                },
-                {
-                    "label": "1",
-                    "value": "1"
-                },
-                {
-                    "label": "2",
-                    "value": "2"
-                },
-                {
-                    "label": "3",
-                    "value": "3"
-                },
-                {
-                    "label": "4",
-                    "value": "4"
-                },
-                {
-                    "label": "5",
-                    "value": "5"
-                },
-                {
-                    "label": "6",
-                    "value": "6"
-                },
-                {
-                    "label": "7",
-                    "value": "7"
-                },
-                {
-                    "label": "8",
-                    "value": "8"
-                },
-                {
-                    "label": "9",
-                    "value": "9"
-                },
-                {
-                    "label": "10",
-                    "value": "10"
-                }
-            ],
-            "title": "Number of colums",
-            "type": "menulist"
-        },
-        {
-            "name": "backgroundImage",
-            "title": "Image to use as background",
-            "type": "file"
-        },
-        {
-            "label": "Clear chosen background image",
-            "name": "resetBackgroundImage",
-            "title": " ",
-            "type": "control"
-        },
-        {
-            "name": "scaleBackgroundToFit",
-            "title": "Scale background image to fit browser window",
-            "type": "bool",
-            "value": true
-        },
-        {
-            "name": "customStyleFile",
-            "title": "A custom CSS file for Bookmark Dial",
-            "type": "file"
-        },
-        {
-            "label": "Clear custom CSS file and use the default one",
-            "name": "resetCustomStyleFile",
-            "title": " ",
-            "type": "control"
-        }
-    ],
-    "preferences-branch": "bookmarkdial",
     "repository": {
         "type": "git",
         "url": "https://github.com/sblask/firefox-bookmark-dial"
     },
     "scripts": {
-        "help": "jpm --help",
-        "lint": "eslint index.js lib data test && jscs index.js lib data",
-        "start": "jpm --binary firefox-trunk run",
-        "start:stable": "jpm --binary /usr/bin/firefox run",
-        "start:stable:profile": "jpm --no-copy --profile /home/sebastian/Desktop/profile --binary /usr/bin/firefox run",
-        "test": "echo test",
-        "xpi": "jpm xpi"
+        "artifact-create:chrome": "web-ext build --artifacts-dir . --ignore-files screenshots package.json icon.fodg",
+        "artifact-create:firefox": "web-ext build --artifacts-dir . --ignore-files screenshots package.json icon.fodg *.png browser-polyfill.js",
+        "artifact-rename:chrome": "VERSION=$(jq --raw-output '.version' manifest.json); rename \"s/.zip$/-chrome.zip/\"  *$VERSION.zip",
+        "artifact-rename:firefox": "VERSION=$(jq --raw-output '.version' manifest.json); rename \"s/.zip$/-firefox.zip/\" *$VERSION.zip",
+        "build": "git add --all; rm *.zip; npm run modify:chrome && npm run artifact-create:chrome && npm run artifact-rename:chrome && git checkout -- . && npm run modify:firefox && npm run artifact-create:firefox && npm run artifact-rename:firefox && git checkout -- .",
+        "help": "web-ext --help",
+        "icons": "for size in 16x16 32x32 48x48 64x64 128x128 440x280; do convert -background none -density 1000 -resize ${size} -extent ${size} -gravity center icon.svg icon-${size}.png; done",
+        "lint": "eslint --debug $(find . -not -path '*node_modules*' -name '*.js') && jscs $(find . -not -path '*node_modules*' -name '*.js')",
+        "modify:chrome": "jq --indent 4 '. | del(.applications) | del(.browser_action.default_icon)' manifest.json | sponge manifest.json",
+        "modify:firefox": "npm run modify:manifest:firefox && npm run modify:remove-polyfill-references",
+        "modify:manifest:firefox": "jq --indent 4 '. | .background.scripts |= map(select(. != \"browser-polyfill.js\")) | if has(\"icons\") then .icons |= {\"48\": \"icon.svg\"} else . end | del(.options_ui.open_in_tab)' manifest.json | sponge manifest.json",
+        "modify:remove-polyfill-references": "sed --in-place --regexp-extended '/\"(\\.\\.\\/)?browser-polyfill.js\"/d' $(find . -not -path '*node_modules*' -name '*.js' -o -name '*.html')",
+        "readme": "cat README.md | sed -r 's/\\[.+\\]\\((.+)\\)/\\1/' | sed -r '/\\[/{ N; s/\\[.+\\]\\((.+)\\)/\\n\\1/ }' | sed -r '/```/,/```/d' | vim -",
+        "release": "VERSION=$(jq --raw-output '.version' manifest.json); hub release create $(for file in *$VERSION*.zip; do echo \" -a ${file} \"; done) -m $VERSION $VERSION",
+        "start": "GTK_THEME=Greybird web-ext run --verbose --firefox firefox",
+        "start:nightly": "GTK_THEME=Greybird web-ext run --verbose --firefox firefox-trunk",
+        "test": "web-ext lint"
     },
     "title": "Bookmark Dial",
-    "unpack": true,
     "version": "2.0.0"
 }

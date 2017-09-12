@@ -19,13 +19,20 @@
         "default_title": "Bookmark Dial"
     },
     "chrome_settings_overrides": {
-        "homepage": "bookmark-dial.html"
+        "homepage": "content-scripts/bookmark-dial.html"
     },
     "chrome_url_overrides": {
-        "newtab": "bookmark-dial.html"
+        "newtab": "content-scripts/bookmark-dial.html"
     },
     "description": "Display the contents of a bookmark folder as thumbnails with title every time the user opens a new tab.",
     "homepage_url": "https://github.com/sblask/firefox-bookmark-dial/",
+    "icons": {
+        "128": "icon-128x128.png",
+        "16": "icon-16x16.png",
+        "32": "icon-32x32.png",
+        "48": "icon-48x48.png",
+        "64": "icon-64x64.png"
+    },
     "manifest_version": 2,
     "name": "Bookmark Dial",
     "options_ui": {
