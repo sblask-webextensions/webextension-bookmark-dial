@@ -25,7 +25,7 @@
         "newtab": "content-scripts/bookmark-dial.html"
     },
     "description": "Display the contents of a bookmark folder as thumbnails with title every time the user opens a new tab.",
-    "homepage_url": "https://github.com/sblask/firefox-bookmark-dial/",
+    "homepage_url": "https://github.com/sblask/webextension-bookmark-dial",
     "icons": {
         "128": "icon-128x128.png",
         "16": "icon-16x16.png",
