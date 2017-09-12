@@ -39,7 +39,9 @@
         "page": "options/options.html"
     },
     "permissions": [
+        "<all_urls>",
         "bookmarks",
+        "tabs",
         "storage"
     ],
     "version": "2.0.0"
