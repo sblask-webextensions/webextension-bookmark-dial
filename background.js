@@ -16,3 +16,11 @@ browser.storage.local.get([
         }
     );
 
+function handleInstalled(details) {
+    if (details.reason === "update" && details.previousVersion === "1.1.2") {
+        browser.tabs.create({
+            url: "update.html",
+        });
+    }
+}
+browser.runtime.onInstalled.addListener(handleInstalled);
