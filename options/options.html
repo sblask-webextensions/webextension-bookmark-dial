@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" type="text/css" href="./options.css">
+    </head>
+
+    <body>
+        <form>
+            <fieldset>
+
+                <div class="color-wrapper">
+                    <input type="color" id="backgroundColor"></input>
+                    <label for="backgroundColor">
+                        <span class="color-picker" id="backgroundColorPicker"></span>
+                        <span class="label">Background Color<span>
+                    </label>
+                </div>
+
+                <label for="backgroundImageURL">Background Image URL</label>
+                <input type="text" id="backgroundImageURL"></input>
+                <input type="file" id="backgroundImageChooser"></input>
+
+                <label for="folderSelect">Select Folder</label>
+                <select size="8" id="folderSelect"></select>
+
+                <legend>Options</legend>
+            </fieldset>
+        </form>
+        <script src="../browser-polyfill.js"></script>
+        <script src="./options.js"></script>
+    </body>
+
+</html>

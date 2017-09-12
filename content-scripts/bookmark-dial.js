@@ -1,9 +1,10 @@
-/* global getBookmarkDataForNode */
-/* eslint-env jquery */
-
-let originalIndex;
+const OPTION_BACKGROUND_COLOR = "option_background_color";
+const OPTION_BACKGROUND_IMAGE_URL = "option_background_image_url";
+const OPTION_BOOKMARK_FOLDER = "option_bookmark_folder";
 
 const LIST_MARGIN = 20;
+const THUMBNAIL_WIDTH = 300;
+
 const SORTABLE_OPTIONS = {
     containment: "window",
     cursor: "move",
@@ -13,7 +14,6 @@ const SORTABLE_OPTIONS = {
     scroll: false,
     tolerance: "pointer",
     start: function(_event, ui) {
-        originalIndex = ui.placeholder.index("li") - 1;
         const tileRect = ui.placeholder[0].getBoundingClientRect();
 
         // helper's size is off for some reason when not setting this explicitely
@@ -22,19 +22,23 @@ const SORTABLE_OPTIONS = {
     },
 
     update: function(_event, ui) {
-        const bookmark = getBookmarkDataForNode(ui.item.find("a")[0]);
-        if (originalIndex < bookmark.index) {
-            bookmark.index = bookmark.index + 1;
-        }
-
-        self.port.emit("save", bookmark);
+        browser.bookmarks.move(
+            ui.item.find("a")[0].id,
+            {
+                index: ui.item.index("li"),
+            },
+        );
     },
 };
 
-let bookmarkCount;
-let columnCount;
+let backgroundColor = undefined;
+let backgroundImageURL = undefined;
+let bookmarkFolder = undefined;
 
-function __getOptimalTileLayout(bookmarkCount, containerWidth, containerHeight) {
+let bookmarks = undefined;
+let columnCount = undefined;
+
+function __getOptimalColumnCountLayout(bookmarkCount, containerWidth, containerHeight) {
     let newLineCount = 0;
     let newTileHeight = 0;
     let newTileWidth = 0;
@@ -45,7 +49,7 @@ function __getOptimalTileLayout(bookmarkCount, containerWidth, containerHeight) 
     let previousTileWidth = 0;
     let previousTilesPerLine = 0;
 
-    while (newTileWidth >= previousTileWidth && newTileWidth <= self.options.THUMBNAIL_WIDTH) {
+    while (newTileWidth >= previousTileWidth && newTileWidth <= THUMBNAIL_WIDTH) {
         previousLineCount = newLineCount;
         previousTileHeight = newTileHeight;
         previousTileWidth = newTileWidth;
@@ -54,14 +58,14 @@ function __getOptimalTileLayout(bookmarkCount, containerWidth, containerHeight) 
         newTilesPerLine++;
         newLineCount = Math.ceil(bookmarkCount / newTilesPerLine);
         newTileWidth = Math.min(
-            self.options.THUMBNAIL_WIDTH,
+            THUMBNAIL_WIDTH,
             Math.floor(containerWidth / newTilesPerLine)
         );
         newTileHeight = Math.floor(newTileWidth / 3 * 2);
         if (newTileHeight * newLineCount > containerHeight) {
             newTileHeight = Math.min(
                 Math.floor(containerHeight / newLineCount),
-                self.options.THUMBNAIL_WIDTH / 3 * 2
+                THUMBNAIL_WIDTH / 3 * 2
             );
             newTileWidth = Math.floor(newTileHeight / 2 * 3);
         }
@@ -70,10 +74,10 @@ function __getOptimalTileLayout(bookmarkCount, containerWidth, containerHeight) 
     return [previousTilesPerLine, previousLineCount, previousTileWidth, previousTileHeight];
 }
 
-function __getFixedTileLayout(columnCount, bookmarkCount, containerWidth) {
+function __getFixedColumnCountLayout(columnCount, bookmarkCount, containerWidth) {
     let lineCount = Math.ceil(bookmarkCount / columnCount);
     let tileWidth = Math.min(
-        self.options.THUMBNAIL_WIDTH,
+        THUMBNAIL_WIDTH,
         Math.floor(containerWidth / columnCount)
     );
     let tileHeight = tileWidth / 3 * 2;
@@ -90,10 +94,9 @@ function __setStyle(layout, windowWidth, windowHeight) {
     let verticalPadding = Math.floor((windowHeight - listHeight) / 2);
 
     let labelHeight = 5 + tileHeight / 20;
-    let busyImage = tileWidth > 150 ? "busy.png" : "busy-small.png";
     let styleString = `
         li {
-            max-width: ${ self.options.THUMBNAIL_WIDTH }px;
+            max-width: ${ THUMBNAIL_WIDTH }px;
             width: calc(100% / ${ tilesPerLine });
         }
         ol {
@@ -110,25 +113,12 @@ function __setStyle(layout, windowWidth, windowHeight) {
         span {
             font-size: ${ labelHeight }px;
         }
-        a.busy {
-            background-image: url("${ busyImage }");
-        }
     `;
     $("style#sizingStyle").text(styleString);
 }
 
-function updateBackgroundStyle(styleString) {
-    console.log("Update background style");
-    $("style#backgroundStyle").text(styleString);
-}
-
-function updateGivenStyle(styleString) {
-    console.log("Update Given style");
-    $("style#givenStyle").text(styleString);
-}
-
-function makeLayout() {
-    if (!bookmarkCount) {
+function __makeLayout() {
+    if (!bookmarks) {
         return;
     }
 
@@ -137,27 +127,31 @@ function makeLayout() {
     let containerHeight = window.innerHeight - LIST_MARGIN;
 
     let layout;
-    if (columnCount === null) {
-        layout = __getOptimalTileLayout(bookmarkCount, containerWidth, containerHeight);
+    if (columnCount) {
+        layout = __getFixedColumnCountLayout(columnCount, bookmarks.length, containerWidth);
     } else {
-        layout = __getFixedTileLayout(columnCount, bookmarkCount, containerWidth);
+        layout = __getOptimalColumnCountLayout(bookmarks.length, containerWidth, containerHeight);
     }
 
     __setStyle(layout, containerWidth, containerHeight);
 }
 
-let debounceTimeout;
-function debouncedLayout() {
-    if (debounceTimeout) {
-        clearTimeout(debounceTimeout);
-    }
-
-    debounceTimeout = setTimeout(makeLayout, 300);
+function __getBackgroundStyleString() {
+    return `
+        body {
+            background-attachment: fixed;
+            background-color: ${backgroundColor};
+            background-image: url(${backgroundImageURL});
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: contain;
+        }
+    `;
 }
 
 function __createElement(tagName, attributes, children) {
     const element = document.createElement(tagName);
-    for (let key in attributes) {
+    for (let key of Object.keys(attributes)) { // TODO replace with Map
         element.setAttribute(key, attributes[key]);
     }
 
@@ -171,94 +165,89 @@ function __createElement(tagName, attributes, children) {
 function __makeHTMLListItem(bookmark) {
     return __createElement("li", {class: "keepAspectRatio"}, [
         __createElement("a", {id: bookmark.id, href: bookmark.url, title: bookmark.title}, [
-            __createElement("img", {src: bookmark.thumbnail}, []),
+            __createElement("img", {src: bookmark.thumbnail || ""}, []),
             __createElement("div", {class: "absoluteBottom"}, [
                 __createElement("span", {class: "absoluteBottom"}, [
                     document.createTextNode(bookmark.title),
-                ]),
-                __createElement("span", {class: "absoluteBottom tags"}, [
-                    document.createTextNode(bookmark.tags.join(", ")),
                 ]),
             ]),
         ]),
     ]);
 }
 
-function __makeSortable() {
+function __makeBookmarkListSortable() {
     $("ol").sortable(SORTABLE_OPTIONS);
     $("ol").disableSelection();
 }
 
-function updateBookmarks(bookmarks) {
-    console.log("Update " + bookmarks.length + " bookmarks");
-    const oldList = document.querySelector("ol");
-    const newList = __createElement("ol", {}, bookmarks.map(__makeHTMLListItem));
+function __replaceBookmarkList() {
+    let oldList = document.querySelector("ol");
+    let newList = __createElement("ol", {}, bookmarks.map(__makeHTMLListItem));
     oldList.parentNode.replaceChild(newList, oldList);
-    __makeSortable();
 }
 
-function __applyOnMatches(someFunction, urlMap) {
-    $("a").each(function(index) {
-        let anchor = $(this);
-        let bookmarkURL = anchor.attr("href");
-        if (urlMap[bookmarkURL]) {
-            console.log("Found match at index " + index);
-            someFunction(anchor, bookmarkURL, urlMap);
+function __updateDial() {
+    if (!bookmarkFolder) {
+        return;
+    }
+
+    browser.bookmarks.getChildren(bookmarkFolder).then(
+        (bookmarkOrFolder) => {
+            bookmarks = bookmarkOrFolder.filter(item => item.url && item.url.indexOf("place:") !== 0);
+            __replaceBookmarkList();
+            __makeBookmarkListSortable();
+            __makeLayout();
         }
-    });
+    );
 }
 
-function __setBusy(anchor) {
-    anchor.addClass("busy");
+let debounceTimeout;
+function debouncedMakeLayout() {
+    if (debounceTimeout) {
+        clearTimeout(debounceTimeout);
+    }
+
+    debounceTimeout = setTimeout(__makeLayout, 300);
 }
 
-function setBusy(bookmarkURL) {
-    let urlMap = {};
-    urlMap[bookmarkURL] = true;
-    __applyOnMatches(__setBusy, urlMap);
+function onPreferencesChanged(changes) {
+    if (changes[OPTION_BACKGROUND_COLOR]) {
+        backgroundColor = changes[OPTION_BACKGROUND_COLOR].newValue;
+    }
+    if (changes[OPTION_BACKGROUND_IMAGE_URL]) {
+        backgroundImageURL = changes[OPTION_BACKGROUND_IMAGE_URL].newValue;
+    }
+    if (changes[OPTION_BOOKMARK_FOLDER]) {
+        bookmarkFolder = changes[OPTION_BOOKMARK_FOLDER].newValue;
+        __updateDial();
+    }
+    $("style#backgroundStyle").text(__getBackgroundStyleString());
 }
 
-function __updateThumbnail(anchor, bookmarkURL, thumbnails) {
-    console.log("Update thumbnail for " + bookmarkURL);
-    let thumbnailURL = thumbnails[bookmarkURL];
-    anchor.children("img").attr("src", thumbnailURL);
-    anchor.removeClass("busy");
+function initFromPreferences() {
+    browser.storage.local.get([
+        OPTION_BACKGROUND_COLOR,
+        OPTION_BACKGROUND_IMAGE_URL,
+        OPTION_BOOKMARK_FOLDER,
+    ]).then(
+        (result) => {
+            backgroundColor = result[OPTION_BACKGROUND_COLOR];
+            backgroundImageURL = result[OPTION_BACKGROUND_IMAGE_URL];
+            bookmarkFolder = result[OPTION_BOOKMARK_FOLDER];
+            __updateDial();
+
+            $("style#backgroundStyle").text(__getBackgroundStyleString());
+        }
+    );
 }
 
-function updateThumbnails(thumbnails) {
-    __applyOnMatches(__updateThumbnail, thumbnails);
-}
+browser.storage.onChanged.addListener(onPreferencesChanged);
 
-self.port.on("init", function(initialColumnCount) {
-    columnCount = initialColumnCount;
-    makeLayout();
-    window.addEventListener("resize", debouncedLayout, true);
-    __makeSortable();
-});
+browser.bookmarks.onCreated.addListener(__updateDial);
+browser.bookmarks.onChanged.addListener(__updateDial);
+browser.bookmarks.onMoved.addListener(__updateDial);
+browser.bookmarks.onRemoved.addListener(__updateDial);
 
-self.port.on("backgroundUpdated", function(backgroundStyleString) {
-    updateBackgroundStyle(backgroundStyleString);
-});
+window.addEventListener("resize", debouncedMakeLayout, true);
 
-self.port.on("columnCountUpdated", function(newColumnCount) {
-    columnCount = newColumnCount;
-    makeLayout();
-});
-
-self.port.on("styleUpdated", function(styleString) {
-    updateGivenStyle(styleString);
-});
-
-self.port.on("bookmarksUpdated", function(bookmarks) {
-    bookmarkCount = bookmarks.length;
-    makeLayout();
-    updateBookmarks(bookmarks);
-});
-
-self.port.on("updatingThumbnail", function(bookmarkURL) {
-    setBusy(bookmarkURL);
-});
-
-self.port.on("thumbnailsUpdated", function(thumbnails) {
-    updateThumbnails(thumbnails);
-});
+initFromPreferences();
