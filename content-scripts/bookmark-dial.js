@@ -155,8 +155,8 @@ function __getBackgroundStyleString() {
 
 function __createElement(tagName, attributes, children) {
     const element = document.createElement(tagName);
-    for (let key of Object.keys(attributes)) { // TODO replace with Map
-        element.setAttribute(key, attributes[key]);
+    for (let [key, value] of Object.entries(attributes)) {
+        element.setAttribute(key, value);
     }
 
     for (let child of children) {
@@ -246,17 +246,16 @@ function initFromPreferences() {
 }
 
 function onThumbnailsChanged(changes) {
-    for (let key of Object.keys(changes)) {
-        let newValue = changes[key].newValue;
-        if (key.indexOf(THUMBNAIL_STORAGE_PREFIX) === 0 && newValue) {
+    for (let [key, changeInfo] of Object.entries(changes)) {
+        if (key.indexOf(THUMBNAIL_STORAGE_PREFIX) === 0 && changeInfo.newValue) {
             let url = key.substring(THUMBNAIL_STORAGE_PREFIX.length);
             let image = document.querySelector(`a[href="${url}"] img`);
 
             if (image) {
-                image.src = newValue;
+                image.src = changeInfo.newValue;
             }
 
-            thumbnails.set(url, newValue);
+            thumbnails.set(url, changeInfo.newValue);
         }
     }
 }
@@ -264,10 +263,10 @@ function onThumbnailsChanged(changes) {
 function initThumbnails() {
     return browser.storage.local.get().then(
         items => {
-            for (let key of Object.keys(items)) {
+            for (let [key, value] of Object.entries(items)) {
                 if (key.indexOf(THUMBNAIL_STORAGE_PREFIX) === 0) {
                     let url = key.substring(THUMBNAIL_STORAGE_PREFIX.length);
-                    thumbnails.set(url, items[key]);
+                    thumbnails.set(url, value);
                 }
             }
         }
