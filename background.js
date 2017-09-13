@@ -66,6 +66,14 @@ function __dataURLToCanvas(dataURL, originalWidth, originalHeight, currentTabURL
     );
 }
 
+function __getNewSizing(originalWidth, originalHeight) {
+    if (originalWidth / originalHeight > 1.5) {
+        return [originalWidth / 3 * 2, originalHeight];
+    } else {
+        return [originalWidth, originalHeight / 3 * 2];
+    }
+}
+
 function __resize(canvas) {
     HERMITE.resample_single(canvas, THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT, true); // jscs:ignore
     return canvas;
@@ -81,14 +89,6 @@ function __simpleResize(canvas) { // eslint-disable-line no-unused-vars
         0, 0, THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT,
     );
     return resizeCanvas;
-}
-
-function __getNewSizing(originalWidth, originalHeight) {
-    if (originalWidth / originalHeight > 1.5) {
-        return [originalWidth / 3 * 2, originalHeight];
-    } else {
-        return [originalWidth, originalHeight / 3 * 2];
-    }
 }
 
 browser.bookmarks.onCreated.addListener((_id, bookmark) => createThumbnail(bookmark.url));
