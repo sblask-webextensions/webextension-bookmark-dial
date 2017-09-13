@@ -2,6 +2,8 @@ const OPTION_BACKGROUND_COLOR = "option_background_color";
 const OPTION_BACKGROUND_IMAGE_URL = "option_background_image_url";
 const OPTION_BOOKMARK_FOLDER = "option_bookmark_folder";
 
+const THUMBNAIL_STORAGE_PREFIX = "thumbnail_";
+
 const LIST_MARGIN = 20;
 const THUMBNAIL_WIDTH = 300;
 
@@ -37,6 +39,8 @@ let bookmarkFolder = undefined;
 
 let bookmarks = undefined;
 let columnCount = undefined;
+
+let thumbnails = new Map();
 
 function __getOptimalColumnCountLayout(bookmarkCount, containerWidth, containerHeight) {
     let newLineCount = 0;
@@ -165,7 +169,7 @@ function __createElement(tagName, attributes, children) {
 function __makeHTMLListItem(bookmark) {
     return __createElement("li", {class: "keepAspectRatio"}, [
         __createElement("a", {id: bookmark.id, href: bookmark.url, title: bookmark.title}, [
-            __createElement("img", {src: bookmark.thumbnail || ""}, []),
+            __createElement("img", {src: bookmark.thumbnail || thumbnails.get(bookmark.url) || ""}, []),
             __createElement("div", {class: "absoluteBottom"}, [
                 __createElement("span", {class: "absoluteBottom"}, [
                     document.createTextNode(bookmark.title),
@@ -241,7 +245,37 @@ function initFromPreferences() {
     );
 }
 
+function onThumbnailsChanged(changes) {
+    for (let key of Object.keys(changes)) {
+        let newValue = changes[key].newValue;
+        if (key.indexOf(THUMBNAIL_STORAGE_PREFIX) === 0 && newValue) {
+            let url = key.substring(THUMBNAIL_STORAGE_PREFIX.length);
+            let image = document.querySelector(`a[href="${url}"] img`);
+
+            if (image) {
+                image.src = newValue;
+            }
+
+            thumbnails.set(url, newValue);
+        }
+    }
+}
+
+function initThumbnails() {
+    return browser.storage.local.get().then(
+        items => {
+            for (let key of Object.keys(items)) {
+                if (key.indexOf(THUMBNAIL_STORAGE_PREFIX) === 0) {
+                    let url = key.substring(THUMBNAIL_STORAGE_PREFIX.length);
+                    thumbnails.set(url, items[key]);
+                }
+            }
+        }
+    );
+}
+
 browser.storage.onChanged.addListener(onPreferencesChanged);
+browser.storage.onChanged.addListener(onThumbnailsChanged);
 
 browser.bookmarks.onCreated.addListener(__updateDial);
 browser.bookmarks.onChanged.addListener(__updateDial);
@@ -250,4 +284,4 @@ browser.bookmarks.onRemoved.addListener(__updateDial);
 
 window.addEventListener("resize", debouncedMakeLayout, true);
 
-initFromPreferences();
+initThumbnails().then(initFromPreferences);

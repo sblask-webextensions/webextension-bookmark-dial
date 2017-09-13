@@ -3,10 +3,14 @@
 const OPTION_BACKGROUND_COLOR = "option_background_color";
 const OPTION_BACKGROUND_IMAGE_URL = "option_background_image_url";
 
+const THUMBNAIL_STORAGE_PREFIX = "thumbnail_";
+
 const HERMITE = new Hermite_class(); // jscs:ignore
 
 const THUMBNAIL_WIDTH = 300;
 const THUMBNAIL_HEIGHT = 200;
+
+const THUMBNAIL_STORAGE_MAXBYTES = 10 * 1024 * 1024;
 
 browser.storage.local.get([
     OPTION_BACKGROUND_COLOR,
@@ -34,7 +38,7 @@ function createThumbnail(bookmarkURL) {
         ()       => { return collectData; },
         (result) => { return __dataURLToCanvas(...__flatten(result), bookmarkURL); },
         (canvas) => { return __resize(canvas); },
-        (canvas) => { console.log(canvas.toDataURL()); },
+        (canvas) => { return __storeThumbnail(bookmarkURL, canvas.toDataURL()); },
     ]);
 
 }
@@ -89,6 +93,28 @@ function __simpleResize(canvas) { // eslint-disable-line no-unused-vars
         0, 0, THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT,
     );
     return resizeCanvas;
+}
+
+function __storeThumbnail(bookmarkURL, thumbnailDataURL) {
+    chainPromises([
+        ()           => { return browser.storage.local.set({[THUMBNAIL_STORAGE_PREFIX + bookmarkURL]: thumbnailDataURL}); },
+        ()           => { return browser.storage.local.getBytesInUse(); },
+        (bytesInUse) => { return __maybeRemoveUnusedThumbnails(bytesInUse); },
+    ]);
+}
+
+function __maybeRemoveUnusedThumbnails(bytesInUse) {
+    if (bytesInUse > THUMBNAIL_STORAGE_MAXBYTES) {
+        browser.storage.local.get().then(
+            items => {
+                for (let key of Object.keys(items)) {
+                    if (key.indexOf(THUMBNAIL_STORAGE_PREFIX) === 0) {
+                        browser.storage.local.remove(key);
+                    }
+                }
+            }
+        );
+    }
 }
 
 browser.bookmarks.onCreated.addListener((_id, bookmark) => createThumbnail(bookmark.url));

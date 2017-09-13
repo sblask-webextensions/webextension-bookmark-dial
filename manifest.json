@@ -43,7 +43,8 @@
         "<all_urls>",
         "bookmarks",
         "tabs",
-        "storage"
+        "storage",
+        "unlimitedStorage"
     ],
     "version": "2.0.0"
 }
