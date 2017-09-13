@@ -2,6 +2,7 @@
 
 const OPTION_BACKGROUND_COLOR = "option_background_color";
 const OPTION_BACKGROUND_IMAGE_URL = "option_background_image_url";
+const OPTION_BOOKMARK_FOLDER = "option_bookmark_folder";
 
 const THUMBNAIL_STORAGE_PREFIX = "thumbnail_";
 
@@ -14,11 +15,14 @@ const THUMBNAIL_HEIGHT = 200;
 
 const THUMBNAIL_STORAGE_MAXBYTES = 10 * 1024 * 1024;
 
+let bookmarkFolder = undefined;
+
 let thumbnailRegistry = new Set();
 
 browser.storage.local.get([
     OPTION_BACKGROUND_COLOR,
     OPTION_BACKGROUND_IMAGE_URL,
+    OPTION_BOOKMARK_FOLDER,
 ])
     .then(
         (result) => {
@@ -28,19 +32,25 @@ browser.storage.local.get([
             if (result[OPTION_BACKGROUND_IMAGE_URL] === undefined) {
                 browser.storage.local.set({[OPTION_BACKGROUND_IMAGE_URL]: ""});
             }
+            bookmarkFolder = result[OPTION_BOOKMARK_FOLDER];
         }
     );
+
+function onPreferencesChanged(changes) {
+    if (changes[OPTION_BOOKMARK_FOLDER]) {
+        bookmarkFolder = changes[OPTION_BOOKMARK_FOLDER].newValue;
+    }
+}
 
 function createThumbnail(bookmarkURL) {
     let collectData = Promise.all([
         browser.tabs.captureVisibleTab(),
         browser.tabs.executeScript({ code: "window.innerWidth" }),
         browser.tabs.executeScript({ code: "window.innerHeight" }),
-        browser.tabs.query({ active: true, currentWindow: true }).then(tabs => tabs[0].url),
     ]);
     chainPromises([
         ()       => { return collectData; },
-        (result) => { return __dataURLToCanvas(...__flatten(result), bookmarkURL); },
+        (result) => { return __dataURLToCanvas(...__flatten(result)); },
         (canvas) => { return __resize(canvas); },
         (canvas) => { return __storeThumbnail(bookmarkURL, canvas.toDataURL()); },
     ]);
@@ -51,11 +61,7 @@ function __flatten(list) {
     return [].concat.apply([], list);
 }
 
-function __dataURLToCanvas(dataURL, originalWidth, originalHeight, currentTabURL, bookmarkURL) {
-    if (currentTabURL !== bookmarkURL) {
-        return null;
-    }
-
+function __dataURLToCanvas(dataURL, originalWidth, originalHeight) {
     let [newWidth, newHeight] = __getNewSizing(originalWidth - SCROLLBAR_WIDTH, originalHeight);
 
     return new Promise(
@@ -126,14 +132,54 @@ function __maybeRemoveUnusedThumbnails(bytesInUse) {
 }
 
 function maybeCreateThumbnail(url) {
-    if (thumbnailRegistry.has(url)) {
-        return;
-    }
-    createThumbnail(url);
+    Promise.all([
+        __hasNoThumbnail(url),
+        __isBookmarkFromBookmarkFolder(url),
+        __isBookmarkOpenInActiveTab(url),
+    ]).then(
+        conditions => {
+            if (conditions.every(Boolean)) {
+                createThumbnail(url);
+            }
+        }
+    );
 }
 
-browser.bookmarks.onCreated.addListener((_id, bookmark) => maybeCreateThumbnail(bookmark.url));
-browser.bookmarks.onChanged.addListener((_id, changeInfo) => maybeCreateThumbnail(changeInfo.url));
+function __hasNoThumbnail(url) {
+    return !thumbnailRegistry.has(url);
+}
+
+function __isBookmarkFromBookmarkFolder(url) {
+    if (!bookmarkFolder) {
+        return false;
+    }
+    return browser.bookmarks.getChildren(bookmarkFolder).then(
+        children => {
+            for (let child of children) {
+                if (child.url === url) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    );
+}
+
+function __isBookmarkOpenInActiveTab(url) {
+    return browser.tabs.query({ active: true, currentWindow: true }).then(tabs => { return tabs[0].url === url; });
+}
+
+browser.bookmarks.onCreated.addListener(
+    (_id, bookmark) => maybeCreateThumbnail(bookmark.url)
+);
+browser.bookmarks.onChanged.addListener(
+    (id, _changeInfo) => browser.bookmarks.get(id).then(bookmarks => maybeCreateThumbnail(bookmarks[0].url))
+);
+browser.bookmarks.onMoved.addListener(
+    (id, _moveInfo) => browser.bookmarks.get(id).then(bookmarks => maybeCreateThumbnail(bookmarks[0].url))
+);
+
+browser.storage.onChanged.addListener(onPreferencesChanged);
 
 function chainPromises(functions) {
     let promise = Promise.resolve();
