@@ -16,7 +16,7 @@ const SORTABLE_OPTIONS = {
     start: function(_event, ui) {
         const tileRect = ui.placeholder[0].getBoundingClientRect();
 
-        // helper's size is off for some reason when not setting this explicitely
+        // helper's size is off for some reason when not setting this explicitly
         ui.helper.height(tileRect.height);
         ui.helper.width(tileRect.width);
     },
