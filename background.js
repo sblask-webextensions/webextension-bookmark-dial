@@ -1,5 +1,12 @@
+/* global Hermite_class */
+
 const OPTION_BACKGROUND_COLOR = "option_background_color";
 const OPTION_BACKGROUND_IMAGE_URL = "option_background_image_url";
+
+const HERMITE = new Hermite_class(); // jscs:ignore
+
+const THUMBNAIL_WIDTH = 300;
+const THUMBNAIL_HEIGHT = 200;
 
 browser.storage.local.get([
     OPTION_BACKGROUND_COLOR,
@@ -17,14 +24,19 @@ browser.storage.local.get([
     );
 
 function createThumbnail(bookmarkURL) {
-    Promise.all([
+    let collectData = Promise.all([
         browser.tabs.captureVisibleTab(),
         browser.tabs.executeScript({ code: "window.innerWidth" }),
         browser.tabs.executeScript({ code: "window.innerHeight" }),
         browser.tabs.query({ active: true, currentWindow: true }).then(tabs => tabs[0].url),
-    ])
-        .then(result => { return __dataURLToCanvas(...__flatten(result), bookmarkURL); })
-        .then(canvas => { console.log(canvas.toDataURL()); });
+    ]);
+    chainPromises([
+        ()       => { return collectData; },
+        (result) => { return __dataURLToCanvas(...__flatten(result), bookmarkURL); },
+        (canvas) => { return __resize(canvas); },
+        (canvas) => { console.log(canvas.toDataURL()); },
+    ]);
+
 }
 
 function __flatten(list) {
@@ -44,16 +56,31 @@ function __dataURLToCanvas(dataURL, originalWidth, originalHeight, currentTabURL
             canvas.width = newWidth;
             canvas.height = newHeight;
 
-            let context = canvas.getContext("2d");
-
             let image = new Image();
             image.onload = function() {
-                context.drawImage(image, 0, 0, newWidth, newHeight, 0, 0, newWidth, newHeight);
+                canvas.getContext("2d").drawImage(image, 0, 0, newWidth, newHeight, 0, 0, newWidth, newHeight);
                 return resolve(canvas);
             };
             image.src = dataURL;
         }
     );
+}
+
+function __resize(canvas) {
+    HERMITE.resample_single(canvas, THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT, true); // jscs:ignore
+    return canvas;
+}
+
+function __simpleResize(canvas) { // eslint-disable-line no-unused-vars
+    let resizeCanvas = document.createElement("canvas");
+    resizeCanvas.width = THUMBNAIL_WIDTH;
+    resizeCanvas.height = THUMBNAIL_HEIGHT;
+    resizeCanvas.getContext("2d").drawImage(
+        canvas,
+        0, 0, canvas.width, canvas.height,
+        0, 0, THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT,
+    );
+    return resizeCanvas;
 }
 
 function __getNewSizing(originalWidth, originalHeight) {
@@ -66,6 +93,15 @@ function __getNewSizing(originalWidth, originalHeight) {
 
 browser.bookmarks.onCreated.addListener((_id, bookmark) => createThumbnail(bookmark.url));
 browser.bookmarks.onChanged.addListener((_id, changeInfo) => createThumbnail(changeInfo.url));
+
+function chainPromises(functions) {
+    let promise = Promise.resolve();
+    for (let function_ of functions) {
+        promise = promise.then(function_);
+    }
+
+    return promise.catch((error) => { console.warn(error.message); });
+}
 
 function handleInstalled(details) {
     if (details.reason === "update" && details.previousVersion === "1.1.2") {
