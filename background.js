@@ -14,6 +14,8 @@ const THUMBNAIL_HEIGHT = 200;
 
 const THUMBNAIL_STORAGE_MAXBYTES = 10 * 1024 * 1024;
 
+let thumbnailRegistry = new Set();
+
 browser.storage.local.get([
     OPTION_BACKGROUND_COLOR,
     OPTION_BACKGROUND_IMAGE_URL,
@@ -100,6 +102,7 @@ function __simpleResize(canvas) { // eslint-disable-line no-unused-vars
 function __storeThumbnail(bookmarkURL, thumbnailDataURL) {
     chainPromises([
         ()           => { return browser.storage.local.set({[THUMBNAIL_STORAGE_PREFIX + bookmarkURL]: thumbnailDataURL}); },
+        ()           => { return thumbnailRegistry.add(bookmarkURL); },
         ()           => { return browser.storage.local.getBytesInUse(); },
         (bytesInUse) => { return __maybeRemoveUnusedThumbnails(bytesInUse); },
     ]);
@@ -112,6 +115,9 @@ function __maybeRemoveUnusedThumbnails(bytesInUse) {
                 for (let key of Object.keys(items)) {
                     if (key.indexOf(THUMBNAIL_STORAGE_PREFIX) === 0) {
                         browser.storage.local.remove(key);
+
+                        let url = key.substring(THUMBNAIL_STORAGE_PREFIX.length);
+                        thumbnailRegistry.delete(url);
                     }
                 }
             }
@@ -119,8 +125,15 @@ function __maybeRemoveUnusedThumbnails(bytesInUse) {
     }
 }
 
-browser.bookmarks.onCreated.addListener((_id, bookmark) => createThumbnail(bookmark.url));
-browser.bookmarks.onChanged.addListener((_id, changeInfo) => createThumbnail(changeInfo.url));
+function maybeCreateThumbnail(url) {
+    if (thumbnailRegistry.has(url)) {
+        return;
+    }
+    createThumbnail(url);
+}
+
+browser.bookmarks.onCreated.addListener((_id, bookmark) => maybeCreateThumbnail(bookmark.url));
+browser.bookmarks.onChanged.addListener((_id, changeInfo) => maybeCreateThumbnail(changeInfo.url));
 
 function chainPromises(functions) {
     let promise = Promise.resolve();
@@ -162,6 +175,20 @@ function __getScrollbarWidth() {
     document.head.removeChild(style);
     return scrollbarWidth;
 }
+
+function initThumbnailRegistry() {
+    return browser.storage.local.get().then(
+        items => {
+            for (let key of Object.keys(items)) {
+                if (key.indexOf(THUMBNAIL_STORAGE_PREFIX) === 0) {
+                    let url = key.substring(THUMBNAIL_STORAGE_PREFIX.length);
+                    thumbnailRegistry.add(url);
+                }
+            }
+        }
+    );
+}
+initThumbnailRegistry();
 
 function handleInstalled(details) {
     if (details.reason === "update" && details.previousVersion === "1.1.2") {
