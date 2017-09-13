@@ -23,20 +23,20 @@ function createThumbnail(bookmarkURL) {
         browser.tabs.executeScript({ code: "window.innerHeight" }),
         browser.tabs.query({ active: true, currentWindow: true }).then(tabs => tabs[0].url),
     ])
-        .then(result => { return dataURLToCanvas(...flatten(result), bookmarkURL); })
+        .then(result => { return __dataURLToCanvas(...__flatten(result), bookmarkURL); })
         .then(canvas => { console.log(canvas.toDataURL()); });
 }
 
-function flatten(list) {
+function __flatten(list) {
     return [].concat.apply([], list);
 }
 
-function dataURLToCanvas(dataURL, originalWidth, originalHeight, currentTabURL, bookmarkURL) {
+function __dataURLToCanvas(dataURL, originalWidth, originalHeight, currentTabURL, bookmarkURL) {
     if (currentTabURL !== bookmarkURL) {
         return null;
     }
 
-    let [newWidth, newHeight] = getNewSizing(originalWidth, originalHeight);
+    let [newWidth, newHeight] = __getNewSizing(originalWidth, originalHeight);
 
     return new Promise(
         function(resolve, _reject) {
@@ -56,7 +56,7 @@ function dataURLToCanvas(dataURL, originalWidth, originalHeight, currentTabURL, 
     );
 }
 
-function getNewSizing(originalWidth, originalHeight) {
+function __getNewSizing(originalWidth, originalHeight) {
     if (originalWidth / originalHeight > 1.5) {
         return [originalWidth / 3 * 2, originalHeight];
     } else {
