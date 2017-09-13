@@ -116,19 +116,34 @@ function __storeThumbnail(bookmarkURL, thumbnailDataURL) {
 
 function __maybeRemoveUnusedThumbnails(bytesInUse) {
     if (bytesInUse > THUMBNAIL_STORAGE_MAXBYTES) {
-        browser.storage.local.get().then(
-            items => {
-                for (let key of Object.keys(items)) {
-                    if (key.indexOf(THUMBNAIL_STORAGE_PREFIX) === 0) {
-                        browser.storage.local.remove(key);
-
-                        let url = key.substring(THUMBNAIL_STORAGE_PREFIX.length);
+        Promise.all([
+            browser.storage.local.get().then(__getThumbnailURLs),
+            browser.bookmarks.getChildren(bookmarkFolder).then(__getBookmarkURLSet),
+        ]).then(
+            result => {
+                let [thumbnailURLs, bookmarkURLSet] = result;
+                for (let url of thumbnailURLs) {
+                    if (!bookmarkURLSet.has(url)) {
+                        browser.storage.local.remove(THUMBNAIL_STORAGE_PREFIX + url);
                         thumbnailRegistry.delete(url);
                     }
                 }
             }
         );
     }
+}
+
+function __getThumbnailURLs(preferenceItems) {
+    return Object.keys(preferenceItems)
+        .filter(key => { return key.indexOf(THUMBNAIL_STORAGE_PREFIX) === 0; })
+        .map(key => { return key.substring(THUMBNAIL_STORAGE_PREFIX.length); });
+}
+
+function __getBookmarkURLSet(bookmarks) {
+    let bookmarkURLs = bookmarks
+        .filter(bookmark => bookmark.hasOwnProperty("url"))
+        .map(bookmark => bookmark.url);
+    return new Set(bookmarkURLs);
 }
 
 function maybeCreateThumbnail(url) {
