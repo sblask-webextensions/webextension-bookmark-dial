@@ -194,6 +194,10 @@ browser.bookmarks.onMoved.addListener(
     (id, _moveInfo) => browser.bookmarks.get(id).then(bookmarks => maybeCreateThumbnail(bookmarks[0].url))
 );
 
+browser.tabs.onUpdated.addListener(
+    (_tabId, _changeInfo, tabInfo) => tabInfo.url && tabInfo.status === "complete" ? maybeCreateThumbnail(tabInfo.url) : null
+);
+
 browser.storage.onChanged.addListener(onPreferencesChanged);
 
 function chainPromises(functions) {
