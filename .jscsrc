@@ -7,5 +7,6 @@
     "excludeFiles": [
         "browser-polyfill.js",
         "content-scripts/jquery-*.js",
+        "hermite.js",
     ],
 }
