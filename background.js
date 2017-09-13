@@ -7,6 +7,8 @@ const THUMBNAIL_STORAGE_PREFIX = "thumbnail_";
 
 const HERMITE = new Hermite_class(); // jscs:ignore
 
+const SCROLLBAR_WIDTH = __getScrollbarWidth();
+
 const THUMBNAIL_WIDTH = 300;
 const THUMBNAIL_HEIGHT = 200;
 
@@ -52,7 +54,7 @@ function __dataURLToCanvas(dataURL, originalWidth, originalHeight, currentTabURL
         return null;
     }
 
-    let [newWidth, newHeight] = __getNewSizing(originalWidth, originalHeight);
+    let [newWidth, newHeight] = __getNewSizing(originalWidth - SCROLLBAR_WIDTH, originalHeight);
 
     return new Promise(
         function(resolve, _reject) {
@@ -127,6 +129,38 @@ function chainPromises(functions) {
     }
 
     return promise.catch((error) => { console.warn(error.message); });
+}
+
+function __makeStyle() {
+    let style = document.createElement("style");
+    style.type = "text/css";
+    document.head.appendChild(style);
+    return style;
+}
+
+function __getScrollbarWidth() {
+    let css = `
+        .scrollbar-measure {
+            height: 100px;
+            overflow: scroll;
+            position: absolute;
+            top: -9999px;
+            width: 100px;
+        }
+    `;
+
+    let style = __makeStyle();
+    style.appendChild(document.createTextNode(css));
+
+    let div = document.createElement("div");
+    div.className = "scrollbar-measure";
+    document.body.appendChild(div);
+
+    let scrollbarWidth = div.offsetWidth - div.clientWidth;
+
+    document.body.removeChild(div);
+    document.head.removeChild(style);
+    return scrollbarWidth;
 }
 
 function handleInstalled(details) {
