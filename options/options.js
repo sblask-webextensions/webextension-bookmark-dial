@@ -44,6 +44,7 @@ function saveOptions(event) {
     let selectedFolder = undefined;
     if (folderSelect.selectedIndex >= 0) {
         selectedFolder = folderSelect.options[folderSelect.selectedIndex].value;
+        enableGenerateThumbnailButton();
     }
 
     browser.storage.local.set({
@@ -86,6 +87,7 @@ function maybeSelectFolder() {
             for (let option of document.getElementById("folderSelect").options) {
                 if (option.value === bookmarkFolder) {
                     option.setAttribute("selected", true);
+                    enableGenerateThumbnailButton();
                 }
             }
         }
@@ -106,11 +108,25 @@ function loadBackgroundImageURL(event) {
     reader.readAsDataURL(input.files[0]);
 }
 
+function enableGenerateThumbnailButton() {
+    document.querySelector("#generateThumbnailButton").disabled = false;
+}
+
 document.addEventListener("DOMContentLoaded", restoreOptions);
 document.addEventListener("DOMContentLoaded", enableAutosave);
-document.querySelector("form").addEventListener("submit", saveOptions);
 
-document.querySelector("#backgroundImageChooser").addEventListener("change", loadBackgroundImageURL);
+document.querySelector("form").addEventListener(
+    "submit",
+    saveOptions,
+);
+document.querySelector("#backgroundImageChooser").addEventListener(
+    "change",
+    loadBackgroundImageURL,
+);
+document.querySelector("#generateThumbnailButton").addEventListener(
+    "click",
+    () => browser.runtime.sendMessage({ message: "generateThumbnail" }),
+);
 
 browser.storage.onChanged.addListener(restoreOptions);
 
