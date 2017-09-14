@@ -169,7 +169,7 @@ function __createElement(tagName, attributes, children) {
 function __makeHTMLListItem(bookmark) {
     return __createElement("li", {class: "keepAspectRatio"}, [
         __createElement("a", {id: bookmark.id, href: bookmark.url, title: bookmark.title}, [
-            __createElement("img", {src: bookmark.thumbnail || thumbnails.get(bookmark.url) || ""}, []),
+            __createElement("img", {src: bookmark.thumbnail || thumbnails.get(__cleanURL(bookmark.url)) || ""}, []),
             __createElement("div", {class: "absoluteBottom"}, [
                 __createElement("span", {class: "absoluteBottom"}, [
                     document.createTextNode(bookmark.title),
@@ -249,13 +249,13 @@ function onThumbnailsChanged(changes) {
     for (let [key, changeInfo] of Object.entries(changes)) {
         if (key.indexOf(THUMBNAIL_STORAGE_PREFIX) === 0 && changeInfo.newValue) {
             let url = key.substring(THUMBNAIL_STORAGE_PREFIX.length);
-            let image = document.querySelector(`a[href="${url}"] img`);
+            let image = document.querySelector(`a[href*="${__cleanURL(url)}"] img`);
 
             if (image) {
                 image.src = changeInfo.newValue;
             }
 
-            thumbnails.set(url, changeInfo.newValue);
+            thumbnails.set(__cleanURL(url), changeInfo.newValue);
         }
     }
 }
@@ -266,11 +266,15 @@ function initThumbnails() {
             for (let [key, value] of Object.entries(items)) {
                 if (key.indexOf(THUMBNAIL_STORAGE_PREFIX) === 0) {
                     let url = key.substring(THUMBNAIL_STORAGE_PREFIX.length);
-                    thumbnails.set(url, value);
+                    thumbnails.set(__cleanURL(url), value);
                 }
             }
         }
     );
+}
+
+function __cleanURL(url) {
+    return url.replace(/https?:\/\//, "").replace(/\/+$/, "");
 }
 
 browser.storage.onChanged.addListener(onPreferencesChanged);

@@ -188,8 +188,12 @@ function __isURLOpenInActiveTabAndComplete(url) {
     return chainPromises([
         ()     => browser.tabs.query({ active: true, currentWindow: true }),
         (tabs) => tabs[0],
-        (tab)  => tab.url === url && tab.status === "complete",
+        (tab)  => __cleanURL(tab.url) === __cleanURL(url) && tab.status === "complete",
     ]);
+}
+
+function __cleanURL(url) {
+    return url.replace(/https?:\/\//, "").replace(/\/+$/, "");
 }
 
 browser.bookmarks.onCreated.addListener(
