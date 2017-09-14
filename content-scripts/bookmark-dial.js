@@ -1,5 +1,6 @@
 const OPTION_BACKGROUND_COLOR = "option_background_color";
 const OPTION_BACKGROUND_IMAGE_URL = "option_background_image_url";
+const OPTION_BACKGROUND_SIZE = "option_background_size";
 const OPTION_BOOKMARK_FOLDER = "option_bookmark_folder";
 const OPTION_COLUMN_COUNT = "option_column_count";
 const OPTION_CUSTOM_CSS = "option_custom_css";
@@ -37,6 +38,8 @@ const SORTABLE_OPTIONS = {
 
 let backgroundColor = undefined;
 let backgroundImageURL = undefined;
+let backgroundSize = undefined;
+
 let bookmarkFolder = undefined;
 
 let bookmarks = undefined;
@@ -150,7 +153,7 @@ function __getBackgroundStyleString() {
             background-image: url(${backgroundImageURL});
             background-position: center;
             background-repeat: no-repeat;
-            background-size: contain;
+            background-size: ${backgroundSize};
         }
     `;
 }
@@ -233,6 +236,9 @@ function onPreferencesChanged(changes) {
     if (changes[OPTION_BACKGROUND_IMAGE_URL]) {
         backgroundImageURL = changes[OPTION_BACKGROUND_IMAGE_URL].newValue;
     }
+    if (changes[OPTION_BACKGROUND_SIZE]) {
+        backgroundSize = changes[OPTION_BACKGROUND_SIZE].newValue;
+    }
     if (changes[OPTION_BOOKMARK_FOLDER]) {
         bookmarkFolder = changes[OPTION_BOOKMARK_FOLDER].newValue;
         __updateDial();
@@ -252,6 +258,7 @@ function initFromPreferences() {
     browser.storage.local.get([
         OPTION_BACKGROUND_COLOR,
         OPTION_BACKGROUND_IMAGE_URL,
+        OPTION_BACKGROUND_SIZE,
         OPTION_BOOKMARK_FOLDER,
         OPTION_COLUMN_COUNT,
         OPTION_CUSTOM_CSS,
@@ -259,6 +266,7 @@ function initFromPreferences() {
         (result) => {
             backgroundColor = result[OPTION_BACKGROUND_COLOR];
             backgroundImageURL = result[OPTION_BACKGROUND_IMAGE_URL];
+            backgroundSize = result[OPTION_BACKGROUND_SIZE];
             bookmarkFolder = result[OPTION_BOOKMARK_FOLDER];
             columnCount = result[OPTION_COLUMN_COUNT];
             __updateDial();

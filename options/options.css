@@ -28,8 +28,18 @@ form > fieldset > fieldset {
     border-color: #DDDDDD;
     padding: 5px;
 }
-input[type=text],
-input[type=number] {
+form > fieldset > fieldset > label:not(:first-child),
+form > fieldset > fieldset > fieldset > label:not(:first-child) {
+    display: inline-block;
+    margin-top: 10px;
+}
+form > fieldset > fieldset > fieldset {
+    border-color: #DDDDDD;
+    padding: 5px;
+}
+input[type=file],
+input[type=number],
+input[type=text] {
     width: 100%;
 }
 input[type=checkbox],

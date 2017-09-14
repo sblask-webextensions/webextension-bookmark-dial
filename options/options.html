@@ -34,13 +34,33 @@
                         <input type="color" id="backgroundColor"></input>
                         <label for="backgroundColor">
                             <span class="color-picker" id="backgroundColorPicker"></span>
-                            <span class="label">Color<span>
+                            <span class="label">Color</span>
                         </label>
                     </div>
 
                     <label for="backgroundImageURL">Image URL</label>
                     <input type="text" id="backgroundImageURL"></input>
                     <input type="file" id="backgroundImageChooser"></input>
+
+                    <label for="size">Size</label>
+                    <fieldset id="size">
+
+                        <div class="box-wrapper">
+                            <input type="radio" name="backgroundSize" id="backgroundSizeAuto" value="auto">
+                            <label for="backgroundSizeAuto">Use original size</label>
+                        </div>
+
+                        <div class="box-wrapper">
+                            <input type="radio" name="backgroundSize" id="backgroundSizeContain"value="contain">
+                            <label for="backgroundSizeContain">Scale image to be as big as possible while staying completely visible</label>
+                        </div>
+
+                        <div class="box-wrapper">
+                            <input type="radio" name="backgroundSize" id="backgroundSizeCover"value="cover">
+                            <label for="backgroundSizeCover">Scale image to cover the whole background</label>
+                        </div>
+
+                    </fieldset>
 
                 </fieldset>
 

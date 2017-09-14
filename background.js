@@ -2,6 +2,7 @@
 
 const OPTION_BACKGROUND_COLOR = "option_background_color";
 const OPTION_BACKGROUND_IMAGE_URL = "option_background_image_url";
+const OPTION_BACKGROUND_SIZE = "option_background_size";
 const OPTION_BOOKMARK_FOLDER = "option_bookmark_folder";
 const OPTION_CUSTOM_CSS = "option_custom_css";
 
@@ -33,6 +34,9 @@ browser.storage.local.get([
             }
             if (result[OPTION_BACKGROUND_IMAGE_URL] === undefined) {
                 browser.storage.local.set({[OPTION_BACKGROUND_IMAGE_URL]: ""});
+            }
+            if (result[OPTION_BACKGROUND_SIZE] === undefined) {
+                browser.storage.local.set({[OPTION_BACKGROUND_SIZE]: "auto"});
             }
             if (result[OPTION_CUSTOM_CSS] === undefined) {
                 browser.storage.local.set({[OPTION_CUSTOM_CSS]: ""});

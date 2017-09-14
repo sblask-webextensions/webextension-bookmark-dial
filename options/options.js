@@ -1,5 +1,6 @@
 const OPTION_BACKGROUND_COLOR = "option_background_color";
 const OPTION_BACKGROUND_IMAGE_URL = "option_background_image_url";
+const OPTION_BACKGROUND_SIZE = "option_background_size";
 const OPTION_BOOKMARK_FOLDER = "option_bookmark_folder";
 const OPTION_COLUMN_COUNT = "option_column_count";
 const OPTION_CUSTOM_CSS = "option_custom_css";
@@ -10,6 +11,7 @@ function restoreOptions() {
     browser.storage.local.get([
         OPTION_BACKGROUND_COLOR,
         OPTION_BACKGROUND_IMAGE_URL,
+        OPTION_BACKGROUND_SIZE,
         OPTION_COLUMN_COUNT,
         OPTION_CUSTOM_CSS,
     ]).then(
@@ -18,6 +20,8 @@ function restoreOptions() {
             document.getElementById("backgroundColorPicker").style.backgroundColor = result[OPTION_BACKGROUND_COLOR];
 
             setTextValue("backgroundImageURL", result[OPTION_BACKGROUND_IMAGE_URL]);
+
+            setBooleanValue("backgroundSize" + result[OPTION_BACKGROUND_SIZE].charAt(0).toUpperCase() + result[OPTION_BACKGROUND_SIZE].slice(1), true);
 
             let numberOfColumnsIndex = result[OPTION_COLUMN_COUNT] || 0;
             document.getElementById("columnCount").options[numberOfColumnsIndex].setAttribute("selected", true);
@@ -44,6 +48,10 @@ function setTextValue(elementID, newValue) {
     }
 }
 
+function setBooleanValue(elementID, newValue) {
+    document.getElementById(elementID).checked = newValue;
+}
+
 function saveOptions(event) {
     if (event) {
         event.preventDefault();
@@ -59,6 +67,11 @@ function saveOptions(event) {
     browser.storage.local.set({
         [OPTION_BACKGROUND_COLOR]: document.getElementById("backgroundColor").value,
         [OPTION_BACKGROUND_IMAGE_URL]: document.getElementById("backgroundImageURL").value,
+        [OPTION_BACKGROUND_SIZE]: document.querySelector("#backgroundSizeAuto").checked && "auto"
+                                  ||
+                                  document.querySelector("#backgroundSizeContain").checked && "contain"
+                                  ||
+                                  document.querySelector("#backgroundSizeCover").checked && "cover",
         [OPTION_BOOKMARK_FOLDER]: selectedFolder,
         [OPTION_COLUMN_COUNT]: document.getElementById("columnCount").selectedIndex || null,
         [OPTION_CUSTOM_CSS]: document.getElementById("customCSS").value,
