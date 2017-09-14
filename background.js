@@ -227,6 +227,12 @@ browser.tabs.onActivated.addListener(
 browser.storage.onChanged.addListener(onPreferencesChanged);
 
 function handleRequest(request) {
+    if (request.message === "isGenerateThumbnailEnabled") {
+        return chainPromises([
+            ()     => browser.tabs.query({ active: true, currentWindow: true }),
+            (tabs) => __isURLFromBookmarkFolder(tabs[0].url),
+        ]);
+    }
     if (request.message === "generateThumbnail") {
         chainPromises([
             ()     => browser.tabs.query({ active: true, currentWindow: true }),

@@ -109,7 +109,9 @@ function loadBackgroundImageURL(event) {
 }
 
 function enableGenerateThumbnailButton() {
-    document.querySelector("#generateThumbnailButton").disabled = false;
+    browser.runtime.sendMessage({ message: "isGenerateThumbnailEnabled" }).then(
+        enabled => document.querySelector("#generateThumbnailButton").disabled = !enabled
+    );
 }
 
 document.addEventListener("DOMContentLoaded", restoreOptions);
