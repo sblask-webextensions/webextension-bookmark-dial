@@ -149,8 +149,8 @@ function __getBookmarkURLSet(bookmarks) {
 function maybeCreateThumbnail(url) {
     Promise.all([
         __hasNoThumbnail(url),
-        __isBookmarkFromBookmarkFolder(url),
-        __isBookmarkOpenInActiveTab(url),
+        __isURLFromBookmarkFolder(url),
+        __isURLOpenInActiveTabAndComplete(url),
     ]).then(
         conditions => {
             if (conditions.every(Boolean)) {
@@ -164,7 +164,7 @@ function __hasNoThumbnail(url) {
     return !thumbnailRegistry.has(url);
 }
 
-function __isBookmarkFromBookmarkFolder(url) {
+function __isURLFromBookmarkFolder(url) {
     if (!bookmarkFolder) {
         return false;
     }
@@ -180,8 +180,16 @@ function __isBookmarkFromBookmarkFolder(url) {
     );
 }
 
-function __isBookmarkOpenInActiveTab(url) {
-    return browser.tabs.query({ active: true, currentWindow: true }).then(tabs => { return tabs[0].url === url; });
+function __isURLOpenInActiveTabAndComplete(url) {
+    if (!url) {
+        return false;
+    }
+
+    return chainPromises([
+        ()     => browser.tabs.query({ active: true, currentWindow: true }),
+        (tabs) => tabs[0],
+        (tab)  => tab.url === url && tab.status === "complete",
+    ]);
 }
 
 browser.bookmarks.onCreated.addListener(
@@ -195,7 +203,18 @@ browser.bookmarks.onMoved.addListener(
 );
 
 browser.tabs.onUpdated.addListener(
-    (_tabId, _changeInfo, tabInfo) => tabInfo.url && tabInfo.status === "complete" ? maybeCreateThumbnail(tabInfo.url) : null
+    (_tabId, _changeInfo, tabInfo) => {
+        return maybeCreateThumbnail(tabInfo.url);
+    }
+);
+browser.tabs.onActivated.addListener(
+    (activeInfo) => {
+        return chainPromises([
+            ()    => browser.tabs.get(activeInfo.tabId),
+            // delay as Chrome fails to capture image otherwise
+            (tab) => setTimeout(() => maybeCreateThumbnail(tab.url), 100),
+        ]);
+    }
 );
 
 browser.storage.onChanged.addListener(onPreferencesChanged);
