@@ -176,12 +176,21 @@ function __makeHTMLListItem(bookmark) {
                 ]),
             ]),
         ]),
+        __createElement("span", { class: "delete", title: "Delete Bookmark"}, [
+            document.createTextNode("✗"),
+        ]),
     ]);
 }
 
 function __makeBookmarkListSortable() {
     $("ol").sortable(SORTABLE_OPTIONS);
     $("ol").disableSelection();
+}
+
+function __makeDeleteLinksClickable() {
+    $(".delete").on("click", function(event) {
+        browser.bookmarks.remove($(event.target).parent().children("a").attr("id"));
+    });
 }
 
 function __replaceBookmarkList() {
@@ -200,6 +209,7 @@ function __updateDial() {
             bookmarks = bookmarkOrFolder.filter(item => item.url && item.url.indexOf("place:") !== 0);
             __replaceBookmarkList();
             __makeBookmarkListSortable();
+            __makeDeleteLinksClickable();
             __makeLayout();
         }
     );

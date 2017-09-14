@@ -83,6 +83,22 @@ img[src=""] {
     right: 0;
 }
 
+.delete {
+    bottom: 6%;
+    color: darkred;
+    cursor: default;
+    display: none;
+    font-size: 20px;
+    position: absolute;
+    right: 4%;
+}
+.delete:hover {
+    color: red;
+}
+li:hover .delete {
+    display: block;
+}
+
 /* width set dynamically, height comes from before element (padding is based on width) */
 .keepAspectRatio {
     position: relative;
