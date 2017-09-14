@@ -3,6 +3,7 @@
 const OPTION_BACKGROUND_COLOR = "option_background_color";
 const OPTION_BACKGROUND_IMAGE_URL = "option_background_image_url";
 const OPTION_BOOKMARK_FOLDER = "option_bookmark_folder";
+const OPTION_CUSTOM_CSS = "option_custom_css";
 
 const THUMBNAIL_STORAGE_PREFIX = "thumbnail_";
 
@@ -23,6 +24,7 @@ browser.storage.local.get([
     OPTION_BACKGROUND_COLOR,
     OPTION_BACKGROUND_IMAGE_URL,
     OPTION_BOOKMARK_FOLDER,
+    OPTION_CUSTOM_CSS,
 ])
     .then(
         (result) => {
@@ -31,6 +33,9 @@ browser.storage.local.get([
             }
             if (result[OPTION_BACKGROUND_IMAGE_URL] === undefined) {
                 browser.storage.local.set({[OPTION_BACKGROUND_IMAGE_URL]: ""});
+            }
+            if (result[OPTION_CUSTOM_CSS] === undefined) {
+                browser.storage.local.set({[OPTION_CUSTOM_CSS]: ""});
             }
             bookmarkFolder = result[OPTION_BOOKMARK_FOLDER];
         }
