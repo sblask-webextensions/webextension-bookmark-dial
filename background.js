@@ -171,7 +171,7 @@ function __isURLFromBookmarkFolder(url) {
     return browser.bookmarks.getChildren(bookmarkFolder).then(
         children => {
             for (let child of children) {
-                if (child.url === url) {
+                if (__cleanURL(child.url) === __cleanURL(url)) {
                     return true;
                 }
             }
@@ -208,6 +208,9 @@ browser.bookmarks.onMoved.addListener(
 
 browser.tabs.onUpdated.addListener(
     (_tabId, _changeInfo, tabInfo) => {
+        if (tabInfo.status !== "complete") {
+            return;
+        }
         return maybeCreateThumbnail(tabInfo.url);
     }
 );
