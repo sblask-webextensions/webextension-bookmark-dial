@@ -1,6 +1,7 @@
 const OPTION_BACKGROUND_COLOR = "option_background_color";
 const OPTION_BACKGROUND_IMAGE_URL = "option_background_image_url";
 const OPTION_BOOKMARK_FOLDER = "option_bookmark_folder";
+const OPTION_COLUMN_COUNT = "option_column_count";
 
 const FOLDER_SELECT = document.querySelector("#folderSelect");
 
@@ -8,12 +9,16 @@ function restoreOptions() {
     browser.storage.local.get([
         OPTION_BACKGROUND_COLOR,
         OPTION_BACKGROUND_IMAGE_URL,
+        OPTION_COLUMN_COUNT,
     ]).then(
         result => {
             setTextValue("backgroundColor", result[OPTION_BACKGROUND_COLOR]);
             document.getElementById("backgroundColorPicker").style.backgroundColor = result[OPTION_BACKGROUND_COLOR];
 
             setTextValue("backgroundImageURL", result[OPTION_BACKGROUND_IMAGE_URL]);
+
+            let numberOfColumnsIndex = result[OPTION_COLUMN_COUNT] || 0;
+            document.getElementById("columnCount").options[numberOfColumnsIndex].setAttribute("selected", true);
         }
     );
 }
@@ -51,6 +56,7 @@ function saveOptions(event) {
         [OPTION_BACKGROUND_COLOR]: document.getElementById("backgroundColor").value,
         [OPTION_BACKGROUND_IMAGE_URL]: document.getElementById("backgroundImageURL").value,
         [OPTION_BOOKMARK_FOLDER]: selectedFolder,
+        [OPTION_COLUMN_COUNT]: document.getElementById("columnCount").selectedIndex || null,
     });
 }
 

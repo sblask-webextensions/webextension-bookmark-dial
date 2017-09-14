@@ -1,6 +1,7 @@
 const OPTION_BACKGROUND_COLOR = "option_background_color";
 const OPTION_BACKGROUND_IMAGE_URL = "option_background_image_url";
 const OPTION_BOOKMARK_FOLDER = "option_bookmark_folder";
+const OPTION_COLUMN_COUNT = "option_column_count";
 
 const THUMBNAIL_STORAGE_PREFIX = "thumbnail_";
 
@@ -235,6 +236,10 @@ function onPreferencesChanged(changes) {
         bookmarkFolder = changes[OPTION_BOOKMARK_FOLDER].newValue;
         __updateDial();
     }
+    if (changes[OPTION_COLUMN_COUNT]) {
+        columnCount = changes[OPTION_COLUMN_COUNT].newValue;
+        debouncedMakeLayout();
+    }
     $("style#backgroundStyle").text(__getBackgroundStyleString());
 }
 
@@ -243,11 +248,13 @@ function initFromPreferences() {
         OPTION_BACKGROUND_COLOR,
         OPTION_BACKGROUND_IMAGE_URL,
         OPTION_BOOKMARK_FOLDER,
+        OPTION_COLUMN_COUNT,
     ]).then(
         (result) => {
             backgroundColor = result[OPTION_BACKGROUND_COLOR];
             backgroundImageURL = result[OPTION_BACKGROUND_IMAGE_URL];
             bookmarkFolder = result[OPTION_BOOKMARK_FOLDER];
+            columnCount = result[OPTION_COLUMN_COUNT];
             __updateDial();
 
             $("style#backgroundStyle").text(__getBackgroundStyleString());
