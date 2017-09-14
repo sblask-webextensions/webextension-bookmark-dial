@@ -16,9 +16,6 @@ form > fieldset {
 form > fieldset:not(:first-child) {
     margin-top: 10px;
 }
-form > fieldset > button {
-    width: 100%;
-}
 form > fieldset > label:not(:first-child),
 form > fieldset > fieldset > label:not(:first-child) {
     display: inline-block;
@@ -37,6 +34,7 @@ form > fieldset > fieldset > fieldset {
     border-color: #DDDDDD;
     padding: 5px;
 }
+button,
 input[type=file],
 input[type=number],
 input[type=text] {
