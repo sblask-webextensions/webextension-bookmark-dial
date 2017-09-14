@@ -10,18 +10,6 @@
         <form>
             <fieldset>
 
-                <div class="color-wrapper">
-                    <input type="color" id="backgroundColor"></input>
-                    <label for="backgroundColor">
-                        <span class="color-picker" id="backgroundColorPicker"></span>
-                        <span class="label">Background Color<span>
-                    </label>
-                </div>
-
-                <label for="backgroundImageURL">Background Image URL</label>
-                <input type="text" id="backgroundImageURL"></input>
-                <input type="file" id="backgroundImageChooser"></input>
-
                 <label for="folderSelect">Select Folder</label>
                 <select size="8" id="folderSelect"></select>
 
@@ -38,6 +26,23 @@
                     <option>8</option>
                     <option>9</option>
                 </select>
+
+                <label for="background">Background</label>
+                <fieldset id="background">
+
+                    <div class="color-wrapper">
+                        <input type="color" id="backgroundColor"></input>
+                        <label for="backgroundColor">
+                            <span class="color-picker" id="backgroundColorPicker"></span>
+                            <span class="label">Color<span>
+                        </label>
+                    </div>
+
+                    <label for="backgroundImageURL">Image URL</label>
+                    <input type="text" id="backgroundImageURL"></input>
+                    <input type="file" id="backgroundImageChooser"></input>
+
+                </fieldset>
 
                 <label for="customCSS" >Custom CSS (complementing the default one)</label>
                 <textarea id="customCSS"></textarea>
