@@ -243,7 +243,7 @@ function chainPromises(functions) {
         promise = promise.then(function_);
     }
 
-    return promise.catch((error) => { console.warn(error.message); });
+    return promise.catch((error) => { console.warn(error); });
 }
 
 function __makeStyle() {
