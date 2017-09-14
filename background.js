@@ -82,9 +82,9 @@ function __dataURLToCanvas(dataURL, originalWidth, originalHeight) {
 
 function __getNewSizing(originalWidth, originalHeight) {
     if (originalWidth / originalHeight > 1.5) {
-        return [originalWidth / 3 * 2, originalHeight];
+        return [originalHeight / 3 * 2, originalHeight];
     } else {
-        return [originalWidth, originalHeight / 3 * 2];
+        return [originalWidth, originalWidth / 3 * 2];
     }
 }
 
