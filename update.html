@@ -7,8 +7,8 @@
     <body>
         <h1>Bookmark Dial has changed!</h1>
         <p>
-            Firefox has been working on a new extension API for while which is
-            to replace all other existing APIs in Firefox 57. Migrating
+            Firefox has been working on a new extension API for a while which
+            is to replace all other existing APIs in Firefox 57. Migrating
             Bookmark Dial to the new API required some changes - most notably:
             <ul>
                 <li>
@@ -19,18 +19,26 @@
                     Updates outside of Bookmark Dial are now reflected
                     immediately which allowed me to remove custom dialogues.
                     You can use the built-in keyboard shortcuts, menu entries
-                    and buttons now.
+                    and buttons for bookmark handling now.
                 </li>
                 <li>
                     Thumbnails cannot be generated in the background anymore.
-                    Instead a snapshot is taken the first time a bookmark is
-                    opened (or when it is open in the active tab when adding
-                    it). There is also a page action to replace the existing
-                    thumbnail with the snapshot of the currently open bookmark.
-                    The latter gives you more control over the thumbnail as it
-                    allows you to size the window and to scroll.
+                    Instead thumbnails are generated from a snapshot of the
+                    visible area of a webpage that is taken the first time a
+                    bookmark from the configured bookmark folder is open in the
+                    currently active tab. There is also a button in the popup
+                    opened from the toolbar icon that allows you to create a
+                    new snapshot (disabled for unknown URLs). The latter allows
+                    you to capture the part of a webpage that you want as you
+                    can scroll and resize the window before taking the
+                    snapshot. Overall you have more control over thumbnail
+                    generation but you loose some convenience.
                 </li>
             </ul>
+            Also see
+            <a href="https://github.com/sblask/webextension-bookmark-dial/">
+                Bookmark Dial's Github page
+            </a> for more information.
         </p>
     </body>
 </html>
