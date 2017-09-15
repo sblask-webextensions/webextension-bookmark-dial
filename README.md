@@ -31,8 +31,10 @@ manager. Open a new tab.
 Known Issues
 ------------
 
-Color chooser and file chooser close the popup. To change settings using them,
-go to the extension page in your browser's extension manager.
+ - if a bookmark redirects to another page, thumbnail generation will fail as
+   the URL of the bookmark will not match the page in the currently active tab
+ - color chooser and file chooser close the popup - to change settings using
+   them, go to the extension page in your browser's extension manager
 
 Feedback
 --------
