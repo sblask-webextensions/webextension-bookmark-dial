@@ -141,6 +141,10 @@ function enableGenerateThumbnailButton() {
 document.addEventListener("DOMContentLoaded", restoreOptions);
 document.addEventListener("DOMContentLoaded", enableAutosave);
 
+document.querySelector("#optionLink").addEventListener(
+    "click",
+    () => browser.runtime.openOptionsPage(),
+);
 document.querySelector("form").addEventListener(
     "submit",
     saveOptions,
