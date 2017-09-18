@@ -9,17 +9,22 @@ suggestions and sponsored links). Similar extensions call this speed dial. In
 most cases they do not use bookmarks and/or require you to manually tweak
 settings to change the layout of the thumbnails.
 
-Bookmark Dial arranges and sizes (up to a maximum size) the thumbnails to be as
-big as possible by default. As a bookmark folder is used, sync comes with your
-browser and you can use the usual keyboard shortcuts, menu entries and buttons
-for bookmark handling to add, edit and delete dial items.
+By default, Bookmark Dial arranges and sizes (up to a maximum size) the
+thumbnails to be as big as possible while covering as much space as possible.
+As a bookmark folder is used, sync comes with your browser and you can use the
+usual keyboard shortcuts, menu entries and buttons for bookmark handling to
+add, edit and delete dial items. You can drag and drop thumbnails to change the
+order.
 
-Thumbnails are generated from a snapshot of the visible area of a webpage that
-is taken the first time a bookmark from the configured bookmark folder is open
-in the currently active tab. There is also a button in the popup opened from
-the toolbar icon that allows you to create a new snapshot (disabled for unknown
-URLs). The latter allows you to capture the part of a webpage that you want as
-you can scroll and resize the window before taking the snapshot.
+Thumbnails are generated from a snapshot of the visible area of a bookmarked
+webpage. If a bookmark has no thumbnail yet, a snapshot is taken automatically
+when the bookmark is opened in the currently active tab or if it is loaded in a
+background tab and the tab becomes active. To ensure the best result, the
+generation starts when the page has completed loading. There is also a button
+in the popup opened from the toolbar icon that allows you to create a new
+snapshot (disabled for URLs that do not belong to bookmarks from the configured
+folder). The latter allows you to capture the part of a webpage that you want
+as you can scroll and resize the window before taking the snapshot.
 
 Getting Started
 ---------------
@@ -35,6 +40,11 @@ Known Issues
    the URL of the bookmark will not match the page in the currently active tab
  - color chooser and file chooser close the popup - to change settings using
    them, go to the extension page in your browser's extension manager
+ - Firefox:
+    - the homepage is not overridden - this should be fixed in Firefox 56
+    - the location bar is not cleared when a new tab is opened - this should be
+      fixed in Firefox 57
+      (https://bugzilla.mozilla.org/show_bug.cgi?id=1372996)
 
 Feedback
 --------
