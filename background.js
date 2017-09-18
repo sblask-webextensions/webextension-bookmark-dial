@@ -90,10 +90,14 @@ function __dataURLToCanvas(dataURL, originalWidth, originalHeight) {
 }
 
 function __getNewSizing(originalWidth, originalHeight) {
-    if (originalWidth / originalHeight > 1.5) {
-        return [originalHeight / 3 * 2, originalHeight];
+    let targetRatio = 3 / 2;
+    let currentRatio = originalWidth / originalHeight;
+    if (currentRatio > targetRatio) {
+        // cut off width
+        return [originalHeight * targetRatio, originalHeight];
     } else {
-        return [originalWidth, originalWidth / 3 * 2];
+        // cut off height
+        return [originalWidth, originalWidth / targetRatio];
     }
 }
 
