@@ -94,7 +94,6 @@ function __getFixedColumnCountLayout(columnCount, bookmarkCount, containerWidth)
 }
 
 function __setStyle(layout, windowWidth, windowHeight) {
-    console.log("Setting size", layout, windowWidth, windowHeight);
     let [tilesPerLine, lineCount, tileWidth, tileHeight] = layout;
     let listWidth = tileWidth * tilesPerLine;
     let listHeight = tileHeight * lineCount;
@@ -131,7 +130,6 @@ function __makeLayout() {
         return;
     }
 
-    console.log("Calculate layout with columnCount " + columnCount);
     let containerWidth = window.innerWidth - LIST_MARGIN;
     let containerHeight = window.innerHeight - LIST_MARGIN;
 
