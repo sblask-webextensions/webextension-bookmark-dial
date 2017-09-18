@@ -17,9 +17,23 @@ const THUMBNAIL_HEIGHT = 200;
 
 const THUMBNAIL_STORAGE_MAXBYTES = 10 * 1024 * 1024;
 
-let bookmarkFolder = undefined;
+class CleanURLSet extends Set {
+    add(url) {
+        return super.add(__cleanURL(url));
+    }
+    has(url) {
+        return super.has(__cleanURL(url));
+    }
+    delete(url) {
+        return super.delete(__cleanURL(url));
+    }
+}
 
-let thumbnailRegistry = new Set();
+let bookmarkFolder = undefined;
+let bookmarkFolderRegistry = new CleanURLSet();
+
+let thumbnailRegistry = new CleanURLSet();
+__initThumbnailRegistry();
 
 browser.storage.local.get([
     OPTION_BACKGROUND_COLOR,
@@ -42,12 +56,14 @@ browser.storage.local.get([
                 browser.storage.local.set({[OPTION_CUSTOM_CSS]: ""});
             }
             bookmarkFolder = result[OPTION_BOOKMARK_FOLDER];
+            __initBookmarkFolderRegistry();
         }
     );
 
 function onPreferencesChanged(changes) {
     if (changes[OPTION_BOOKMARK_FOLDER]) {
         bookmarkFolder = changes[OPTION_BOOKMARK_FOLDER].newValue;
+        __initBookmarkFolderRegistry();
     }
 }
 
@@ -118,6 +134,20 @@ function __simpleResize(canvas) { // eslint-disable-line no-unused-vars
     return resizeCanvas;
 }
 
+function __getThumbnailURLs() {
+    return browser.storage.local.get().then(
+        preferenceItems => {
+            return Object.keys(preferenceItems)
+                .filter(key => { return key.indexOf(THUMBNAIL_STORAGE_PREFIX) === 0; })
+                .map(key => { return key.substring(THUMBNAIL_STORAGE_PREFIX.length); });
+        }
+    );
+}
+
+function __initThumbnailRegistry() {
+    return __getThumbnailURLs().then(thumbnailURLs => thumbnailURLs.map(thumbnailRegistry.add));
+}
+
 function __storeThumbnail(bookmarkURL, thumbnailDataURL) {
     chainPromises([
         ()           => { return browser.storage.local.set({[THUMBNAIL_STORAGE_PREFIX + bookmarkURL]: thumbnailDataURL}); },
@@ -129,14 +159,10 @@ function __storeThumbnail(bookmarkURL, thumbnailDataURL) {
 
 function __maybeRemoveUnusedThumbnails(bytesInUse) {
     if (bytesInUse > THUMBNAIL_STORAGE_MAXBYTES) {
-        Promise.all([
-            browser.storage.local.get().then(__getThumbnailURLs),
-            browser.bookmarks.getChildren(bookmarkFolder).then(__getBookmarkURLSet),
-        ]).then(
-            result => {
-                let [thumbnailURLs, bookmarkURLSet] = result;
+        __getThumbnailURLs().then(
+            thumbnailURLs => {
                 for (let url of thumbnailURLs) {
-                    if (!bookmarkURLSet.has(url)) {
+                    if (!bookmarkFolderRegistry.has(url)) {
                         browser.storage.local.remove(THUMBNAIL_STORAGE_PREFIX + url);
                         thumbnailRegistry.delete(url);
                     }
@@ -146,17 +172,27 @@ function __maybeRemoveUnusedThumbnails(bytesInUse) {
     }
 }
 
-function __getThumbnailURLs(preferenceItems) {
-    return Object.keys(preferenceItems)
-        .filter(key => { return key.indexOf(THUMBNAIL_STORAGE_PREFIX) === 0; })
-        .map(key => { return key.substring(THUMBNAIL_STORAGE_PREFIX.length); });
+function __initBookmarkFolderRegistry() {
+    if (!bookmarkFolder) {
+        return false;
+    }
+    bookmarkFolderRegistry.clear();
+    browser.bookmarks.getChildren(bookmarkFolder).then(
+        bookmarks => {
+            bookmarks
+                .filter(bookmark => bookmark.hasOwnProperty("url"))
+                .map(bookmark => bookmark.url)
+                .map(url => bookmarkFolderRegistry.add(url));
+        }
+    );
 }
 
-function __getBookmarkURLSet(bookmarks) {
-    let bookmarkURLs = bookmarks
-        .filter(bookmark => bookmark.hasOwnProperty("url"))
-        .map(bookmark => bookmark.url);
-    return new Set(bookmarkURLs);
+function __updateBookmarkFolderRegistry(bookmark) {
+    if (bookmark.parentId === bookmarkFolder) {
+        bookmarkFolderRegistry.add(bookmark.url);
+    } else {
+        bookmarkFolderRegistry.delete(bookmark.url);
+    }
 }
 
 function maybeCreateThumbnail(url) {
@@ -178,19 +214,7 @@ function __hasNoThumbnail(url) {
 }
 
 function __isURLFromBookmarkFolder(url) {
-    if (!bookmarkFolder) {
-        return false;
-    }
-    return browser.bookmarks.getChildren(bookmarkFolder).then(
-        children => {
-            for (let child of children) {
-                if (__cleanURL(child.url) === __cleanURL(url)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    );
+    return bookmarkFolderRegistry.has(url);
 }
 
 function __isURLOpenInActiveTabAndComplete(url) {
@@ -209,14 +233,22 @@ function __cleanURL(url) {
     return url.replace(/https?:\/\//, "").replace(/\/+$/, "");
 }
 
+function handleBookmarkChange(bookmark) {
+    __updateBookmarkFolderRegistry(bookmark);
+    maybeCreateThumbnail(bookmark.url);
+}
+
 browser.bookmarks.onCreated.addListener(
-    (_id, bookmark) => maybeCreateThumbnail(bookmark.url)
+    (_id, bookmark) => handleBookmarkChange(bookmark)
 );
 browser.bookmarks.onChanged.addListener(
-    (id, _changeInfo) => browser.bookmarks.get(id).then(bookmarks => maybeCreateThumbnail(bookmarks[0].url))
+    (id, _changeInfo) => browser.bookmarks.get(id).then(bookmarks => handleBookmarkChange(bookmarks[0]))
 );
 browser.bookmarks.onMoved.addListener(
-    (id, _moveInfo) => browser.bookmarks.get(id).then(bookmarks => maybeCreateThumbnail(bookmarks[0].url))
+    (id, _moveInfo) => browser.bookmarks.get(id).then(bookmarks => handleBookmarkChange(bookmarks[0]))
+);
+browser.bookmarks.onRemoved.addListener(
+    (_id, removeInfo) => bookmarkFolderRegistry.delete(removeInfo.node.url)
 );
 
 browser.tabs.onUpdated.addListener(
@@ -250,7 +282,7 @@ function handleRequest(request) {
         chainPromises([
             ()     => browser.tabs.query({ active: true, currentWindow: true }),
             (tabs) => tabs[0],
-            (tab)  => __isURLFromBookmarkFolder(tab.url).then(isIt => isIt ? createThumbnail(tab.url) : null),
+            (tab)  => __isURLFromBookmarkFolder(tab.url) ? createThumbnail(tab.url) : null,
         ]);
     }
 }
@@ -296,20 +328,6 @@ function __getScrollbarWidth() {
     document.head.removeChild(style);
     return scrollbarWidth;
 }
-
-function initThumbnailRegistry() {
-    return browser.storage.local.get().then(
-        items => {
-            for (let key of Object.keys(items)) {
-                if (key.indexOf(THUMBNAIL_STORAGE_PREFIX) === 0) {
-                    let url = key.substring(THUMBNAIL_STORAGE_PREFIX.length);
-                    thumbnailRegistry.add(url);
-                }
-            }
-        }
-    );
-}
-initThumbnailRegistry();
 
 function handleInstalled(details) {
     if (details.reason === "update" && details.previousVersion === "1.1.2") {
