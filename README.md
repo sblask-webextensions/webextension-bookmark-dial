@@ -33,6 +33,12 @@ Configure the bookmark folder and check available settings in the popup opened
 from the toolbar icon or from the extension page in your browser's extension
 manager. Open a new tab.
 
+Customisation
+-------------
+
+You can set a background colour and/or image (including sizing) in the
+preferences. There is also a text field to provide custom CSS.
+
 Known Issues
 ------------
 
