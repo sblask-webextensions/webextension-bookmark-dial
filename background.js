@@ -145,7 +145,7 @@ function __getThumbnailURLs() {
 }
 
 function __initThumbnailRegistry() {
-    return __getThumbnailURLs().then(thumbnailURLs => thumbnailURLs.map(thumbnailRegistry.add));
+    return __getThumbnailURLs().then(thumbnailURLs => thumbnailURLs.map(thumbnailRegistry.add.bind(thumbnailRegistry)));
 }
 
 function __storeThumbnail(bookmarkURL, thumbnailDataURL) {
