@@ -19,9 +19,6 @@
         "default_popup": "options/options.html",
         "default_title": "Bookmark Dial"
     },
-    "chrome_settings_overrides": {
-        "homepage": "content-scripts/bookmark-dial.html"
-    },
     "chrome_url_overrides": {
         "newtab": "content-scripts/bookmark-dial.html"
     },

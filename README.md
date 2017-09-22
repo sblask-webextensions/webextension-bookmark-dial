@@ -47,7 +47,6 @@ Known Issues
  - color chooser and file chooser close the popup - to change settings using
    them, go to the extension page in your browser's extension manager
  - Firefox:
-    - the homepage is not overridden - this should be fixed in Firefox 56
     - the location bar is not cleared when a new tab is opened - this should be
       fixed in Firefox 57
       (https://bugzilla.mozilla.org/show_bug.cgi?id=1372996)
