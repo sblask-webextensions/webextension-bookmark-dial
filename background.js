@@ -225,7 +225,7 @@ function __isURLOpenInActiveTabAndComplete(url) {
     return chainPromises([
         ()     => browser.tabs.query({ active: true, currentWindow: true }),
         (tabs) => tabs[0],
-        (tab)  => __cleanURL(tab.url) === __cleanURL(url) && tab.status === "complete",
+        (tab)  => tab.status === "complete" && __cleanURL(tab.url) === __cleanURL(url),
     ]);
 }
 
