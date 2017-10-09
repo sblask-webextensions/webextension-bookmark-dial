@@ -50,6 +50,9 @@ Known Issues
     - the location bar is not cleared when a new tab is opened - this should be
       fixed in Firefox 57
       (https://bugzilla.mozilla.org/show_bug.cgi?id=1372996)
+ - special URLs like about: chrome: file: etc can cause problems - thumbnail
+   generation might fail or bookmarks won't open - due to limitations in the
+   webextension API
 
 Privacy Policy
 --------------
