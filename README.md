@@ -51,6 +51,11 @@ Known Issues
       fixed in Firefox 57
       (https://bugzilla.mozilla.org/show_bug.cgi?id=1372996)
 
+Privacy Policy
+--------------
+
+This extension does not collect or send data of any kind to third parties.
+
 Feedback
 --------
 
