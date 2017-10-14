@@ -38,6 +38,7 @@ __initThumbnailRegistry();
 browser.storage.local.get([
     OPTION_BACKGROUND_COLOR,
     OPTION_BACKGROUND_IMAGE_URL,
+    OPTION_BACKGROUND_SIZE,
     OPTION_BOOKMARK_FOLDER,
     OPTION_CUSTOM_CSS,
 ])
