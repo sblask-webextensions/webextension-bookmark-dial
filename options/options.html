@@ -7,7 +7,14 @@
     </head>
 
     <body>
-        <form>
+        <!-- Tabs -->
+        <input class="tab" type="radio" value="options" name="selected" id="tab-options" checked>
+        <label class="tab" for="tab-options">Options</label>
+        <input class="tab" type="radio" value="dials" name="selected" id="tab-dials">
+        <label class="tab" for="tab-dials">Dials</label>
+
+        <!-- Tab content -->
+        <form id="tab-options-content" class="tab-content">
             <fieldset>
 
                 <button type="button" id="generateThumbnailButton" disabled>Use snapshot of current tab as thumbnail</button>
@@ -60,12 +67,12 @@
                         </div>
 
                         <div class="box-wrapper">
-                            <input type="radio" name="backgroundSize" id="backgroundSizeContain"value="contain">
+                            <input type="radio" name="backgroundSize" id="backgroundSizeContain" value="contain">
                             <label for="backgroundSizeContain">Scale image to be as big as possible while staying completely visible</label>
                         </div>
 
                         <div class="box-wrapper">
-                            <input type="radio" name="backgroundSize" id="backgroundSizeCover"value="cover">
+                            <input type="radio" name="backgroundSize" id="backgroundSizeCover" value="cover">
                             <label for="backgroundSizeCover">Scale image to cover the whole background</label>
                         </div>
 
@@ -79,6 +86,11 @@
                 <legend>Options</legend>
             </fieldset>
         </form>
+
+        <div id="tab-dials-content" class="tab-content">
+
+        </div>
+
         <script src="../browser-polyfill.js"></script>
         <script src="./options.js"></script>
     </body>

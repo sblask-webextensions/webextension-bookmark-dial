@@ -5,7 +5,17 @@ const OPTION_BOOKMARK_FOLDER = "option_bookmark_folder";
 const OPTION_COLUMN_COUNT = "option_column_count";
 const OPTION_CUSTOM_CSS = "option_custom_css";
 
+const THUMBNAIL_STORAGE_PREFIX = "thumbnail_";
+
 const FOLDER_SELECT = document.querySelector("#folderSelect");
+
+const SETTING_IMG_URL = "setting_img_url";
+
+function createNode(html){
+    const el = document.createElement("div");
+    el.innerHTML = html;
+    return el.firstElementChild;
+}
 
 function restoreOptions() {
     browser.storage.local.get([
@@ -99,6 +109,77 @@ function loadBookmarkTree(folders, level=-1) {
     }
 }
 
+async function loadBookmarkFolder(folderId) {
+    const promises = (await browser.bookmarks.getChildren(folderId))
+        .filter(bookmarkNode => bookmarkNode.type === "bookmark")
+        .map(loadBookmarkSettings);
+    return Promise.all(promises);
+}
+
+async function loadBookmarkSettings({url, title}){
+    const thumbnailKey = `${THUMBNAIL_STORAGE_PREFIX}${url}`;
+    const settingsKey = `settings_${url}`;
+    const result = await browser.storage.local.get([
+        thumbnailKey,
+        settingsKey,
+    ]);
+    const $tabContent = document.querySelector("#tab-dials-content");
+    const $dialContainer = createNode(`<div class="dial-container">
+        <div class="dial-container__header">
+            ${title}
+        </div>
+        <div class="settings-container">
+            <img />
+            <div class="settings-container__settings">
+                <span>Img URL</span>
+                <input type="text">
+                <div class="buttons">
+                    <div class="buttons__set-img">Set img</div>
+                    <div class="buttons_reset">Reset</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    `);
+    const thumbnail = result[thumbnailKey];
+    if(thumbnail){
+        $dialContainer.querySelector("img").src = thumbnail;
+    }
+    const settings = result[settingsKey];
+    if(settings){
+        $dialContainer.querySelector(".settings-container__settings input")
+            .value = settings[SETTING_IMG_URL];
+    }
+    $dialContainer
+        .querySelector(".buttons__set-img")
+        .addEventListener("click",
+            setDialImg.bind(this, $dialContainer, thumbnailKey));
+
+    $tabContent.appendChild($dialContainer);
+}
+
+async function setDialImg($dialContainer, thumbnailKey){
+    const $input = $dialContainer.querySelector(".settings-container__settings input");
+
+    const responseBlob = await (await fetch($input.value)).blob();
+    // Use image element to make sure what we retrieved is actually an image
+    const $tempImg = document.createElement("img");
+    $tempImg.src = URL.createObjectURL(responseBlob);
+    await $tempImg.decode();
+
+    // Convert image to dataURL
+    const canvas = document.createElement("canvas");
+    canvas.height = $tempImg.height;
+    canvas.width = $tempImg.width;
+    canvas.getContext("2d").drawImage($tempImg, 0, 0);
+
+    $dialContainer.querySelector("img").src = canvas.toDataURL();
+
+    await browser.storage.local.set({
+        [thumbnailKey]: canvas.toDataURL(),
+    });
+}
+
 function maybeSelectFolder() {
     browser.storage.local.get([
         OPTION_BOOKMARK_FOLDER,
@@ -112,6 +193,8 @@ function maybeSelectFolder() {
                 if (option.value === bookmarkFolder) {
                     option.setAttribute("selected", true);
                     enableGenerateThumbnailButton();
+                    loadBookmarkFolder(bookmarkFolder);
+                    break;
                 }
             }
         }
