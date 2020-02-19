@@ -182,6 +182,7 @@ function __initBookmarkFolderRegistry() {
         bookmarks => {
             bookmarks
                 .filter(bookmark => Object.prototype.hasOwnProperty.call(bookmark, "url"))
+                .filter(bookmark => bookmark.url) // filter out folders and separators
                 .map(bookmark => bookmark.url)
                 .map(url => bookmarkFolderRegistry.add(url));
         }
@@ -235,6 +236,10 @@ function __cleanURL(url) {
 }
 
 function handleBookmarkChange(bookmark) {
+    if (!bookmark.url) {
+        // folder or separator
+        return;
+    }
     __updateBookmarkFolderRegistry(bookmark);
     maybeCreateThumbnail(bookmark.url);
 }
