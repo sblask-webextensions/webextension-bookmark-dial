@@ -181,7 +181,7 @@ function __initBookmarkFolderRegistry() {
     browser.bookmarks.getChildren(bookmarkFolder).then(
         bookmarks => {
             bookmarks
-                .filter(bookmark => bookmark.hasOwnProperty("url"))
+                .filter(bookmark => Object.prototype.hasOwnProperty.call(bookmark, "url"))
                 .map(bookmark => bookmark.url)
                 .map(url => bookmarkFolderRegistry.add(url));
         }
