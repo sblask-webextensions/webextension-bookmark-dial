@@ -30,9 +30,9 @@ class CleanURLSet extends Set {
 }
 
 let bookmarkFolder = undefined;
-let bookmarkFolderRegistry = new CleanURLSet();
+const bookmarkFolderRegistry = new CleanURLSet();
 
-let thumbnailRegistry = new CleanURLSet();
+const thumbnailRegistry = new CleanURLSet();
 __initThumbnailRegistry();
 
 browser.storage.local.get([
@@ -69,7 +69,7 @@ function onPreferencesChanged(changes) {
 }
 
 function createThumbnail(bookmarkURL) {
-    let collectData = Promise.all([
+    const collectData = Promise.all([
         browser.tabs.captureVisibleTab(),
         browser.tabs.executeScript({ code: "window.innerWidth" }),
         browser.tabs.executeScript({ code: "window.innerHeight" }),
@@ -88,15 +88,15 @@ function __flatten(list) {
 }
 
 function __dataURLToCanvas(dataURL, originalWidth, originalHeight) {
-    let [newWidth, newHeight] = __getNewSizing(originalWidth - SCROLLBAR_WIDTH, originalHeight);
+    const [newWidth, newHeight] = __getNewSizing(originalWidth - SCROLLBAR_WIDTH, originalHeight);
 
     return new Promise(
         function(resolve, _reject) {
-            let canvas = document.createElement("canvas");
+            const canvas = document.createElement("canvas");
             canvas.width = newWidth;
             canvas.height = newHeight;
 
-            let image = new Image();
+            const image = new Image();
             image.onload = function() {
                 canvas.getContext("2d").drawImage(image, 0, 0, newWidth, newHeight, 0, 0, newWidth, newHeight);
                 return resolve(canvas);
@@ -107,8 +107,8 @@ function __dataURLToCanvas(dataURL, originalWidth, originalHeight) {
 }
 
 function __getNewSizing(originalWidth, originalHeight) {
-    let targetRatio = 3 / 2;
-    let currentRatio = originalWidth / originalHeight;
+    const targetRatio = 3 / 2;
+    const currentRatio = originalWidth / originalHeight;
     if (currentRatio > targetRatio) {
         // cut off width
         return [originalHeight * targetRatio, originalHeight];
@@ -124,7 +124,7 @@ function __resize(canvas) {
 }
 
 function __simpleResize(canvas) { // eslint-disable-line no-unused-vars
-    let resizeCanvas = document.createElement("canvas");
+    const resizeCanvas = document.createElement("canvas");
     resizeCanvas.width = THUMBNAIL_WIDTH;
     resizeCanvas.height = THUMBNAIL_HEIGHT;
     resizeCanvas.getContext("2d").drawImage(
@@ -162,7 +162,7 @@ function __maybeRemoveUnusedThumbnails(bytesInUse) {
     if (bytesInUse > THUMBNAIL_STORAGE_MAXBYTES) {
         __getThumbnailURLs().then(
             thumbnailURLs => {
-                for (let url of thumbnailURLs) {
+                for (const url of thumbnailURLs) {
                     if (!bookmarkFolderRegistry.has(url)) {
                         browser.storage.local.remove(THUMBNAIL_STORAGE_PREFIX + url);
                         thumbnailRegistry.delete(url);
@@ -296,7 +296,7 @@ browser.runtime.onMessage.addListener(handleRequest);
 
 function chainPromises(functions) {
     let promise = Promise.resolve();
-    for (let function_ of functions) {
+    for (const function_ of functions) {
         promise = promise.then(function_);
     }
 
@@ -304,14 +304,14 @@ function chainPromises(functions) {
 }
 
 function __makeStyle() {
-    let style = document.createElement("style");
+    const style = document.createElement("style");
     style.type = "text/css";
     document.head.appendChild(style);
     return style;
 }
 
 function __getScrollbarWidth() {
-    let css = `
+    const css = `
         .scrollbar-measure {
             height: 100px;
             overflow: scroll;
@@ -321,14 +321,14 @@ function __getScrollbarWidth() {
         }
     `;
 
-    let style = __makeStyle();
+    const style = __makeStyle();
     style.appendChild(document.createTextNode(css));
 
-    let div = document.createElement("div");
+    const div = document.createElement("div");
     div.className = "scrollbar-measure";
     document.body.appendChild(div);
 
-    let scrollbarWidth = div.offsetWidth - div.clientWidth;
+    const scrollbarWidth = div.offsetWidth - div.clientWidth;
 
     document.body.removeChild(div);
     document.head.removeChild(style);

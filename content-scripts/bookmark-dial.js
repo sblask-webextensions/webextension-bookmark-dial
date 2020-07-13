@@ -45,7 +45,7 @@ let bookmarkFolder = undefined;
 let bookmarks = undefined;
 let columnCount = undefined;
 
-let thumbnails = new Map();
+const thumbnails = new Map();
 
 function __getOptimalColumnCountLayout(bookmarkCount, containerWidth, containerHeight) {
     let newLineCount = 0;
@@ -84,25 +84,25 @@ function __getOptimalColumnCountLayout(bookmarkCount, containerWidth, containerH
 }
 
 function __getFixedColumnCountLayout(columnCount, bookmarkCount, containerWidth) {
-    let lineCount = Math.ceil(bookmarkCount / columnCount);
-    let tileWidth = Math.min(
+    const lineCount = Math.ceil(bookmarkCount / columnCount);
+    const tileWidth = Math.min(
         THUMBNAIL_WIDTH,
         Math.floor(containerWidth / columnCount)
     );
-    let tileHeight = tileWidth / 3 * 2;
+    const tileHeight = tileWidth / 3 * 2;
     return [columnCount, lineCount, tileWidth, tileHeight];
 }
 
 function __setStyle(layout, windowWidth, windowHeight) {
-    let [tilesPerLine, lineCount, tileWidth, tileHeight] = layout;
-    let listWidth = tileWidth * tilesPerLine;
-    let listHeight = tileHeight * lineCount;
+    const [tilesPerLine, lineCount, tileWidth, tileHeight] = layout;
+    const listWidth = tileWidth * tilesPerLine;
+    const listHeight = tileHeight * lineCount;
 
-    let horizontalPadding = Math.ceil((windowWidth - listWidth) / 2);
-    let verticalPadding = Math.floor((windowHeight - listHeight) / 2);
+    const horizontalPadding = Math.ceil((windowWidth - listWidth) / 2);
+    const verticalPadding = Math.floor((windowHeight - listHeight) / 2);
 
-    let labelHeight = 5 + tileHeight / 20;
-    let styleString = `
+    const labelHeight = 5 + tileHeight / 20;
+    const styleString = `
         li {
             max-width: ${ THUMBNAIL_WIDTH }px;
             width: calc(100% / ${ tilesPerLine });
@@ -130,8 +130,8 @@ function __makeLayout() {
         return;
     }
 
-    let containerWidth = window.innerWidth - LIST_MARGIN;
-    let containerHeight = window.innerHeight - LIST_MARGIN;
+    const containerWidth = window.innerWidth - LIST_MARGIN;
+    const containerHeight = window.innerHeight - LIST_MARGIN;
 
     let layout;
     if (columnCount) {
@@ -158,11 +158,11 @@ function __getBackgroundStyleString() {
 
 function __createElement(tagName, attributes, children) {
     const element = document.createElement(tagName);
-    for (let [key, value] of Object.entries(attributes)) {
+    for (const [key, value] of Object.entries(attributes)) {
         element.setAttribute(key, value);
     }
 
-    for (let child of children) {
+    for (const child of children) {
         element.appendChild(child);
     }
 
@@ -197,8 +197,8 @@ function __makeDeleteLinksClickable() {
 }
 
 function __replaceBookmarkList() {
-    let oldList = document.querySelector("ol");
-    let newList = __createElement("ol", {}, bookmarks.map(__makeHTMLListItem));
+    const oldList = document.querySelector("ol");
+    const newList = __createElement("ol", {}, bookmarks.map(__makeHTMLListItem));
     oldList.parentNode.replaceChild(newList, oldList);
 }
 
@@ -276,10 +276,10 @@ function initFromPreferences() {
 }
 
 function onThumbnailsChanged(changes) {
-    for (let [key, changeInfo] of Object.entries(changes)) {
+    for (const [key, changeInfo] of Object.entries(changes)) {
         if (key.indexOf(THUMBNAIL_STORAGE_PREFIX) === 0 && changeInfo.newValue) {
-            let url = key.substring(THUMBNAIL_STORAGE_PREFIX.length);
-            let image = document.querySelector(`a[href*="${__cleanURL(url)}"] img`);
+            const url = key.substring(THUMBNAIL_STORAGE_PREFIX.length);
+            const image = document.querySelector(`a[href*="${__cleanURL(url)}"] img`);
 
             if (image) {
                 image.src = changeInfo.newValue;
@@ -293,9 +293,9 @@ function onThumbnailsChanged(changes) {
 function initThumbnails() {
     return browser.storage.local.get().then(
         items => {
-            for (let [key, value] of Object.entries(items)) {
+            for (const [key, value] of Object.entries(items)) {
                 if (key.indexOf(THUMBNAIL_STORAGE_PREFIX) === 0) {
-                    let url = key.substring(THUMBNAIL_STORAGE_PREFIX.length);
+                    const url = key.substring(THUMBNAIL_STORAGE_PREFIX.length);
                     thumbnails.set(__cleanURL(url), value);
                 }
             }
