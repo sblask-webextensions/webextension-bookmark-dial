@@ -43,6 +43,7 @@ input[type=text] {
 input[type=checkbox],
 input[type=radio] {
     display: inline-block;
+    vertical-align: -2px;
 }
 select {
     padding: 3px;
@@ -52,6 +53,15 @@ textarea {
     height: 100px;
     padding: 3px;
     width: 100%;
+}
+textarea.error {
+    border: 1px solid red;
+}
+textarea:focus.error {
+    outline-color: red;
+}
+.list-error {
+    color: red;
 }
 .box-wrapper {
     margin-top: 5px;
