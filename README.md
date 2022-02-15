@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/sblask/webextension-bookmark-dial.svg?branch=master)](https://travis-ci.org/sblask/webextension-bookmark-dial)
+[![Build Status](https://github.com/sblask/webextension-bookmark-dial/actions/workflows/build.yml/badge.svg)](https://github.com/sblask/webextension-bookmark-dial/actions/workflows/build.yml)
 
 Bookmark dial
 =============
