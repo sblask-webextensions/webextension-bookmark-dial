@@ -5,31 +5,33 @@ Bookmark dial
 
 Displays the contents of a bookmark folder including a thumbnail when you start
 the browser and open a new tab (instead of frequently visited sites,
-suggestions and sponsored links). Similar extensions call this speed dial. In
-most cases they do not use bookmarks and/or require you to manually tweak
-settings to change the layout of the thumbnails.
+suggestions and sponsored links).
 
-By default, Bookmark Dial arranges and sizes (up to a maximum size) the
-thumbnails to be as big as possible while covering as much space as possible.
-As a bookmark folder is used, sync comes with your browser and you can use the
+Similar extensions call this speed dial. In many cases there is a third party
+web service behind those extensions and your data is stored remotely. Bookmark
+Dial on the other hand uses only browser capabilities (meaning you can use the
 usual keyboard shortcuts, menu entries and buttons for bookmark handling to
-add, edit and delete dial items. You can drag and drop thumbnails to change the
-order.
+add, edit and delete dial items) and your data only leaves your computer if you
+enable browser sync.
 
-Thumbnails are generated from a snapshot of the visible area of a bookmarked
-webpage. If a bookmark has no thumbnail yet, a snapshot is taken automatically
-when the bookmark is opened in the currently active tab or if it is loaded in a
-background tab and the tab becomes active. To ensure the best result, the
-generation starts when the page has completed loading. There is also a button
-in the popup opened from the toolbar icon that allows you to create a new
-snapshot (disabled for URLs that do not belong to bookmarks from the configured
-folder). The latter allows you to capture the part of a webpage that you want
-as you can scroll and resize the window before taking the snapshot.
+Thumbnails
+----------
+
+By default, thumbnails are arranged and sized (up to a maximum size) to be as
+big as possible while covering as much space as possible. You can drag and drop
+them to change the order.
+
+They are generated from a snapshot of the visible area of a bookmarked webpage
+and stored in the browser. If there is no thumbnail available yet a snapshot is
+taken once the page has been loaded in the currently active tab. There is also
+a button in the popup opened from the toolbar icon to create a new snapshot.
+That allows you to arrange the visible area of the page by scrolling or
+resizing the window to capture exactly what you want.
 
 Getting Started
 ---------------
 
-Configure the bookmark folder and check available settings in the popup opened
+Select a bookmark folder and check available settings in the popup opened
 from the toolbar icon or from the extension page in your browser's extension
 manager. Open a new tab.
 
@@ -42,19 +44,15 @@ preferences. There is also a text field to provide custom CSS.
 Known Issues
 ------------
 
- - if a bookmark redirects to another page, thumbnail generation will fail as
-   the URL of the bookmark will not match the page in the currently active tab
- - color chooser and file chooser close the popup - to change settings using
-   them, go to the extension page in your browser's extension manager
- - Firefox:
-    - the location bar is not cleared when a new tab is opened - this should be
-      fixed in Firefox 57
-      (https://bugzilla.mozilla.org/show_bug.cgi?id=1372996)
-    - compatibility issues with [New Tab Override
-      extension](https://addons.mozilla.org/en-US/firefox/addon/new-tab-override/)
- - special URLs like about: chrome: file: etc can cause problems - thumbnail
-   generation might fail or bookmarks won't open - due to limitations in the
-   webextension API
+- if a bookmark redirects to another page, no thumbnail will be generated as
+  the its URL will not match the page in the currently active tab
+- special URLs like about: chrome: file: etc. can cause problems due to
+  limitations in the webextension API
+- Firefox:
+  - color chooser and file chooser close the popup - to change settings using
+    them, go to the extension page in your browser's extension manager
+  - compatibility issues with [New Tab Override
+    extension](https://addons.mozilla.org/en-US/firefox/addon/new-tab-override/)
 
 Privacy Policy
 --------------
