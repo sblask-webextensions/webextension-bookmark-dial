@@ -21,12 +21,41 @@ function restoreOptions() {
 
             setTextValue("backgroundImageURL", result[OPTION_BACKGROUND_IMAGE_URL]);
 
-            setBooleanValue("backgroundSize" + result[OPTION_BACKGROUND_SIZE].charAt(0).toUpperCase() + result[OPTION_BACKGROUND_SIZE].slice(1), true);
+            //setBooleanValue("backgroundSize" + result[OPTION_BACKGROUND_SIZE].charAt(0).toUpperCase() + result[OPTION_BACKGROUND_SIZE].slice(1), true);
 
             const numberOfColumnsIndex = result[OPTION_COLUMN_COUNT] || 0;
             document.getElementById("columnCount").options[numberOfColumnsIndex].setAttribute("selected", true);
 
             setTextValue("customCSS", result[OPTION_CUSTOM_CSS]);
+
+            let oldSelect = document.getElementById("actionURL");
+            let selectedOption = oldSelect.options[oldSelect.selectedIndex]?.value;
+
+            let newSelect = document.createElement("SELECT");
+            newSelect.id = "actionURL";
+
+            var currentUrlOption = document.createElement("option");
+            currentUrlOption.text = "Current URL";
+            currentUrlOption.value = "-1";
+            currentUrlOption.selected = true;
+            newSelect.add(currentUrlOption);
+
+            browser.runtime.sendMessage({ message: "getBookmarkURL" }).then(
+                bookmarks => bookmarks.forEach(bookmark => {
+                    var option = document.createElement("option");
+                    let shortValue = bookmark.substring(0, 75);
+                    option.text = shortValue < bookmark ? shortValue+' ...' : shortValue;
+                    option.value = bookmark;
+                    if(selectedOption === bookmark){
+                        option.selected = true;
+                    }
+                    newSelect.add(option);
+                })
+            );
+
+            newSelect.addEventListener( "change", enableGenerateThumbnailButton );
+
+            oldSelect.parentElement.replaceChild(newSelect, oldSelect);
         }
     );
 }
@@ -133,10 +162,46 @@ function loadBackgroundImageURL(event) {
 }
 
 function enableGenerateThumbnailButton() {
-    browser.runtime.sendMessage({ message: "isGenerateThumbnailEnabled" }).then(
-        enabled => document.querySelector("#generateThumbnailButton").disabled = !enabled
+    browser.runtime.sendMessage({ message: "isGenerateThumbnailEnabled", url: document.getElementById("actionURL").value }).then(
+        enabled => {
+            document.querySelector("#generateThumbnailButton").disabled = !enabled;
+            document.querySelector("#loadThumbnailButton").disabled = !enabled;
+        }
     );
 }
+
+function loadThumbnailImage(){
+    let file = document.getElementById("thumbnailFile")['files'][0];
+
+    var reader = new FileReader();
+    reader.onload = function () {
+        browser.runtime.sendMessage({ message: "loadThumbnail", image: reader.result, url: document.getElementById("actionURL").value });
+    }
+    reader.readAsDataURL(file);
+}
+
+function exportSettings(){
+    browser.runtime.sendMessage({ message: "getExportJSON"}).then(
+        exportData => {
+            var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData));
+            var a = document.createElement('a');
+            a.href = 'data:' + data;
+            a.download = 'BookmarkDial_export.json';
+            a.click();
+        }
+    );
+}
+
+function importSettings(){
+    let file = document.getElementById("importFile")['files'][0];
+
+    var reader = new FileReader();
+    reader.onload = function () {
+        browser.runtime.sendMessage({ message: "importJSON", data: JSON.parse(reader.result)});
+    }
+    reader.readAsText(file);
+}
+
 
 document.addEventListener("DOMContentLoaded", restoreOptions);
 document.addEventListener("DOMContentLoaded", enableAutosave);
@@ -155,7 +220,28 @@ document.querySelector("#backgroundImageChooser").addEventListener(
 );
 document.querySelector("#generateThumbnailButton").addEventListener(
     "click",
-    () => browser.runtime.sendMessage({ message: "generateThumbnail" }),
+    () => browser.runtime.sendMessage({ message: "generateThumbnail", url: document.getElementById("actionURL").value }),
+);
+document.querySelector("#loadThumbnailButton").addEventListener(
+    "click",
+    () => document.getElementById("thumbnailFile").click()
+);
+document.querySelector("#thumbnailFile").addEventListener(
+    "change",
+    loadThumbnailImage
+);
+
+document.querySelector("#importButton").addEventListener(
+    "click",
+    () => document.getElementById("importFile").click()
+);
+document.querySelector("#exportButton").addEventListener(
+    "click",
+    exportSettings,
+);
+document.querySelector("#importFile").addEventListener(
+    "change",
+    importSettings
 );
 
 browser.storage.onChanged.addListener(restoreOptions);

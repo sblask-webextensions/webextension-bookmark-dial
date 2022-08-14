@@ -80,7 +80,43 @@ function createThumbnail(bookmarkURL) {
         (canvas) => { return __resize(canvas); },
         (canvas) => { return __storeThumbnail(bookmarkURL, canvas.toDataURL()); },
     ]);
+}
 
+function delay(t, v) {
+    return new Promise(function(resolve) {
+        setTimeout(resolve.bind(null, v), t)
+    });
+ }
+
+ Promise.prototype.delay = function(t) {
+     return this.then(function(v) {
+         return delay(t, v);
+     });
+ }
+
+
+function loadThumbnail(bookmarkURL, imageData) {
+    var img = new Image();
+
+    img.onload = function(){
+
+        var width = img.width;
+        var height = img.height;
+
+        let canvas = document.createElement("CANVAS");
+        canvas.width = width;
+        canvas.height = height;
+        let ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+
+        chainPromises([
+            ()       => { return __resize(canvas); },
+            (canvas) => { return __storeThumbnail(bookmarkURL, canvas.toDataURL()); },
+        ]);
+
+    }
+
+    img.src = imageData;
 }
 
 function __flatten(list) {
@@ -277,18 +313,50 @@ browser.tabs.onActivated.addListener(
 
 browser.storage.onChanged.addListener(onPreferencesChanged);
 
+async function selectedURL(url){
+    return __cleanURL( (url && url != -1) ? url : (await browser.tabs.query({ active: true, currentWindow: true }))[0].url );
+}
+
 function handleRequest(request) {
     if (request.message === "isGenerateThumbnailEnabled") {
         return chainPromises([
-            ()     => browser.tabs.query({ active: true, currentWindow: true }),
-            (tabs) => __isURLFromBookmarkFolder(tabs[0].url),
+            ()     => selectedURL(request?.url),
+            (url) => __isURLFromBookmarkFolder(url),
+        ]);
+    }
+    if (request.message === "getBookmarkURL") {
+        return chainPromises([
+            ()     => bookmarkFolderRegistry
         ]);
     }
     if (request.message === "generateThumbnail") {
         chainPromises([
-            ()     => browser.tabs.query({ active: true, currentWindow: true }),
-            (tabs) => tabs[0],
-            (tab)  => __isURLFromBookmarkFolder(tab.url) ? createThumbnail(tab.url) : null,
+            ()     => selectedURL(request?.url),
+            (url)  => __isURLFromBookmarkFolder(url) ? createThumbnail(url) : null,
+        ]);
+    }
+    if (request.message === "loadThumbnail") {
+        chainPromises([
+            ()     => selectedURL(request?.url),
+            (url)  => __isURLFromBookmarkFolder(url) ? loadThumbnail(url, request.image) : null,
+        ]);
+    }
+    if (request.message === "getExportJSON") {
+        return chainPromises([
+            ()     => browser.storage.local.get()
+        ]);
+    }
+    if (request.message === "importJSON") {
+        return chainPromises([
+            ()     => {
+                Object.entries(request.data).forEach((e) => {
+                    let [key, value] = e;
+                    let obj = {};
+                    obj[key] = value;
+                    browser.storage.local.set(obj);
+                })
+
+            }
         ]);
     }
 }
