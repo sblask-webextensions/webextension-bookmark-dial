@@ -181,7 +181,7 @@ function __makeHTMLListItem(bookmark) {
                 ]),
             ]),
         ]),
-        __createElement("span", { class: "delete", title: "Delete Bookmark"}, [
+        __createElement("span", { class: "delete", title: "Delete Bookmark", "data-title": bookmark.title}, [
             document.createTextNode("✗"),
         ]),
     ]);
@@ -194,7 +194,9 @@ function __makeBookmarkListSortable() {
 
 function __makeDeleteLinksClickable() {
     $(".delete").on("click", function(event) {
-        browser.bookmarks.remove($(event.target).parent().children("a").attr("id"));
+        if (confirm("Do you want to delete bookmark \""+event.currentTarget.dataset.title+"\"") == true) {
+            browser.bookmarks.remove($(event.target).parent().children("a").attr("id"));
+        }
     });
 }
 
