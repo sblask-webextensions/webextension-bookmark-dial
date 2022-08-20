@@ -21,7 +21,7 @@ function restoreOptions() {
 
             setTextValue("backgroundImageURL", result[OPTION_BACKGROUND_IMAGE_URL]);
 
-            //setBooleanValue("backgroundSize" + result[OPTION_BACKGROUND_SIZE].charAt(0).toUpperCase() + result[OPTION_BACKGROUND_SIZE].slice(1), true);
+            setBooleanValue("backgroundSize" + result[OPTION_BACKGROUND_SIZE].charAt(0).toUpperCase() + result[OPTION_BACKGROUND_SIZE].slice(1), true);
 
             const numberOfColumnsIndex = result[OPTION_COLUMN_COUNT] || 0;
             document.getElementById("columnCount").options[numberOfColumnsIndex].setAttribute("selected", true);
