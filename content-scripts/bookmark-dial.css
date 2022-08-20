@@ -50,12 +50,6 @@ a:hover {
 }
 
 div {
-    background: transparent linear-gradient(
-        to bottom,
-        rgba(150, 150, 150, 0.0),
-        rgba(150, 150, 150, 0.7),
-        rgba(150, 150, 150, 1.0)
-    );
     color: black;
     height: 15%;
 }
@@ -74,6 +68,16 @@ img {
 }
 img[src=""] {
     display: none;
+}
+
+.absoluteBottomBlur {
+    backdrop-filter: blur(2px);
+    background: transparent linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.01) 0%,
+        rgba(255, 255, 255, 0.4) 10%,
+        rgba(255, 255, 255, 0.58) 100%
+    );
 }
 
 .absoluteBottom {

@@ -117,6 +117,7 @@ function __setStyle(layout, windowWidth, windowHeight) {
         }
         div {
             height: ${ labelHeight * 2 }px;
+            line-height: ${ labelHeight * 2 }px;
         }
         span {
             font-size: ${ labelHeight }px;
@@ -174,12 +175,13 @@ function __makeHTMLListItem(bookmark) {
         __createElement("a", {id: bookmark.id, href: bookmark.url, title: bookmark.title}, [
             __createElement("img", {src: bookmark.thumbnail || thumbnails.get(__cleanURL(bookmark.url)) || ""}, []),
             __createElement("div", {class: "absoluteBottom"}, [
-                __createElement("span", {class: "absoluteBottom"}, [
+                __createElement("div", {class: "absoluteBottomBlur"}, []),
+                __createElement("div", {class: "absoluteBottom"}, [
                     document.createTextNode(bookmark.title),
                 ]),
             ]),
         ]),
-        __createElement("span", { class: "delete", title: "Delete Bookmark"}, [
+        __createElement("span", { class: "delete", title: "Delete Bookmark", "data-title": bookmark.title}, [
             document.createTextNode("✗"),
         ]),
     ]);
@@ -192,7 +194,9 @@ function __makeBookmarkListSortable() {
 
 function __makeDeleteLinksClickable() {
     $(".delete").on("click", function(event) {
-        browser.bookmarks.remove($(event.target).parent().children("a").attr("id"));
+        if (confirm("Do you want to delete bookmark \""+event.currentTarget.dataset.title+"\"") == true) {
+            browser.bookmarks.remove($(event.target).parent().children("a").attr("id"));
+        }
     });
 }
 
