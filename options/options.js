@@ -206,10 +206,10 @@ function importSettings(){
 document.addEventListener("DOMContentLoaded", restoreOptions);
 document.addEventListener("DOMContentLoaded", enableAutosave);
 
-document.querySelector("#optionLink").addEventListener(
-    "click",
-    () => browser.runtime.openOptionsPage(),
-);
+Array.from(document.getElementsByClassName("optionLink")).forEach(e => {
+    e.addEventListener('click', () => {browser.runtime.openOptionsPage(); window.close();});
+});
+
 document.querySelector("form").addEventListener(
     "submit",
     saveOptions,
