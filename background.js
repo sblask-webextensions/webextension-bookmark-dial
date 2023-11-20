@@ -71,8 +71,8 @@ function onPreferencesChanged(changes) {
 function createThumbnail(bookmarkURL) {
     const collectData = Promise.all([
         browser.tabs.captureVisibleTab(),
-        browser.tabs.executeScript({ code: "window.innerWidth" }),
-        browser.tabs.executeScript({ code: "window.innerHeight" }),
+        browser.tabs.executeScript({code: "window.innerWidth"}),
+        browser.tabs.executeScript({code: "window.innerHeight"}),
     ]);
     chainPromises([
         ()       => { return collectData; },
@@ -225,7 +225,7 @@ function __isURLOpenInActiveTabAndComplete(url) {
     }
 
     return chainPromises([
-        ()     => browser.tabs.query({ active: true, currentWindow: true }),
+        ()     => browser.tabs.query({active: true, currentWindow: true}),
         (tabs) => tabs[0],
         (tab)  => tab.status === "complete" && __cleanURL(tab.url) === __cleanURL(url),
     ]);
@@ -280,13 +280,13 @@ browser.storage.onChanged.addListener(onPreferencesChanged);
 function handleRequest(request) {
     if (request.message === "isGenerateThumbnailEnabled") {
         return chainPromises([
-            ()     => browser.tabs.query({ active: true, currentWindow: true }),
+            ()     => browser.tabs.query({active: true, currentWindow: true}),
             (tabs) => __isURLFromBookmarkFolder(tabs[0].url),
         ]);
     }
     if (request.message === "generateThumbnail") {
         chainPromises([
-            ()     => browser.tabs.query({ active: true, currentWindow: true }),
+            ()     => browser.tabs.query({active: true, currentWindow: true}),
             (tabs) => tabs[0],
             (tab)  => __isURLFromBookmarkFolder(tab.url) ? createThumbnail(tab.url) : null,
         ]);

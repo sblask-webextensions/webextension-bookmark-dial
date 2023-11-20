@@ -179,7 +179,7 @@ function __makeHTMLListItem(bookmark) {
                 ]),
             ]),
         ]),
-        __createElement("span", { class: "delete", title: "Delete Bookmark"}, [
+        __createElement("span", {class: "delete", title: "Delete Bookmark"}, [
             document.createTextNode("✗"),
         ]),
     ]);
