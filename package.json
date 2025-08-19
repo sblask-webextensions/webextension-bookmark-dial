@@ -10,7 +10,7 @@
     "name": "bookmarkdial",
     "repository": {
         "type": "git",
-        "url": "https://github.com/sblask/webextension-bookmark-dial"
+        "url": "https://github.com/sblask-webextensions/webextension-bookmark-dial"
     },
     "scripts": {
         "artifact-create:chrome": "web-ext build --artifacts-dir . --ignore-files screenshots package.json icon.fodg",
