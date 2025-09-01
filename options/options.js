@@ -68,10 +68,10 @@ function saveOptions(event) {
         [OPTION_BACKGROUND_COLOR]: document.getElementById("backgroundColor").value,
         [OPTION_BACKGROUND_IMAGE_URL]: document.getElementById("backgroundImageURL").value,
         [OPTION_BACKGROUND_SIZE]: document.querySelector("#backgroundSizeAuto").checked && "auto"
-                                  ||
-                                  document.querySelector("#backgroundSizeContain").checked && "contain"
-                                  ||
-                                  document.querySelector("#backgroundSizeCover").checked && "cover",
+                                    ||
+                                    document.querySelector("#backgroundSizeContain").checked && "contain"
+                                    ||
+                                    document.querySelector("#backgroundSizeCover").checked && "cover",
         [OPTION_BOOKMARK_FOLDER]: selectedFolder,
         [OPTION_COLUMN_COUNT]: document.getElementById("columnCount").selectedIndex || null,
         [OPTION_CUSTOM_CSS]: document.getElementById("customCSS").value,
