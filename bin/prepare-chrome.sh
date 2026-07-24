@@ -32,6 +32,9 @@ fi
 cp "${ROOT_DIRECTORY}"/*.js "${DIST_DIRECTORY}"/
 rm "${DIST_DIRECTORY}"/eslint.config.js
 
+# shellcheck disable=2046
+sed --in-place --regexp-extended 's|// chrome-only: ||' $(find "${DIST_DIRECTORY}" -name '*.js' -o -name '*.html')
+
 # create zip
 name="$(jq -r '.name' manifest.json |
   tr '[:upper:]' '[:lower:]' |

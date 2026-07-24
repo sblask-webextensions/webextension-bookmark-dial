@@ -10,6 +10,7 @@ const THUMBNAIL_STORAGE_PREFIX = "thumbnail_";
 const LIST_MARGIN = 20;
 const THUMBNAIL_WIDTH = 300;
 
+let dragStartIndex;
 const SORTABLE_OPTIONS = {
     containment: "window",
     cursor: "move",
@@ -19,6 +20,7 @@ const SORTABLE_OPTIONS = {
     scroll: false,
     tolerance: "pointer",
     start: function(_event, ui) {
+        dragStartIndex = ui.item.index();
         const tileRect = ui.placeholder[0].getBoundingClientRect();
 
         // helper's size is off for some reason when not setting this explicitly
@@ -27,11 +29,12 @@ const SORTABLE_OPTIONS = {
     },
 
     update: function(_event, ui) {
-        browser.bookmarks.move(
-            ui.item.find("a")[0].id,
-            {
-                index: ui.item.index("li"),
-            },
+        const droppedIndex = ui.item.index();
+        const newIndex = droppedIndex > dragStartIndex
+            ? droppedIndex // chrome-only: + 1
+            : droppedIndex;
+
+        browser.bookmarks.move(ui.item.find("a")[0].id, {index: newIndex},
         );
     },
 };
