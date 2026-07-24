@@ -2,7 +2,7 @@
  * Hermite resize - fast image resize/resample using Hermite filter.
  * https://github.com/viliusle/Hermite-resize
  */
-function Hermite_class() {
+export function Hermite_class() {
 	var cores;
 	var workers_archive = [];
 	var workerBlobURL;
@@ -209,7 +209,8 @@ function Hermite_class() {
 	};
 
 	// Build a worker from an anonymous function body - purpose is to avoid separate file
-	workerBlobURL = window.URL.createObjectURL(new Blob(['(',
+	if (typeof window !== 'undefined') {
+		workerBlobURL = window.URL.createObjectURL(new Blob(['(',
 		function () {
 			//begin worker
 			onmessage = function (event) {
@@ -294,6 +295,7 @@ function Hermite_class() {
 			//end worker
 		}.toString(),
 		')()'], {type: 'application/javascript'}));
+	}
 
 	/**
 	 * Hermite resize - fast image resize/resample using Hermite filter. 1 cpu version!

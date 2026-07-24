@@ -5,7 +5,6 @@ const stylistic = require("@stylistic/eslint-plugin");
 module.exports = [
     {
         ignores: [
-            "browser-polyfill.js",
             "content-scripts/jquery-3.1.1.js",
             "content-scripts/jquery-ui-1.12.1.js",
             "hermite.js",
@@ -21,7 +20,7 @@ module.exports = [
                 ...globals.webextensions,
             },
             parserOptions: {
-                ecmaVersion: 2020,
+                ecmaVersion: 2024,
             },
         },
         plugins: {
@@ -32,6 +31,10 @@ module.exports = [
             "no-restricted-syntax": [
                 "error",
                 "ForInStatement",
+                {
+                    selector: "AwaitExpression:not(:function AwaitExpression)",
+                    message: "Top-level await is disallowed in service workers.",
+                },
             ],
             "no-unused-vars": [
                 "error",
