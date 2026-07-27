@@ -17,7 +17,6 @@ function restoreOptions() {
     ]).then(
         result => {
             setTextValue("backgroundColor", result[OPTION_BACKGROUND_COLOR]);
-            document.getElementById("backgroundColorPicker").style.backgroundColor = result[OPTION_BACKGROUND_COLOR];
 
             setTextValue("backgroundImageURL", result[OPTION_BACKGROUND_IMAGE_URL]);
 

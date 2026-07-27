@@ -9,50 +9,56 @@
     <body>
         <form>
             <fieldset>
+                <legend>Actions</legend>
 
                 <button type="button" id="generateThumbnailButton" disabled>Use snapshot of current tab as thumbnail</button>
 
-                <legend>Actions</legend>
             </fieldset>
+
             <fieldset>
+                <legend>Options</legend>
 
-                <label for="folderSelect">Select Folder</label>
-                <select size="8" id="folderSelect"></select>
+                <div>
+                    <label for="folderSelect">Select Folder</label>
+                    <select size="8" id="folderSelect"></select>
+                </div>
 
-                <label for="columnCount">Number of columns</label>
-                <select id="columnCount">
-                    <option>Auto</option>
-                    <option>1</option>
-                    <option>2</option>
-                    <option>3</option>
-                    <option>4</option>
-                    <option>5</option>
-                    <option>6</option>
-                    <option>7</option>
-                    <option>8</option>
-                    <option>9</option>
-                </select>
 
-                <label for="background">
-                    Background
-                    (use <a id="optionLink" href="#">option page</a> if color or file picker don't work)
-                </label>
-                <fieldset id="background">
+                <div>
+                    <label for="columnCount">Number of columns</label>
+                    <select id="columnCount">
+                        <option>Auto</option>
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                        <option>6</option>
+                        <option>7</option>
+                        <option>8</option>
+                        <option>9</option>
+                    </select>
+                </div>
 
-                    <div class="color-wrapper">
-                        <input type="color" id="backgroundColor"></input>
-                        <label for="backgroundColor">
-                            <span class="color-picker" id="backgroundColorPicker"></span>
-                            <span class="label">Color</span>
-                        </label>
+                <fieldset>
+                    <legend>
+                        Background
+                        (use <a id="optionLink" href="#">option page</a> if color or file picker don't work)
+                    </legend>
+
+                    <div class="box-wrapper">
+                        <input type="color" id="backgroundColor">
+                        <label for="backgroundColor">Color</label>
                     </div>
 
-                    <label for="backgroundImageURL">Image URL</label>
-                    <input type="text" id="backgroundImageURL"></input>
-                    <input type="file" id="backgroundImageChooser"></input>
+                    <div>
+                        <label for="backgroundImageURL">Image URL</label>
+                        <input type="text" id="backgroundImageURL"></input>
+                        <input type="file" id="backgroundImageChooser"></input>
+                    </div>
 
-                    <label for="size">Size</label>
-                    <fieldset id="size">
+                    <fieldset>
+                        <legend>Size</legend>
 
                         <div class="box-wrapper">
                             <input type="radio" name="backgroundSize" id="backgroundSizeAuto" value="auto">
@@ -73,10 +79,11 @@
 
                 </fieldset>
 
-                <label for="customCSS" >Custom CSS (complementing the default one)</label>
-                <textarea id="customCSS"></textarea>
+                <div>
+                    <label for="customCSS" >Custom CSS (complementing the default one)</label>
+                    <textarea id="customCSS"></textarea>
+                </div>
 
-                <legend>Options</legend>
             </fieldset>
         </form>
         <script src="./options.js"></script>
