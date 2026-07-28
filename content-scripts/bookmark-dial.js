@@ -3,6 +3,7 @@ const OPTION_BACKGROUND_IMAGE_URL = "option_background_image_url";
 const OPTION_BACKGROUND_SIZE = "option_background_size";
 const OPTION_BOOKMARK_FOLDER = "option_bookmark_folder";
 const OPTION_COLUMN_COUNT = "option_column_count";
+const OPTION_CONFIRM_BOOKMARK_DELETION = "option_confirm_bookmark_deletion";
 const OPTION_CUSTOM_CSS = "option_custom_css";
 
 const THUMBNAIL_STORAGE_PREFIX = "thumbnail_";
@@ -47,6 +48,7 @@ let bookmarkFolder = undefined;
 
 let bookmarks = undefined;
 let columnCount = undefined;
+let confirmBookmarkDeletion = false;
 
 const thumbnails = new Map();
 
@@ -182,7 +184,7 @@ function __makeHTMLListItem(bookmark) {
                 ]),
             ]),
         ]),
-        __createElement("span", {class: "delete", title: "Delete Bookmark"}, [
+        __createElement("span", {class: "delete", title: "Delete Bookmark", "data-title": bookmark.title}, [
             document.createTextNode("✗"),
         ]),
     ]);
@@ -195,6 +197,9 @@ function __makeBookmarkListSortable() {
 
 function __makeDeleteLinksClickable() {
     $(".delete").on("click", function(event) {
+        if (confirmBookmarkDeletion && !confirm(`Do you want to delete bookmark "${event.currentTarget.dataset.title}"`)) {
+            return;
+        }
         browser.bookmarks.remove($(event.target).parent().children("a").attr("id"));
     });
 }
@@ -248,6 +253,9 @@ function onPreferencesChanged(changes) {
         columnCount = changes[OPTION_COLUMN_COUNT].newValue;
         debouncedMakeLayout();
     }
+    if (changes[OPTION_CONFIRM_BOOKMARK_DELETION]) {
+        confirmBookmarkDeletion = changes[OPTION_CONFIRM_BOOKMARK_DELETION].newValue;
+    }
     if (changes[OPTION_CUSTOM_CSS]) {
         $("style#givenStyle").text(changes[OPTION_CUSTOM_CSS].newValue);
     }
@@ -262,6 +270,7 @@ function initFromPreferences() {
         OPTION_BACKGROUND_SIZE,
         OPTION_BOOKMARK_FOLDER,
         OPTION_COLUMN_COUNT,
+        OPTION_CONFIRM_BOOKMARK_DELETION,
         OPTION_CUSTOM_CSS,
     ]).then(
         (result) => {
@@ -270,6 +279,7 @@ function initFromPreferences() {
             backgroundSize = result[OPTION_BACKGROUND_SIZE];
             bookmarkFolder = result[OPTION_BOOKMARK_FOLDER];
             columnCount = result[OPTION_COLUMN_COUNT];
+            confirmBookmarkDeletion = result[OPTION_CONFIRM_BOOKMARK_DELETION] === true;
             __updateDial();
 
             $("style#givenStyle").text(result[OPTION_CUSTOM_CSS]);

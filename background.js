@@ -4,6 +4,7 @@ const OPTION_BACKGROUND_COLOR = "option_background_color";
 const OPTION_BACKGROUND_IMAGE_URL = "option_background_image_url";
 const OPTION_BACKGROUND_SIZE = "option_background_size";
 const OPTION_BOOKMARK_FOLDER = "option_bookmark_folder";
+const OPTION_CONFIRM_BOOKMARK_DELETION = "option_confirm_bookmark_deletion";
 const OPTION_CUSTOM_CSS = "option_custom_css";
 
 const THUMBNAIL_STORAGE_PREFIX = "thumbnail_";
@@ -20,6 +21,7 @@ async function __initPreferences() {
         OPTION_BACKGROUND_COLOR,
         OPTION_BACKGROUND_IMAGE_URL,
         OPTION_BACKGROUND_SIZE,
+        OPTION_CONFIRM_BOOKMARK_DELETION,
         OPTION_CUSTOM_CSS,
     ]);
     if (result[OPTION_BACKGROUND_COLOR] === undefined) {
@@ -30,6 +32,9 @@ async function __initPreferences() {
     }
     if (result[OPTION_BACKGROUND_SIZE] === undefined) {
         await browser.storage.local.set({[OPTION_BACKGROUND_SIZE]: "auto"});
+    }
+    if (result[OPTION_CONFIRM_BOOKMARK_DELETION] === undefined) {
+        await browser.storage.local.set({[OPTION_CONFIRM_BOOKMARK_DELETION]: false});
     }
     if (result[OPTION_CUSTOM_CSS] === undefined) {
         await browser.storage.local.set({[OPTION_CUSTOM_CSS]: ""});

@@ -3,6 +3,7 @@ const OPTION_BACKGROUND_IMAGE_URL = "option_background_image_url";
 const OPTION_BACKGROUND_SIZE = "option_background_size";
 const OPTION_BOOKMARK_FOLDER = "option_bookmark_folder";
 const OPTION_COLUMN_COUNT = "option_column_count";
+const OPTION_CONFIRM_BOOKMARK_DELETION = "option_confirm_bookmark_deletion";
 const OPTION_CUSTOM_CSS = "option_custom_css";
 
 const FOLDER_SELECT = document.querySelector("#folderSelect");
@@ -13,6 +14,7 @@ function restoreOptions() {
         OPTION_BACKGROUND_IMAGE_URL,
         OPTION_BACKGROUND_SIZE,
         OPTION_COLUMN_COUNT,
+        OPTION_CONFIRM_BOOKMARK_DELETION,
         OPTION_CUSTOM_CSS,
     ]).then(
         result => {
@@ -25,6 +27,7 @@ function restoreOptions() {
             const numberOfColumnsIndex = result[OPTION_COLUMN_COUNT] || 0;
             document.getElementById("columnCount").options[numberOfColumnsIndex].setAttribute("selected", true);
 
+            setBooleanValue("confirmBookmarkDeletion", result[OPTION_CONFIRM_BOOKMARK_DELETION] === true);
             setTextValue("customCSS", result[OPTION_CUSTOM_CSS]);
         }
     );
@@ -73,6 +76,7 @@ function saveOptions(event) {
                                     document.querySelector("#backgroundSizeCover").checked && "cover",
         [OPTION_BOOKMARK_FOLDER]: selectedFolder,
         [OPTION_COLUMN_COUNT]: document.getElementById("columnCount").selectedIndex || null,
+        [OPTION_CONFIRM_BOOKMARK_DELETION]: document.getElementById("confirmBookmarkDeletion").checked,
         [OPTION_CUSTOM_CSS]: document.getElementById("customCSS").value,
     });
 }
