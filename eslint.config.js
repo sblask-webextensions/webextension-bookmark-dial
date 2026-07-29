@@ -1,10 +1,11 @@
-const globals = require("globals");
-const js = require("@eslint/js");
-const stylistic = require("@stylistic/eslint-plugin");
+import globals from "globals";
+import js from "@eslint/js";
+import stylistic from "@stylistic/eslint-plugin";
 
-module.exports = [
+export default [
     {
         ignores: [
+            "dist-*/",
             "content-scripts/jquery-3.1.1.js",
             "content-scripts/jquery-ui-1.12.1.js",
             "hermite.js",
@@ -14,7 +15,6 @@ module.exports = [
         languageOptions: {
             globals: {
                 ...globals.browser,
-                ...globals.commonjs,
                 ...globals.es6,
                 ...globals.jquery,
                 ...globals.webextensions,
