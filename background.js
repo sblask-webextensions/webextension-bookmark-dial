@@ -71,7 +71,7 @@ async function createThumbnail(bookmarkURL) {
 }
 
 async function __dataURLToCanvas(dataURL, measurements) {
-    const imageBlob = await fetch(dataURL).then(response => response.blob());
+    const imageBlob = await fetch(dataURL).then((response) => response.blob());
     const image = await createImageBitmap(imageBlob);
     // Measured dimensions are CSS pixels, the captured image can be in device
     // pixels so there needs to be some conversion. innerWidth and innerHeight
@@ -136,8 +136,8 @@ async function __getThumbnailURLs() {
     const preferenceItems = await browser.storage.local.get();
     return new Set(
         Object.keys(preferenceItems)
-            .filter(key => { return key.startsWith(THUMBNAIL_STORAGE_PREFIX); })
-            .map(key => { return key.substring(THUMBNAIL_STORAGE_PREFIX.length); })
+            .filter((key) => { return key.startsWith(THUMBNAIL_STORAGE_PREFIX); })
+            .map((key) => { return key.substring(THUMBNAIL_STORAGE_PREFIX.length); })
     );
 }
 
@@ -146,7 +146,6 @@ async function __hasThumbnail(url) {
     const result = await browser.storage.local.get(key);
     return result[key] !== undefined;
 }
-
 
 async function __maybeRemoveUnusedThumbnails() {
     const bytesInUse = await browser.storage.local.getBytesInUse();
@@ -167,11 +166,11 @@ async function maybeCreateThumbnail(url) {
         return;
     }
     const hasThumbnail = await __hasThumbnail(url);
-    if (hasThumbnail){
+    if (hasThumbnail) {
         return;
     }
     const cleanBookmarkURLSet = await __cleanBookmarkURLSet();
-    if(!cleanBookmarkURLSet.has(__cleanURL(url))) {
+    if (!cleanBookmarkURLSet.has(__cleanURL(url))) {
         return;
     }
     await createThumbnail(url);
@@ -186,7 +185,7 @@ async function __cleanBookmarkURLSet() {
     const bookmarks = await browser.bookmarks.getChildren(bookmarkFolder);
     return new Set(
         bookmarks
-            .map(bookmark => bookmark.url)
+            .map((bookmark) => bookmark.url)
             .filter(Boolean)
             .map(__cleanURL)
     );
@@ -244,7 +243,7 @@ browser.tabs.onActivated.addListener(
     async (activeInfo) => {
         const tab = await browser.tabs.get(activeInfo.tabId);
         // delay as Chrome fails to capture image otherwise
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 100));
         await maybeCreateThumbnail(tab.url);
     }
 );

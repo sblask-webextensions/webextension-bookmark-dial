@@ -17,12 +17,12 @@ function restoreOptions() {
         OPTION_CONFIRM_BOOKMARK_DELETION,
         OPTION_CUSTOM_CSS,
     ]).then(
-        result => {
+        (result) => {
             setTextValue("backgroundColor", result[OPTION_BACKGROUND_COLOR]);
 
             setTextValue("backgroundImageURL", result[OPTION_BACKGROUND_IMAGE_URL]);
 
-            setBooleanValue("backgroundSize" + result[OPTION_BACKGROUND_SIZE].charAt(0).toUpperCase() + result[OPTION_BACKGROUND_SIZE].slice(1), true);
+            setRadioValue("backgroundSize", result[OPTION_BACKGROUND_SIZE]);
 
             const numberOfColumnsIndex = result[OPTION_COLUMN_COUNT] || 0;
             document.getElementById("columnCount").options[numberOfColumnsIndex].setAttribute("selected", true);
@@ -54,6 +54,12 @@ function setBooleanValue(elementID, newValue) {
     document.getElementById(elementID).checked = newValue;
 }
 
+function setRadioValue(name, newValue) {
+    for (const input of document.getElementsByName(name)) {
+        input.checked = input.value === newValue;
+    }
+}
+
 function saveOptions(event) {
     if (event) {
         event.preventDefault();
@@ -69,11 +75,7 @@ function saveOptions(event) {
     browser.storage.local.set({
         [OPTION_BACKGROUND_COLOR]: document.getElementById("backgroundColor").value,
         [OPTION_BACKGROUND_IMAGE_URL]: document.getElementById("backgroundImageURL").value,
-        [OPTION_BACKGROUND_SIZE]: document.querySelector("#backgroundSizeAuto").checked && "auto"
-                                    ||
-                                    document.querySelector("#backgroundSizeContain").checked && "contain"
-                                    ||
-                                    document.querySelector("#backgroundSizeCover").checked && "cover",
+        [OPTION_BACKGROUND_SIZE]: document.querySelector(`[name="backgroundSize"]:checked`)?.value,
         [OPTION_BOOKMARK_FOLDER]: selectedFolder,
         [OPTION_COLUMN_COUNT]: document.getElementById("columnCount").selectedIndex || null,
         [OPTION_CONFIRM_BOOKMARK_DELETION]: document.getElementById("confirmBookmarkDeletion").checked,
@@ -106,7 +108,7 @@ function maybeSelectFolder() {
     browser.storage.local.get([
         OPTION_BOOKMARK_FOLDER,
     ]).then(
-        result => {
+        (result) => {
             const bookmarkFolder = result[OPTION_BOOKMARK_FOLDER];
             if (!bookmarkFolder) {
                 return;
@@ -137,7 +139,7 @@ function loadBackgroundImageURL(event) {
 
 function enableGenerateThumbnailButton() {
     browser.runtime.sendMessage({message: "isGenerateThumbnailEnabled"}).then(
-        enabled => document.querySelector("#generateThumbnailButton").disabled = !enabled
+        (enabled) => document.querySelector("#generateThumbnailButton").disabled = !enabled
     );
 }
 

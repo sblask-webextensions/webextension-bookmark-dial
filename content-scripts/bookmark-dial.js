@@ -109,22 +109,22 @@ function __setStyle(layout, windowWidth, windowHeight) {
     const labelHeight = 5 + tileHeight / 20;
     const styleString = `
         li {
-            max-width: ${ THUMBNAIL_WIDTH }px;
-            width: calc(100% / ${ tilesPerLine });
+            max-width: ${THUMBNAIL_WIDTH}px;
+            width: calc(100% / ${tilesPerLine});
         }
         ol {
-            width: calc(100% - ${ LIST_MARGIN }px);
-            height: calc(100% - ${ LIST_MARGIN }px);
-            margin: ${ LIST_MARGIN / 2 }px;
-            padding-top: ${ verticalPadding }px;
-            padding-left: ${ horizontalPadding }px;
-            padding-right: ${ horizontalPadding }px;
+            width: calc(100% - ${LIST_MARGIN}px);
+            height: calc(100% - ${LIST_MARGIN}px);
+            margin: ${LIST_MARGIN / 2}px;
+            padding-top: ${verticalPadding}px;
+            padding-left: ${horizontalPadding}px;
+            padding-right: ${horizontalPadding}px;
         }
         div {
-            height: ${ labelHeight * 2 }px;
+            height: ${labelHeight * 2}px;
         }
         span {
-            font-size: ${ labelHeight }px;
+            font-size: ${labelHeight}px;
         }
     `;
     $("style#sizingStyle").text(styleString);
@@ -184,7 +184,7 @@ function __makeHTMLListItem(bookmark) {
                 ]),
             ]),
         ]),
-        __createElement("span", {class: "delete", title: "Delete Bookmark", "data-title": bookmark.title}, [
+        __createElement("span", {"class": "delete", "title": "Delete Bookmark", "data-title": bookmark.title}, [
             document.createTextNode("✗"),
         ]),
     ]);
@@ -217,7 +217,7 @@ function __updateDial() {
 
     browser.bookmarks.getChildren(bookmarkFolder).then(
         (bookmarkOrFolder) => {
-            bookmarks = bookmarkOrFolder.filter(item => item.url && item.url.indexOf("place:") !== 0);
+            bookmarks = bookmarkOrFolder.filter((item) => item.url && item.url.indexOf("place:") !== 0);
             __replaceBookmarkList();
             __makeBookmarkListSortable();
             __makeDeleteLinksClickable();
@@ -305,7 +305,7 @@ function onThumbnailsChanged(changes) {
 
 function initThumbnails() {
     return browser.storage.local.get().then(
-        items => {
+        (items) => {
             for (const [key, value] of Object.entries(items)) {
                 if (key.indexOf(THUMBNAIL_STORAGE_PREFIX) === 0) {
                     const url = key.substring(THUMBNAIL_STORAGE_PREFIX.length);
