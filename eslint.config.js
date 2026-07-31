@@ -134,7 +134,6 @@ export default [
                     named: "never",
                 },
             ],
-            "@stylistic/space-infix-ops": "off",
         },
     },
 ];

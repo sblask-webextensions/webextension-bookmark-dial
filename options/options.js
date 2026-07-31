@@ -83,7 +83,7 @@ function saveOptions(event) {
     });
 }
 
-function loadBookmarkTree(folders, level=-1) {
+function loadBookmarkTree(folders, level = -1) {
     for (const folder of folders) {
         const {id, title, children} = folder;
 
