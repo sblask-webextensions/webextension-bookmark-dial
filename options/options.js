@@ -187,6 +187,43 @@ function loadThumbnailImage(event) {
     event.target.value = "";
 }
 
+async function exportSettings() {
+    try {
+        const exportData = await browser.storage.local.get();
+        const dataBlob = new Blob(
+            [JSON.stringify(exportData)],
+            {type: "application/json"},
+        );
+        const dataURL = URL.createObjectURL(dataBlob);
+        const downloadLink = document.createElement("a");
+        downloadLink.href = dataURL;
+        downloadLink.download = "BookmarkDial_export.json";
+        downloadLink.click();
+        setTimeout(() => URL.revokeObjectURL(dataURL), 0);
+    } catch (error) {
+        console.warn("Unable to export settings.", error);
+    }
+}
+
+async function importSettings(event) {
+    const [file] = event.target.files;
+    if (!file) {
+        return;
+    }
+
+    try {
+        const importData = JSON.parse(await file.text());
+        if (!importData || typeof importData !== "object" || Array.isArray(importData)) {
+            throw new TypeError("The settings file must contain a JSON object.");
+        }
+        await browser.storage.local.set(importData);
+    } catch (error) {
+        console.warn("Unable to import settings.", error);
+    } finally {
+        event.target.value = "";
+    }
+}
+
 document.addEventListener("DOMContentLoaded", restoreOptions);
 document.addEventListener("DOMContentLoaded", enableAutosave);
 
@@ -226,6 +263,18 @@ document.querySelector("#loadThumbnailButton").addEventListener(
 document.querySelector("#thumbnailFile").addEventListener(
     "change",
     loadThumbnailImage,
+);
+document.querySelector("#importButton").addEventListener(
+    "click",
+    () => document.querySelector("#importFile").click(),
+);
+document.querySelector("#exportButton").addEventListener(
+    "click",
+    exportSettings,
+);
+document.querySelector("#importFile").addEventListener(
+    "change",
+    importSettings,
 );
 
 browser.storage.onChanged.addListener(restoreOptions);
