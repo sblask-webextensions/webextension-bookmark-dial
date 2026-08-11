@@ -42,12 +42,16 @@ async function __initPreferences() {
 }
 browser.runtime.onInstalled.addListener(__initPreferences);
 
-async function createThumbnail(bookmarkURL) {
-    const [tab] = await browser.tabs.query({active: true, currentWindow: true});
+// Firefox closes the native options window when using a picker, so a popup
+// window is used instead which means targetTab has to be passed in.
+async function createThumbnail(bookmarkURL, targetTab) {
+    const tab = targetTab || (await browser.tabs.query({active: true, currentWindow: true}))[0];
     let screenshotDataURL, measurements;
     try {
         [screenshotDataURL, [{result: measurements}]] = await Promise.all([
-            browser.tabs.captureVisibleTab(tab.windowId),
+            browser.tabs.captureTab
+                ? browser.tabs.captureTab(tab.id)
+                : browser.tabs.captureVisibleTab(tab.windowId),
             browser.scripting.executeScript({
                 target: {tabId: tab.id},
                 func: () => {
@@ -62,27 +66,48 @@ async function createThumbnail(bookmarkURL) {
         ]);
     } catch (error) {
         console.warn("Unable to capture the active tab.", error);
-        return;
+        return false;
     }
-    const canvas = await __dataURLToCanvas(screenshotDataURL, measurements);
-    __resize(canvas);
-    const thumbnailDataURL = await __canvasToDataURL(canvas);
-    await __storeThumbnail(bookmarkURL, thumbnailDataURL);
+
+    try {
+        const imageBlob = await fetch(screenshotDataURL).then((response) => response.blob());
+        const image = await createImageBitmap(imageBlob);
+        // Measured dimensions are CSS pixels, the captured image can be in device
+        // pixels so there needs to be some conversion. innerWidth and innerHeight
+        // includes scrollbars, just like the image, so use them to calculate the
+        // ratio and multiply with clientWidth and clientHeight to get width and
+        // height without scrollbar
+        const pixelRatio =  image.width / measurements.innerWidth;
+        const imageWidth = measurements.clientWidth * pixelRatio;
+        const imageHeight = measurements.clientHeight * pixelRatio;
+        const canvas = __imageToCanvas(image, imageWidth, imageHeight);
+        __resize(canvas);
+        const thumbnailDataURL = await __canvasToDataURL(canvas);
+        await __storeThumbnail(bookmarkURL, thumbnailDataURL);
+        return true;
+    } catch (error) {
+        console.warn("Unable to convert the captured thumbnail image.", error);
+        return false;
+    }
 }
 
-async function __dataURLToCanvas(dataURL, measurements) {
-    const imageBlob = await fetch(dataURL).then((response) => response.blob());
-    const image = await createImageBitmap(imageBlob);
-    // Measured dimensions are CSS pixels, the captured image can be in device
-    // pixels so there needs to be some conversion. innerWidth and innerHeight
-    // includes scrollbars, just like the image, so use them to calculate the
-    // ratio and multiply with clientWidth and clientHeight to get width and
-    // height without scrollbar
-    const pixelRatio = image.width / measurements.innerWidth;
-    const [cropX, cropWidth, cropHeight] = __getNewSizing(
-        measurements.clientWidth * pixelRatio,
-        measurements.clientHeight * pixelRatio,
-    );
+async function imageToThumbnail(bookmarkURL, imageDataURL) {
+    try {
+        const imageBlob = await fetch(imageDataURL).then((response) => response.blob());
+        const image = await createImageBitmap(imageBlob);
+        const canvas = __imageToCanvas(image, image.width, image.height);
+        __resize(canvas);
+        const thumbnailDataURL = await __canvasToDataURL(canvas);
+        await __storeThumbnail(bookmarkURL, thumbnailDataURL);
+        return true;
+    } catch (error) {
+        console.warn("Unable to use the selected thumbnail image.", error);
+        return false;
+    }
+}
+
+function __imageToCanvas(image, imageWidth, imageHeight) {
+    const [cropX, cropWidth, cropHeight] = __getNewSizing(imageWidth, imageHeight);
     const canvas = new OffscreenCanvas(cropWidth, cropHeight);
     canvas.getContext("2d").drawImage(
         image,
@@ -248,16 +273,58 @@ browser.tabs.onActivated.addListener(
     }
 );
 
-async function handleRequest(request) {
+async function handleRequest(request, sender) {
+    const optionsPageURL = browser.runtime.getURL("options/options.html");
+    if (sender.id !== browser.runtime.id || !sender.url?.startsWith(optionsPageURL)) {
+        return false;
+    }
+
+    let tab;
+    if (request.tabId === undefined) {
+        [tab] = await browser.tabs.query({active: true, currentWindow: true});
+    } else {
+        try {
+            // tabId will be set when request comes from Firefox options popup window
+            tab = await browser.tabs.get(request.tabId);
+        } catch (error) {
+            console.warn("Thumbnail target tab no longer exists.", error);
+            return false;
+        }
+    }
+
+    const cleanBookmarkURLSet = await __cleanBookmarkURLSet();
     if (request.message === "isGenerateThumbnailEnabled") {
-        const [tab] = await browser.tabs.query({active: true, currentWindow: true});
-        return (await __cleanBookmarkURLSet()).has(__cleanURL(tab.url));
+        return cleanBookmarkURLSet.has(__cleanURL(tab.url));
     }
     if (request.message === "generateThumbnail") {
-        const [tab] = await browser.tabs.query({active: true, currentWindow: true});
-        if ((await __cleanBookmarkURLSet()).has(__cleanURL(tab.url))) {
-            await createThumbnail(tab.url);
+        if (cleanBookmarkURLSet.has(__cleanURL(tab.url))) {
+            await createThumbnail(tab.url, tab);
         }
+    }
+    if (request.message === "imageToThumbnail") {
+        if (cleanBookmarkURLSet.has(__cleanURL(tab.url))) {
+            return imageToThumbnail(tab.url, request.image);
+        }
+        return false;
     }
 }
 browser.runtime.onMessage.addListener(handleRequest);
+
+browser.action.onClicked.addListener(
+    async (tab) => {
+        const optionsURL = new URL(browser.runtime.getURL("options/options.html"));
+        optionsURL.searchParams.set("tabId", tab.id);
+        const sourceWindow = await browser.windows.get(tab.windowId);
+        const width = 440;
+        const height = 700;
+        await browser.windows.create({
+            url: optionsURL.href,
+            type: "popup",
+            width,
+            height,
+            left: sourceWindow.left + sourceWindow.width - width - 10,
+            top: sourceWindow.top + 60,
+            allowScriptsToClose: true,
+        });
+    }
+);

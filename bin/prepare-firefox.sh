@@ -26,6 +26,7 @@ jq \
   '
     .version = $version
     | del(
+      .action.default_popup,
       .background.service_worker,
       .minimum_chrome_version
     )

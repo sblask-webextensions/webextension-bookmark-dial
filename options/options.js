@@ -8,6 +8,12 @@ const OPTION_CUSTOM_CSS = "option_custom_css";
 
 const FOLDER_SELECT = document.querySelector("#folderSelect");
 
+const tabIdParameter = new URL(location.href).searchParams.get("tabId");
+const thumbnailTargetTabId = tabIdParameter === null ? undefined : Number(tabIdParameter);
+const isStandalonePopup = tabIdParameter !== null;
+
+let nativePickerOpen = false;
+
 function restoreOptions() {
     browser.storage.local.get([
         OPTION_BACKGROUND_COLOR,
@@ -60,7 +66,7 @@ function setRadioValue(name, newValue) {
     }
 }
 
-function saveOptions(event) {
+async function saveOptions(event) {
     if (event) {
         event.preventDefault();
     }
@@ -69,10 +75,9 @@ function saveOptions(event) {
     let selectedFolder = undefined;
     if (folderSelect.selectedIndex >= 0) {
         selectedFolder = folderSelect.options[folderSelect.selectedIndex].value;
-        enableGenerateThumbnailButton();
     }
 
-    browser.storage.local.set({
+    await browser.storage.local.set({
         [OPTION_BACKGROUND_COLOR]: document.getElementById("backgroundColor").value,
         [OPTION_BACKGROUND_IMAGE_URL]: document.getElementById("backgroundImageURL").value,
         [OPTION_BACKGROUND_SIZE]: document.querySelector(`[name="backgroundSize"]:checked`)?.value,
@@ -81,6 +86,10 @@ function saveOptions(event) {
         [OPTION_CONFIRM_BOOKMARK_DELETION]: document.getElementById("confirmBookmarkDeletion").checked,
         [OPTION_CUSTOM_CSS]: document.getElementById("customCSS").value,
     });
+
+    if (selectedFolder !== undefined) {
+        await maybeEnableThumbnailButtons();
+    }
 }
 
 function loadBookmarkTree(folders, level = -1) {
@@ -116,7 +125,7 @@ function maybeSelectFolder() {
             for (const option of document.getElementById("folderSelect").options) {
                 if (option.value === bookmarkFolder) {
                     option.setAttribute("selected", true);
-                    enableGenerateThumbnailButton();
+                    maybeEnableThumbnailButtons();
                 }
             }
         }
@@ -137,19 +146,64 @@ function loadBackgroundImageURL(event) {
     reader.readAsDataURL(input.files[0]);
 }
 
-function enableGenerateThumbnailButton() {
-    browser.runtime.sendMessage({message: "isGenerateThumbnailEnabled"}).then(
-        (enabled) => document.querySelector("#generateThumbnailButton").disabled = !enabled
+function maybeEnableThumbnailButtons() {
+    return browser.runtime.sendMessage({
+        message: "isGenerateThumbnailEnabled",
+        tabId: thumbnailTargetTabId,
+    }).then(
+        (enabled) => {
+            document.querySelector("#generateThumbnailButton").disabled = !enabled;
+            document.querySelector("#loadThumbnailButton").disabled = !enabled;
+        }
     );
+}
+
+function loadThumbnailImage(event) {
+    const [file] = event.target.files;
+    if (!file) {
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.addEventListener(
+        "load",
+        async () => {
+            try {
+                await browser.runtime.sendMessage({
+                    message: "imageToThumbnail",
+                    image: reader.result,
+                    tabId: thumbnailTargetTabId,
+                });
+            } catch (error) {
+                console.warn("Unable to send the selected thumbnail image.", error);
+            }
+        },
+    );
+    reader.addEventListener(
+        "error",
+        () => console.warn("Unable to read the selected thumbnail image.", reader.error),
+    );
+    reader.readAsDataURL(file);
+    event.target.value = "";
 }
 
 document.addEventListener("DOMContentLoaded", restoreOptions);
 document.addEventListener("DOMContentLoaded", enableAutosave);
 
-document.querySelector("#optionLink").addEventListener(
-    "click",
-    () => browser.runtime.openOptionsPage(),
+for (const input of document.querySelectorAll(`input[type="file"], input[type="color"]`)) {
+    input.addEventListener("click", () => nativePickerOpen = true);
+}
+
+window.addEventListener("focus", () => nativePickerOpen = false);
+window.addEventListener(
+    "blur",
+    () => {
+        if (isStandalonePopup && !nativePickerOpen) {
+            window.close();
+        }
+    }
 );
+
 document.querySelector("form").addEventListener(
     "submit",
     saveOptions,
@@ -160,7 +214,18 @@ document.querySelector("#backgroundImageChooser").addEventListener(
 );
 document.querySelector("#generateThumbnailButton").addEventListener(
     "click",
-    () => browser.runtime.sendMessage({message: "generateThumbnail"}),
+    () => browser.runtime.sendMessage({
+        message: "generateThumbnail",
+        tabId: thumbnailTargetTabId,
+    }),
+);
+document.querySelector("#loadThumbnailButton").addEventListener(
+    "click",
+    () => document.querySelector("#thumbnailFile").click(),
+);
+document.querySelector("#thumbnailFile").addEventListener(
+    "change",
+    loadThumbnailImage,
 );
 
 browser.storage.onChanged.addListener(restoreOptions);

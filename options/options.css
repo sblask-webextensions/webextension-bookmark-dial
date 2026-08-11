@@ -25,6 +25,11 @@ input[type=number],
 input[type=text] {
     width: 100%;
 }
+.button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
 select {
     padding: 3px;
     width: 100%;

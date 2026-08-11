@@ -11,7 +11,11 @@
             <fieldset>
                 <legend>Actions</legend>
 
-                <button type="button" id="generateThumbnailButton" disabled>Use snapshot of current tab as thumbnail</button>
+                <div class="button-group">
+                    <button type="button" id="generateThumbnailButton" disabled>Use snapshot of current tab as thumbnail</button>
+                    <button type="button" id="loadThumbnailButton" disabled>Use custom image as thumbnail for current tab</button>
+                </div>
+                <input type="file" id="thumbnailFile" accept="image/*" hidden>
 
             </fieldset>
 
@@ -45,10 +49,7 @@
                 </div>
 
                 <fieldset>
-                    <legend>
-                        Background
-                        (use <a id="optionLink" href="#">option page</a> if color or file picker don't work)
-                    </legend>
+                    <legend>Background</legend>
 
                     <div class="box-wrapper">
                         <input type="color" id="backgroundColor">
